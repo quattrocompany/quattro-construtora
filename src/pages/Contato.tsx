@@ -81,7 +81,6 @@ const FAQS_CONTATO = [
 // ============================================================================
 
 export const Contato: React.FC = () => {
-  // Estado do Formulário
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -96,7 +95,6 @@ export const Contato: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Manipulador de Mudança
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
@@ -107,7 +105,6 @@ export const Contato: React.FC = () => {
     }
   };
 
-  // Envio do Formulário
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
@@ -125,7 +122,6 @@ export const Contato: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulação de requisição à API/Firestore
       await new Promise((resolve) => setTimeout(resolve, 1200));
       setIsSuccess(true);
       setFormData({
@@ -145,15 +141,15 @@ export const Contato: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-24 md:pt-28">
+    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
       
       {/* ========================================================================= */}
-      {/* 1. HERO INSTITUCIONAL / BREADCRUMB BANNER                                 */}
+      {/* 1. HERO INSTITUCIONAL (PADRÃO DE GRID MESTRE: max-w-[1440px] px-6 md:px-12) */}
       {/* ========================================================================= */}
-      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-24 px-6 md:px-12 relative overflow-hidden">
+      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
 
-        <div className="max-w-[1440px] mx-auto space-y-6 relative z-10">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 relative z-10">
           <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
             <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
@@ -164,7 +160,7 @@ export const Contato: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
               Canais de Atendimento
             </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-none">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
               Fale com a equipe técnica da Quattro.
             </h1>
             <p className="text-zinc-600 text-base md:text-lg font-normal leading-relaxed pt-2">
@@ -175,12 +171,11 @@ export const Contato: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. SEÇÃO PRINCIPAL (FORMULÁRIO + CANAIS DE CONTATO)                       */}
+      {/* 2. FORMULÁRIO & CANAIS                                                    */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 md:px-12 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* COLUNA DO FORMULÁRIO (LG: 7 COLS) */}
           <div className="lg:col-span-7 bg-zinc-50 border border-zinc-200 p-8 md:p-12 rounded-3xl shadow-sm space-y-8">
             
             <div className="space-y-2">
@@ -195,7 +190,6 @@ export const Contato: React.FC = () => {
               </p>
             </div>
 
-            {/* ALERTA DE SUCESSO */}
             {isSuccess ? (
               <div className="bg-emerald-50 border border-emerald-200 p-8 rounded-2xl text-center space-y-4 animate-in fade-in">
                 <div className="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto">
@@ -216,7 +210,6 @@ export const Contato: React.FC = () => {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 
-                {/* ERRO GLOBAL DO FORM */}
                 {errorMessage && (
                   <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-800 text-xs font-medium">
                     <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
@@ -224,7 +217,6 @@ export const Contato: React.FC = () => {
                   </div>
                 )}
 
-                {/* GRID DE NOME E E-MAIL */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label htmlFor="nome" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
@@ -259,7 +251,6 @@ export const Contato: React.FC = () => {
                   </div>
                 </div>
 
-                {/* GRID DE TELEFONE E EMPRESA */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label htmlFor="telefone" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
@@ -293,7 +284,6 @@ export const Contato: React.FC = () => {
                   </div>
                 </div>
 
-                {/* DROPDOWN DE SELEÇÃO DE ASSUNTO */}
                 <div className="space-y-2">
                   <label htmlFor="assunto" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
                     Qual o motivo do seu contato? *
@@ -314,7 +304,6 @@ export const Contato: React.FC = () => {
                   </select>
                 </div>
 
-                {/* BADGE DINÂMICO PARA VIZINHO DE OBRA */}
                 {formData.assunto === 'vizinho_obra' && (
                   <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3 text-amber-900 text-xs font-medium animate-in fade-in">
                     <HardHat className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
@@ -325,7 +314,6 @@ export const Contato: React.FC = () => {
                   </div>
                 )}
 
-                {/* BADGE DINÂMICO PARA FORNECEDORES */}
                 {formData.assunto === 'fornecedor' && (
                   <div className="p-4 bg-zinc-200/60 border border-zinc-300 rounded-xl flex items-start gap-3 text-zinc-800 text-xs font-medium animate-in fade-in">
                     <Building2 className="w-5 h-5 text-zinc-600 shrink-0 mt-0.5" />
@@ -336,7 +324,6 @@ export const Contato: React.FC = () => {
                   </div>
                 )}
 
-                {/* CAMPO DE MENSAGEM */}
                 <div className="space-y-2">
                   <label htmlFor="mensagem" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
                     Sua Mensagem *
@@ -353,7 +340,6 @@ export const Contato: React.FC = () => {
                   />
                 </div>
 
-                {/* CHECKBOX LGPD / ACEITE DE TERMOS */}
                 <div className="flex items-start gap-3 pt-2">
                   <input
                     type="checkbox"
@@ -368,7 +354,6 @@ export const Contato: React.FC = () => {
                   </label>
                 </div>
 
-                {/* BOTÃO DE SUBMIT */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -389,7 +374,6 @@ export const Contato: React.FC = () => {
 
           </div>
 
-          {/* COLUNA DE CANAIS E INFO (LG: 5 COLS) */}
           <div className="lg:col-span-5 space-y-8">
             
             <div className="space-y-2">
@@ -442,7 +426,6 @@ export const Contato: React.FC = () => {
               })}
             </div>
 
-            {/* CARD DE VAGA / RH */}
             <div className="p-6 bg-zinc-950 text-white rounded-2xl border border-zinc-800 space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-500">
@@ -461,7 +444,7 @@ export const Contato: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. PERGUNTAS FREQUENTES / FAQ DE CONTATO (CINZA 20% - bg-zinc-50)         */}
+      {/* 3. PERGUNTAS FREQUENTES                                                  */}
       {/* ========================================================================= */}
       <section className="py-20 px-6 md:px-12 bg-zinc-50 border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto space-y-12">
@@ -492,7 +475,7 @@ export const Contato: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. SEÇÃO DE LOCALIZAÇÃO / MAPA                                           */}
+      {/* 4. LOCALIZAÇÃO                                                           */}
       {/* ========================================================================= */}
       <section className="py-16 px-6 md:px-12 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8 p-8 md:p-12 rounded-3xl bg-zinc-50 border border-zinc-200">

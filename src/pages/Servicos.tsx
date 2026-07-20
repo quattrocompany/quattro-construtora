@@ -29,7 +29,7 @@ const SERVICOS_LIST = [
     entregaveis: [
       'Gestão unificada de fornecedores e contratos',
       'Preço fechado com previsibilidade orçamentária',
-      'Praso de entrega garantido em contrato',
+      'Prazo de entrega garantido em contrato',
       'Comissionamento e startup de instalações'
     ]
   },
@@ -124,17 +124,16 @@ const FLUXO_TRABALHO = [
 
 export const Servicos: React.FC = () => {
   return (
-    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-24 md:pt-28">
+    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
       
       {/* ========================================================================= */}
-      {/* 1. HERO INSTITUCIONAL DA PÁGINA                                          */}
+      {/* 1. HERO INSTITUCIONAL (PADRÃO DE GRID MESTRE: max-w-[1440px] px-6 md:px-12) */}
       {/* ========================================================================= */}
-      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-24 px-6 md:px-12 relative overflow-hidden">
+      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
 
-        <div className="max-w-[1440px] mx-auto space-y-6 relative z-10">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 relative z-10">
           
-          {/* Breadcrumbs */}
           <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
             <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
@@ -145,7 +144,7 @@ export const Servicos: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
               Soluções Integradas
             </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-none">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
               Engenharia completa para cada fase do seu empreendimento.
             </h1>
             <p className="text-zinc-600 text-base md:text-lg font-normal leading-relaxed pt-2">
@@ -157,7 +156,7 @@ export const Servicos: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. GRID DE SERVIÇOS PRINCIPAIS (BRANCO PURO)                             */}
+      {/* 2. GRID DE SERVIÇOS PRINCIPAIS                                           */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 md:px-12 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto space-y-16">
@@ -190,7 +189,6 @@ export const Servicos: React.FC = () => {
                       {servico.desc}
                     </p>
 
-                    {/* Entregáveis Principais */}
                     <div className="pt-4 border-t border-zinc-200/80 space-y-2.5">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-2">
                         O que inclui:
@@ -222,7 +220,7 @@ export const Servicos: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. METODOLOGIA DE EXECUÇÃO (CINZA 20% - bg-zinc-50)                      */}
+      {/* 3. METODOLOGIA DE EXECUÇÃO                                               */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 md:px-12 bg-zinc-50 border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto space-y-16">
@@ -241,14 +239,12 @@ export const Servicos: React.FC = () => {
             </p>
           </div>
 
-          {/* TIMELINE EM CARDS */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {FLUXO_TRABALHO.map((etapa, idx) => (
               <div 
                 key={idx}
                 className="bg-white border border-zinc-200 p-8 rounded-2xl relative overflow-hidden shadow-sm space-y-4"
               >
-                {/* Número do Passo em Destaque */}
                 <div className="flex items-center justify-between">
                   <span className="text-3xl font-black font-mono text-amber-600">
                     {etapa.passo}
@@ -269,7 +265,7 @@ export const Servicos: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. GARANTIA & RIGOR TÉCNICO (BRANCO PURO)                                 */}
+      {/* 4. GARANTIA & RIGOR TÉCNICO                                              */}
       {/* ========================================================================= */}
       <section className="py-20 px-6 md:px-12 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto grid md:grid-cols-3 gap-8">
@@ -308,7 +304,7 @@ export const Servicos: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. ÂNCORA DE CONVERSÃO / CTA (DARK MODE ENCLOSURE - bg-zinc-950)         */}
+      {/* 5. ÂNCORA DE CONVERSÃO / CTA                                             */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 md:px-12 bg-zinc-950 text-white">
         <div className="max-w-[1440px] mx-auto bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-8 md:p-16 shadow-2xl relative overflow-hidden">

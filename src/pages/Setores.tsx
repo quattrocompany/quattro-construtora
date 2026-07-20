@@ -153,21 +153,20 @@ const PORTFOLIO_OBRAS = [
 export const Setores: React.FC = () => {
   const [categoriaAtiva, setCategoriaAtiva] = useState('todos');
 
-  // Filtragem dinâmica de obras
   const obrasFiltradas = categoriaAtiva === 'todos'
     ? PORTFOLIO_OBRAS
     : PORTFOLIO_OBRAS.filter((obra) => obra.categoriaSlug === categoriaAtiva);
 
   return (
-    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-24 md:pt-28">
+    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
       
       {/* ========================================================================= */}
-      {/* 1. INNER HERO / BREADCRUMB BANNER                                        */}
+      {/* 1. HERO INSTITUCIONAL (PADRÃO DE GRID MESTRE: max-w-[1440px] px-6 md:px-12) */}
       {/* ========================================================================= */}
-      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-24 px-6 md:px-12 relative overflow-hidden">
+      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
 
-        <div className="max-w-[1440px] mx-auto space-y-6 relative z-10">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 relative z-10">
           <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
             <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
@@ -178,7 +177,7 @@ export const Setores: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
               Capacidade Técnica Multisetorial
             </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-none">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
               Soluções de engenharia sob medida para cada setor.
             </h1>
             <p className="text-zinc-600 text-base md:text-lg font-normal leading-relaxed pt-2">
@@ -189,7 +188,7 @@ export const Setores: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 2. VISÃO GERAL DOS 4 SETORES (BRANCO PURO)                              */}
+      {/* 2. VISÃO GERAL DOS SETORES                                               */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 md:px-12 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto space-y-16">
@@ -217,7 +216,6 @@ export const Setores: React.FC = () => {
                         <SetorIcon className="w-7 h-7 text-amber-600" />
                       </div>
                       
-                      {/* Badges de Normas NBR */}
                       <div className="flex gap-2 flex-wrap justify-end">
                         {setor.nbrs.map((nbr, idx) => (
                           <span key={idx} className="text-[10px] font-mono font-bold bg-white border border-zinc-200 text-zinc-600 px-2.5 py-1 rounded-md">
@@ -258,7 +256,7 @@ export const Setores: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. GALERIA & FILTRO DE OBRAS (CINZA 20% - bg-zinc-50)                    */}
+      {/* 3. GALERIA & FILTRO DE OBRAS                                             */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 md:px-12 bg-zinc-50 border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto space-y-12">
@@ -273,7 +271,6 @@ export const Setores: React.FC = () => {
               </h2>
             </div>
 
-            {/* TAB SYSTEM / BARRA DE FILTROS */}
             <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" role="tablist">
               <Filter className="w-4 h-4 text-zinc-400 shrink-0 mr-1 hidden sm:block" />
               {CATEGORIAS_FILTRO.map((cat) => {
@@ -297,7 +294,6 @@ export const Setores: React.FC = () => {
             </div>
           </div>
 
-          {/* GRID DE CARDS DO PORTFÓLIO */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {obrasFiltradas.map((obra) => (
               <div 
@@ -305,7 +301,6 @@ export const Setores: React.FC = () => {
                 className="bg-white border border-zinc-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between"
               >
                 <div>
-                  {/* Foto da Obra com Badge de Status */}
                   <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100">
                     <img 
                       src={obra.imagem} 
@@ -331,7 +326,6 @@ export const Setores: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Informações da Obra */}
                   <div className="p-6 md:p-8 space-y-4">
                     <h3 className="text-xl font-bold text-zinc-950 group-hover:text-amber-600 transition-colors leading-snug">
                       {obra.title}
@@ -371,7 +365,7 @@ export const Setores: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. ÂNCORA DE CONVERSÃO / CTA (DARK MODE ENCLOSURE - bg-zinc-950)         */}
+      {/* 4. ÂNCORA DE CONVERSÃO / CTA                                             */}
       {/* ========================================================================= */}
       <section className="py-24 px-6 md:px-12 bg-zinc-950 text-white">
         <div className="max-w-[1440px] mx-auto bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-8 md:p-16 shadow-2xl relative overflow-hidden">

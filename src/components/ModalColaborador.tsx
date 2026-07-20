@@ -1,6 +1,6 @@
 // src/components/ModalColaborador.tsx
 import React, { useEffect, useCallback } from 'react';
-import { X, Laptop, Truck, ArrowUpRight } from 'lucide-react';
+import { X, Mail, Users, ArrowUpRight } from 'lucide-react';
 
 export interface ModalColaboradorProps {
   /** Controla o estado de visibilidade do modal */
@@ -83,41 +83,41 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
         {/* GRID DOS CARDS DE ACESSO */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           
-          {/* PORTAL DE TI */}
+          {/* WEBMAIL */}
           <a
-            href="http://177.126.7.42:3391/"
+            href="https://webmail.quattroconstrutora.com.br/"
             target="_blank"
             rel="noreferrer"
             className="group p-5 bg-zinc-950/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl transition-all duration-300 flex flex-col items-center text-center justify-between hover:-translate-y-1 shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500/50"
           >
             <div className="p-3 bg-zinc-900 group-hover:bg-amber-500/10 rounded-xl text-amber-500 transition-colors mb-3">
-              <Laptop className="w-6 h-6" />
+              <Mail className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center justify-center gap-1.5 text-white group-hover:text-amber-500 font-bold text-sm uppercase tracking-wider transition-colors">
-                <span>TI</span>
+                <span>WEBMAIL</span>
                 <ArrowUpRight className="w-4 h-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <p className="text-[11px] text-zinc-500 font-light mt-1">Sistemas & Suporte</p>
+              <p className="text-[11px] text-zinc-500 font-light mt-1">E-mail Corporativo</p>
             </div>
           </a>
 
-          {/* PORTAL DE FROTAS */}
+          {/* QUATTRO CONECTA */}
           <a
-            href="http://177.126.7.42:3392/"
+            href="https://conecta.quattrocompany.com.br"
             target="_blank"
             rel="noreferrer"
             className="group p-5 bg-zinc-950/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl transition-all duration-300 flex flex-col items-center text-center justify-between hover:-translate-y-1 shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500/50"
           >
             <div className="p-3 bg-zinc-900 group-hover:bg-amber-500/10 rounded-xl text-amber-500 transition-colors mb-3">
-              <Truck className="w-6 h-6" />
+              <Users className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center justify-center gap-1.5 text-white group-hover:text-amber-500 font-bold text-sm uppercase tracking-wider transition-colors">
-                <span>FROTAS</span>
+                <span>Q CONECTA</span>
                 <ArrowUpRight className="w-4 h-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               </div>
-              <p className="text-[11px] text-zinc-500 font-light mt-1">Gestão de Veículos</p>
+              <p className="text-[11px] text-zinc-500 font-light mt-1">Portal do Colaborador</p>
             </div>
           </a>
 

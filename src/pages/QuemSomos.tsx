@@ -72,16 +72,15 @@ const METRICAS_QUATTRO = [
 
 export const QuemSomos: React.FC = () => {
   return (
-    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-24 md:pt-28">
+    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
       
       {/* ========================================================================= */}
-      {/* 1. HERO INSTITUCIONAL DA PÁGINA (LIGHT BREADCRUMB BANNER)                 */}
+      {/* 1. HERO INSTITUCIONAL (PADRÃO DE GRID MESTRE: max-w-[1440px] px-6 md:px-12) */}
       {/* ========================================================================= */}
-      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-24 px-6 md:px-12 relative overflow-hidden">
-        {/* Detalhe estético de fundo */}
+      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
         
-        <div className="max-w-[1440px] mx-auto space-y-6 relative z-10">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 relative z-10">
           
           {/* Breadcrumbs de Navegação */}
           <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
@@ -94,7 +93,7 @@ export const QuemSomos: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
               Institucional
             </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-none">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
               Engenharia de precisão para projetos extraordinários.
             </h1>
             <p className="text-zinc-600 text-base md:text-lg font-normal leading-relaxed pt-2">
@@ -111,13 +110,14 @@ export const QuemSomos: React.FC = () => {
       <section className="py-24 px-6 md:px-12 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
-          {/* Coluna Visual com Foto de Obra/Equipe */}
+          {/* Coluna Visual com Foto de Obra */}
           <div className="lg:col-span-6 relative">
             <div className="relative rounded-3xl overflow-hidden border border-zinc-200 shadow-2xl aspect-[4/3] bg-zinc-100">
               <img 
                 src="https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1600" 
                 alt="Engenharia Quattro em Ação" 
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent" />
             </div>
@@ -125,7 +125,7 @@ export const QuemSomos: React.FC = () => {
             {/* Card Flutuante de Credibilidade */}
             <div className="absolute -bottom-6 -right-2 md:bottom-8 md:-right-6 bg-zinc-950 text-white p-6 rounded-2xl border border-zinc-800 shadow-2xl max-w-xs hidden sm:block">
               <div className="flex items-center gap-3 mb-2">
-                <Award className="w-6 h-6 text-amber-500" />
+                <Award className="w-6 h-6 text-amber-500 shrink-0" />
                 <span className="text-sm font-bold uppercase tracking-wider">Qualidade Garantida</span>
               </div>
               <p className="text-xs text-zinc-400 font-light leading-relaxed">
@@ -151,7 +151,7 @@ export const QuemSomos: React.FC = () => {
                 Com mais de 15 anos de atuação sólida no mercado, a <strong>Quattro Construtora</strong> se destaca pela capacidade de executar desde galpões logísticos de alta tonelagem até hospitais e residências de altíssimo padrão.
               </p>
               <p>
-                Entendemos que uma obra é um investimento estratégico. Por isso, eliminamos os gargalos tradicionais da construção civil através de metodologias ágeis de gestão, controle rigoroso de insumos e uso de tecnologia de ponta, como o método construtivo Steel Frame em larga escala.
+                Entendemos que uma obra é um investimento estratégico. Por isso, eliminamos os gargalos tradicionais da construção civil através de methodologies ágeis de gestão, controle rigoroso de insumos e uso de tecnologia de ponta, como o método construtivo Steel Frame em larga escala.
               </p>
               <p>
                 Nossa equipe é formada por engenheiros experientes, projetistas e mestres de obras em contínua atualização com as normas de segurança NR-35 e legislações vigentes.
