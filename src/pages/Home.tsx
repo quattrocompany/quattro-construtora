@@ -15,73 +15,129 @@ import {
   Building2,
   Factory,
   Stethoscope,
-  Wrench
+  Wrench,
+  AlertCircle
 } from 'lucide-react';
 import { Hero } from '../components/Hero';
-import { Footer } from '../components/Footer';
 import { saveLead } from '../services/firestoreService';
+
+// ============================================================================
+// DADOS ESTÁTICOS (Declarados fora do componente para evitar garbage collection)
+// ============================================================================
+
+const SETORES = [
+  {
+    id: '01',
+    title: 'Industrial & Logística',
+    desc: 'Construção de galpões logísticos de alta tonelagem, centros de distribuição automatizados e plantas industriais completas.',
+    icon: Factory,
+    image: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1600',
+    slug: 'industrial'
+  },
+  {
+    id: '02',
+    title: 'Setor Hospitalar',
+    desc: 'Engenharia de precisão para centros cirúrgicos, laboratórios de alta complexidade e áreas de contaminação controlada.',
+    icon: Stethoscope,
+    image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1600',
+    slug: 'hospitalar'
+  },
+  {
+    id: '03',
+    title: 'Manutenção & Facilities',
+    desc: 'Gestão contínua de infraestrutura predial, automação de ativos e manutenção industrial preventiva e corretiva.',
+    icon: Wrench,
+    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1600',
+    slug: 'manutencao'
+  },
+  {
+    id: '04',
+    title: 'Residencial de Luxo',
+    desc: 'Incorporação imobiliária de alto padrão, residências de grande porte e edifícios projetados com arquitetura autoral.',
+    icon: Building2,
+    image: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1600',
+    slug: 'residencial'
+  }
+];
+
+const PORTFOLIO_ITEMS = [
+  { id: 1, title: 'Galpão Logístico Amazon', tag: 'Industrial', img: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1000' },
+  { id: 2, title: 'Lumini Clube Residencial 2', tag: 'Residencial', img: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1000' },
+  { id: 3, title: 'Complexo Hospitalar São Lucas', tag: 'Hospitalar', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000' },
+  { id: 4, title: 'Centro de Distribuição Mercado Livre', tag: 'Industrial', img: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1000' },
+];
+
+const METRICAS = [
+  { num: '+15', label: 'Anos de experiência comprovada no mercado de engenharia e construção civil.' },
+  { num: '+1.000', label: 'Projetos e obras executadas com rigoroso padrão técnico em todo o Brasil.' },
+  { num: '100%', label: 'Compromisso absoluto com o cumprimento de prazos e orçamentos firmados.' },
+  { num: 'Pioneiros', label: 'No uso otimizado do método construtivo Steel Frame em escala nacional.' }
+];
+
+const DIFERENCIAIS = [
+  { icon: ShieldCheck, title: 'Flexibilidade Técnica', desc: 'Ajustes ágeis de escopo executivo sem comprometer a data final de entrega do projeto.' },
+  { icon: Globe, title: 'Atuação Nacional', desc: 'Capacidade de mobilização logística e equipes de engenharia de campo em todo o país.' },
+  { icon: Clock, title: 'Pontualidade Britânica', desc: 'Rigoroso controle de cronograma físico-financeiro com relatórios periódicos em tempo real.' },
+  { icon: Award, title: 'Equipe Qualificada', desc: 'Engenheiros e mestres de obra em contínuo treinamento de conformidade NBR e NR-35.' },
+  { icon: Layers, title: 'Soluções One-Stop', desc: 'Atendimento integral: da fundação principal até o retrofit, manutenção e facilities.' },
+  { icon: CheckCircle2, title: 'Regularização Completa', desc: 'Expertise no gerenciamento de licenças, habite-se, AVCB, CLCB e aprovações de órgãos públicos.' }
+];
+
+// ============================================================================
+// COMPONENTE PRINCIPAL HOME
+// ============================================================================
 
 export const Home: React.FC = () => {
   const [activeSector, setActiveSector] = useState(0);
+  const [portfolioIndex, setPortfolioIndex] = useState(0);
+  
+  // Estado do Formulário
   const [formData, setFormData] = useState({ nome: '', email: '', telefone: '', mensagem: '' });
   const [formLoading, setFormLoading] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  const setores = [
-    {
-      id: '01',
-      title: 'Industrial & Logística',
-      desc: 'Construção de galpões logísticos de alta tonelagem, centros de distribuição e plantas industriais.',
-      icon: <Factory className="w-6 h-6 text-amber-500" />,
-      image: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1600',
-      slug: 'industrial'
-    },
-    {
-      id: '02',
-      title: 'Setor Hospitalar',
-      desc: 'Engenharia de precisão para centros cirúrgicos, laboratórios e áreas de contaminação controlada.',
-      icon: <Stethoscope className="w-6 h-6 text-amber-500" />,
-      image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1600',
-      slug: 'hospitalar'
-    },
-    {
-      id: '03',
-      title: 'Manutenção & Facilities',
-      desc: 'Gestão contínua de infraestrutura predial e manutenção industrial preventiva e corretiva.',
-      icon: <Wrench className="w-6 h-6 text-amber-500" />,
-      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1600',
-      slug: 'manutencao'
-    },
-    {
-      id: '04',
-      title: 'Residencial de Luxo',
-      desc: 'Incorporação imobiliária e edifícios inovadores projetados com arquitetura autoral.',
-      icon: <Building2 className="w-6 h-6 text-amber-500" />,
-      image: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1600',
-      slug: 'residencial'
-    }
-  ];
+  // Navegação do Carrossel do Portfólio
+  const handleNextPortfolio = () => {
+    setPortfolioIndex((prev) => (prev + 1) % (PORTFOLIO_ITEMS.length - 2));
+  };
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
+  const handlePrevPortfolio = () => {
+    setPortfolioIndex((prev) => (prev === 0 ? PORTFOLIO_ITEMS.length - 3 : prev - 1));
+  };
+
+  // Submit do Formulário de Lead (Firebase Firestore)
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormLoading(true);
-    const ok = await saveLead(formData);
-    setFormLoading(false);
-    if (ok) {
-      setFormSuccess(true);
-      setFormData({ nome: '', email: '', telefone: '', mensagem: '' });
+    setFormError(null);
+
+    try {
+      const ok = await saveLead(formData);
+      if (ok) {
+        setFormSuccess(true);
+        setFormData({ nome: '', email: '', telefone: '', mensagem: '' });
+      } else {
+        setFormError('Não foi possível enviar sua solicitação. Por favor, tente novamente.');
+      }
+    } catch (err) {
+      setFormError('Falha na comunicação com o servidor. Verifique sua conexão.');
+    } finally {
+      setFormLoading(false);
     }
   };
 
+  const SelectedSectorIcon = SETORES[activeSector].icon;
+
   return (
-    <div className="w-full bg-zinc-950 text-zinc-100 font-sans selection:bg-amber-500 selection:text-zinc-950">
+    <div className="w-full bg-zinc-950 text-zinc-100 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
       
-      {/* 1. HERO COMPONENTIZADO */}
+      {/* 1. HERO SLIDER */}
       <Hero />
 
-      {/* 2. VALUE PROP / MANIFESTO (SEÇÃO CLARA) */}
+      {/* 2. MANIFESTO / SOBRE A QUATTRO */}
       <section className="bg-zinc-50 text-zinc-900 py-24 px-6 md:px-12 border-b border-zinc-200">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+        <div className="max-w-[1440px] mx-auto grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-4">
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block mb-2">
               Sobre a Quattro
@@ -92,7 +148,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="lg:col-span-8 space-y-6">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight font-sans text-zinc-950 leading-tight">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-zinc-950 leading-tight">
               Para quem busca soluções de engenharia extraordinárias e segurança absoluta em cada fase da obra.
             </h2>
             <div className="w-16 h-1 bg-amber-500 rounded-full" />
@@ -104,129 +160,169 @@ export const Home: React.FC = () => {
       </section>
 
       {/* 3. SHOWCASE / PORTFÓLIO DESTAQUES */}
-      <section className="py-20 bg-zinc-950 border-b border-zinc-900">
-        <div className="max-w-7xl mx-auto px-6 mb-10 flex items-end justify-between">
-          <div>
-            <span className="text-amber-500 text-xs font-bold uppercase tracking-widest block mb-1">Portfólio em Destaque</span>
-            <h3 className="text-2xl md:text-4xl font-bold text-white">Projetos Recentes</h3>
-          </div>
-          <div className="flex gap-2">
-            <button className="p-3 rounded-full border border-zinc-800 text-zinc-400 hover:text-white hover:border-amber-500 transition-colors">
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button className="p-3 rounded-full border border-zinc-800 text-zinc-400 hover:text-white hover:border-amber-500 transition-colors">
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            { title: 'Galpão Logístico Amazon', tag: 'Industrial', img: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1000' },
-            { title: 'Lumini Clube Residencial 2', tag: 'Residencial', img: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1000' },
-            { title: 'Complexo Hospitalar São Lucas', tag: 'Hospitalar', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000' },
-          ].map((item, idx) => (
-            <div key={idx} className="group relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 aspect-[4/5] hover:border-amber-500/50 transition-all duration-500">
-              <img src={item.img} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent p-6 flex flex-col justify-end">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full w-fit mb-2">
-                  {item.tag}
-                </span>
-                <h4 className="text-xl font-bold text-white group-hover:text-amber-500 transition-colors">{item.title}</h4>
-              </div>
+      <section className="py-24 bg-zinc-950 border-b border-zinc-900">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+          
+          <div className="mb-12 flex items-end justify-between">
+            <div>
+              <span className="text-amber-500 text-xs font-bold uppercase tracking-[0.3em] block mb-2">
+                Portfólio em Destaque
+              </span>
+              <h3 className="text-2xl md:text-4xl font-bold text-white">Projetos Recentes</h3>
             </div>
-          ))}
+            
+            {/* Controles do Carrossel */}
+            <div className="flex gap-3">
+              <button 
+                onClick={handlePrevPortfolio}
+                className="p-3 rounded-full border border-zinc-800 text-zinc-400 hover:text-amber-500 hover:border-amber-500/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                aria-label="Projeto Anterior"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={handleNextPortfolio}
+                className="p-3 rounded-full border border-zinc-800 text-zinc-400 hover:text-amber-500 hover:border-amber-500/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                aria-label="Próximo Projeto"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Grid Responsivo com Transição */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 transition-all duration-500">
+            {PORTFOLIO_ITEMS.slice(portfolioIndex, portfolioIndex + 3).map((item) => (
+              <div 
+                key={item.id} 
+                className="group relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 aspect-[4/5] hover:border-amber-500/50 transition-all duration-500 shadow-xl"
+              >
+                <img 
+                  src={item.img} 
+                  alt={item.title} 
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent p-6 md:p-8 flex flex-col justify-end">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full w-fit mb-3 backdrop-blur-sm">
+                    {item.tag}
+                  </span>
+                  <h4 className="text-xl font-bold text-white group-hover:text-amber-500 transition-colors leading-snug">
+                    {item.title}
+                  </h4>
+                </div>
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
 
       {/* 4. SETORES DE ATUAÇÃO INTERATIVOS */}
-      <section className="relative py-28 bg-zinc-900 overflow-hidden border-b border-zinc-800">
+      <section className="relative py-28 bg-zinc-900/50 overflow-hidden border-b border-zinc-800">
+        
+        {/* Background Image Preview Dynamic */}
         <div 
-          className="absolute inset-0 bg-cover bg-center opacity-15 transition-all duration-700 blur-sm"
-          style={{ backgroundImage: `url('${setores[activeSector].image}')` }}
+          className="absolute inset-0 bg-cover bg-center opacity-10 transition-all duration-700 blur-sm pointer-events-none"
+          style={{ backgroundImage: `url('${SETORES[activeSector].image}')` }}
         />
 
-        <div className="relative max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center z-10">
-          <div className="lg:col-span-6 space-y-4">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500">
-              Soluções Completas
-            </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-white">
-              Setores de Atuação
-            </h2>
-            <p className="text-zinc-400 text-sm font-light max-w-md">
-              Passe o cursor ou selecione um setor para explorar nossa capacidade técnica especializada.
-            </p>
+        <div className="relative max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 items-center z-10">
+          
+          {/* Lado Esquerdo: Lista Tabulada */}
+          <div className="lg:col-span-6 space-y-6">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block mb-2">
+                Soluções Completas
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold text-white">
+                Setores de Atuação
+              </h2>
+              <p className="text-zinc-400 text-sm font-light max-w-md mt-2">
+                Selecione um setor para explorar nossa capacidade técnica e engenharia especializada.
+              </p>
+            </div>
 
-            <div className="space-y-2 pt-6">
-              {setores.map((setor, index) => (
-                <button
-                  key={setor.id}
-                  onClick={() => setActiveSector(index)}
-                  onMouseEnter={() => setActiveSector(index)}
-                  className={`w-full text-left p-4 rounded-xl transition-all duration-300 flex items-center justify-between border ${
-                    activeSector === index
-                      ? 'bg-zinc-950 border-amber-500 text-amber-500 shadow-xl'
-                      : 'bg-zinc-950/40 border-zinc-800/80 text-zinc-400 hover:text-white hover:border-zinc-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs font-bold tracking-widest opacity-60">{setor.id}</span>
-                    <span className="text-lg font-bold">{setor.title}</span>
-                  </div>
-                  <ArrowRight className={`w-4 h-4 transition-transform ${activeSector === index ? 'translate-x-1 text-amber-500' : 'opacity-0'}`} />
-                </button>
-              ))}
+            <div className="space-y-3 pt-4" role="tablist" aria-label="Setores de Atuação">
+              {SETORES.map((setor, index) => {
+                const isSelected = activeSector === index;
+                return (
+                  <button
+                    key={setor.id}
+                    role="tab"
+                    aria-selected={isSelected}
+                    aria-controls={`sector-panel-${setor.id}`}
+                    onClick={() => setActiveSector(index)}
+                    onMouseEnter={() => setActiveSector(index)}
+                    className={`w-full text-left p-4 md:p-5 rounded-2xl transition-all duration-300 flex items-center justify-between border cursor-pointer ${
+                      isSelected
+                        ? 'bg-zinc-950 border-amber-500 text-amber-500 shadow-2xl scale-[1.01]'
+                        : 'bg-zinc-950/40 border-zinc-800/80 text-zinc-400 hover:text-white hover:border-zinc-700'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs font-bold tracking-widest opacity-60 font-mono">{setor.id}</span>
+                      <span className="text-base md:text-lg font-bold">{setor.title}</span>
+                    </div>
+                    <ArrowRight className={`w-4 h-4 transition-transform duration-300 ${isSelected ? 'translate-x-1 text-amber-500' : 'opacity-0'}`} />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
+          {/* Lado Direito: Card de Detalhes do Setor */}
           <div className="lg:col-span-6">
-            <div className="bg-zinc-950 border border-zinc-800 p-8 md:p-10 rounded-2xl shadow-2xl space-y-6">
-              <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800 w-fit">
-                {setores[activeSector].icon}
+            <div 
+              id={`sector-panel-${SETORES[activeSector].id}`}
+              role="tabpanel"
+              className="bg-zinc-950 border border-zinc-800 p-8 md:p-10 rounded-3xl shadow-2xl space-y-6 animate-in fade-in duration-300"
+            >
+              <div className="p-3.5 bg-zinc-900 rounded-2xl border border-zinc-800 w-fit">
+                <SelectedSectorIcon className="w-6 h-6 text-amber-500" />
               </div>
-              <h3 className="text-2xl font-bold text-white">{setores[activeSector].title}</h3>
+
+              <h3 className="text-2xl font-bold text-white">{SETORES[activeSector].title}</h3>
+              
               <p className="text-zinc-400 text-sm leading-relaxed font-light">
-                {setores[activeSector].desc}
+                {SETORES[activeSector].desc}
               </p>
-              <div className="aspect-video rounded-xl overflow-hidden border border-zinc-800">
+
+              <div className="aspect-video rounded-2xl overflow-hidden border border-zinc-800 shadow-inner">
                 <img 
-                  src={setores[activeSector].image} 
-                  alt={setores[activeSector].title} 
-                  className="w-full h-full object-cover"
+                  src={SETORES[activeSector].image} 
+                  alt={SETORES[activeSector].title} 
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
+
               <Link 
-                to={`/setores/${setores[activeSector].slug}`}
-                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500 hover:underline pt-2"
+                to={`/setores/${SETORES[activeSector].slug}`}
+                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500 hover:text-amber-400 transition-colors pt-2 group"
               >
                 <span>Conhecer Detalhes do Setor</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </div>
+
         </div>
       </section>
 
-      {/* 5. MÉTRICAS E NÚMEROS (SEÇÃO CLARA) */}
+      {/* 5. MÉTRICAS E NÚMEROS */}
       <section className="bg-zinc-50 text-zinc-900 py-24 px-6 md:px-12 border-b border-zinc-200">
-        <div className="max-w-7xl mx-auto space-y-16">
+        <div className="max-w-[1440px] mx-auto space-y-16">
           <div className="max-w-3xl space-y-4">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
               Performance Comprovada
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-zinc-950">
+            <h2 className="text-3xl md:text-5xl font-bold text-zinc-950 leading-tight">
               Uma trajetória pautada por compromisso, pontualidade e inovação tecnológica.
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { num: '+15', label: 'Anos de experiência no mercado de engenharia e construção civil.' },
-              { num: '+1.000', label: 'Projetos e obras executadas com sucesso em todo o Brasil.' },
-              { num: '100%', label: 'Compromisso com o cumprimento de prazos de entrega acordados.' },
-              { num: 'Pioneiros', label: 'No uso do método construtivo Steel Frame em território nacional.' }
-            ].map((metric, idx) => (
+            {METRICAS.map((metric, idx) => (
               <div key={idx} className="border-t border-zinc-300 pt-6 space-y-2">
                 <span className="text-4xl md:text-5xl font-extrabold text-amber-600 block font-sans">
                   {metric.num}
@@ -242,9 +338,10 @@ export const Home: React.FC = () => {
 
       {/* 6. DIFERENCIAIS (GLASSMORPHISM) */}
       <section className="py-28 bg-zinc-950 border-b border-zinc-900">
-        <div className="max-w-7xl mx-auto px-6 space-y-16">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
+          
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block">
               Diferenciais Exclusivos
             </span>
             <h2 className="text-3xl md:text-5xl font-bold text-white">
@@ -253,21 +350,23 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { icon: <ShieldCheck className="w-8 h-8 text-amber-500" />, title: 'Flexibilidade Técnica', desc: 'Ajustes rápidos de escopo sem estender o prazo final de entrega acordado.' },
-              { icon: <Globe className="w-8 h-8 text-amber-500" />, title: 'Atuação Nacional', desc: 'Capacidade de mobilização logística e engenharia de campo em todo o país.' },
-              { icon: <Clock className="w-8 h-8 text-amber-500" />, title: 'Pontualidade Britânica', desc: 'Rigoroso controle de cronograma físico-financeiro em todas as fases.' },
-              { icon: <Award className="w-8 h-8 text-amber-500" />, title: 'Equipe Qualificada', desc: 'Profissionais em contínuo treinamento de segurança e conformidade NBR.' },
-              { icon: <Layers className="w-8 h-8 text-amber-500" />, title: 'Soluções On-Stop', desc: 'Desde a fundação principal até a manutenção predial contínua e facilities.' },
-              { icon: <CheckCircle2 className="w-8 h-8 text-amber-500" />, title: 'Regularização Completa', desc: 'Expertise em licenças, AVCB, CLCB e aprovações regulatórias do imóvel.' }
-            ].map((card, idx) => (
-              <div key={idx} className="bg-zinc-900/60 border border-zinc-800 p-8 rounded-2xl backdrop-blur-md hover:border-amber-500/40 transition-all duration-300 space-y-4">
-                <div>{card.icon}</div>
-                <h3 className="text-xl font-bold text-white">{card.title}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed font-light">{card.desc}</p>
-              </div>
-            ))}
+            {DIFERENCIAIS.map((card, idx) => {
+              const CardIcon = card.icon;
+              return (
+                <div 
+                  key={idx} 
+                  className="bg-zinc-900/60 border border-zinc-800/80 p-8 rounded-3xl backdrop-blur-md hover:border-amber-500/40 transition-all duration-300 space-y-4 group shadow-xl"
+                >
+                  <div className="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 w-fit group-hover:border-amber-500/30 transition-colors">
+                    <CardIcon className="w-6 h-6 text-amber-500" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">{card.title}</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed font-light">{card.desc}</p>
+                </div>
+              );
+            })}
           </div>
+
         </div>
       </section>
 
@@ -275,91 +374,126 @@ export const Home: React.FC = () => {
       <section id="contato" className="py-28 bg-zinc-900">
         <div className="max-w-4xl mx-auto px-6">
           <div className="bg-zinc-950 border border-zinc-800 p-8 md:p-12 rounded-3xl shadow-2xl space-y-8">
+            
             <div className="text-center space-y-3">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500">Atendimento Direto</span>
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block">Atendimento Direto</span>
               <h2 className="text-3xl font-bold text-white">Fale com a Construtora</h2>
-              <p className="text-xs text-zinc-400 max-w-lg mx-auto">
-                Entre em contato com nossos engenheiros e consultores para tirar dúvidas técnicas ou solicitar cotação.
+              <p className="text-xs text-zinc-400 max-w-lg mx-auto leading-relaxed">
+                Entre em contato com nossos engenheiros e consultores para tirar dúvidas técnicas ou solicitar uma cotação personalizada.
               </p>
             </div>
 
+            {/* Alerta de Erro */}
+            {formError && (
+              <div className="bg-red-500/10 border border-red-500/30 p-4 rounded-xl flex items-center gap-3 text-red-400 text-xs">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span>{formError}</span>
+              </div>
+            )}
+
+            {/* Feedback de Sucesso */}
             {formSuccess ? (
-              <div className="bg-amber-500/10 border border-amber-500/30 p-8 rounded-2xl text-center space-y-3">
+              <div className="bg-amber-500/10 border border-amber-500/30 p-8 rounded-2xl text-center space-y-4 animate-in fade-in">
                 <CheckCircle2 className="w-12 h-12 text-amber-500 mx-auto" />
-                <h3 className="text-xl font-bold text-amber-500">Solicitação Enviada!</h3>
-                <p className="text-xs text-zinc-300">Nossa equipe entrará em contato em breve.</p>
+                <h3 className="text-xl font-bold text-amber-500">Solicitação Enviada com Sucesso!</h3>
+                <p className="text-xs text-zinc-300 max-w-md mx-auto">
+                  Agradecemos seu contato. Nossa equipe de engenharia analisará sua demanda e retornará em breve.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setFormSuccess(false)}
+                  className="px-6 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white rounded-full text-xs font-bold uppercase tracking-wider transition-colors"
+                >
+                  Enviar Nova Mensagem
+                </button>
               </div>
             ) : (
+              /* Formulário */
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">Nome Completo</label>
+                  <label htmlFor="nome" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
+                    Nome Completo
+                  </label>
                   <input
+                    id="nome"
                     type="text"
                     required
-                    placeholder="Seu Nome"
+                    placeholder="Seu Nome ou Razão Social"
                     value={formData.nome}
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">E-mail</label>
+                    <label htmlFor="email" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
+                      E-mail Profissional
+                    </label>
                     <input
+                      id="email"
                       type="email"
                       required
-                      placeholder="seu@email.com"
+                      placeholder="seu@empresa.com.br"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
+                      className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">Telefone</label>
+                    <label htmlFor="telefone" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
+                      Telefone / WhatsApp
+                    </label>
                     <input
+                      id="telefone"
                       type="tel"
                       required
                       placeholder="(11) 90000-0000"
                       value={formData.telefone}
                       onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
+                      className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">Mensagem</label>
+                  <label htmlFor="mensagem" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
+                    Detalhes do Projeto
+                  </label>
                   <textarea
+                    id="mensagem"
                     rows={4}
                     required
-                    placeholder="Descreva a demanda do seu projeto..."
+                    placeholder="Descreva a localização, metragem ou necessidade da sua obra..."
                     value={formData.mensagem}
                     onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                    className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors resize-none"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-xl text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-xl shadow-amber-500/10 disabled:opacity-50"
+                  className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-xl text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-xl shadow-amber-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {formLoading ? 'Enviando...' : (
+                  {formLoading ? (
+                    <span>Processando envio...</span>
+                  ) : (
                     <>
-                      <span>Enviar Mensagem</span>
+                      <span>Enviar Solicitação</span>
                       <Send className="w-4 h-4" />
                     </>
                   )}
                 </button>
               </form>
             )}
+
           </div>
         </div>
       </section>
 
-      {/* 8. FOOTER COMPONENTIZADO */}
-      <Footer />
+      {/* NOTA DE ARQUITETURA: O <Footer /> foi removido daqui pois está sendo renderizado no App.tsx */}
 
     </div>
   );

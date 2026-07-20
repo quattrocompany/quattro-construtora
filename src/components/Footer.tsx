@@ -1,3 +1,4 @@
+// src/components/Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -42,16 +43,16 @@ export const Footer: React.FC = () => {
         QUATTRO
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 py-20 relative z-10">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-20 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
           
-          {/* COLUNA 1: LOGO LIMPO (SEM MOLDURA CINZA) */}
+          {/* COLUNA 1: LOGO COMPLETO E EXPANDIDO (SEM MOLDURA CINZA) */}
           <div className="lg:col-span-2 space-y-6">
-            <Link to="/" className="inline-block">
+            <Link to="/" className="inline-block group focus:outline-none">
               <img 
-                src="/logo/Logo_Quattro Construtora_cut.svg" 
+                src="/logo/logo_quattro-construtora.svg" 
                 alt="Quattro Construtora" 
-                className="h-12 w-auto object-contain"
+                className="h-16 md:h-20 lg:h-22 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
 

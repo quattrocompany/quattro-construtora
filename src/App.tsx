@@ -9,17 +9,17 @@ export const App: React.FC = () => {
   return (
     <Router>
       <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-between">
-        {/* Header Global (Renderiza em todas as páginas) */}
+        {/* Renderizado uma única vez para toda a aplicação */}
         <Header />
 
         <main className="grow">
           <Routes>
             <Route path="/" element={<Home />} />
-            {/* Outras rotas aqui */}
+            {/* Outras rotas da aplicação */}
           </Routes>
         </main>
 
-        {/* Footer Global Único (Renderiza uma única vez no final de todas as páginas) */}
+        {/* Renderizado uma única vez no final de todas as páginas */}
         <Footer />
       </div>
     </Router>
