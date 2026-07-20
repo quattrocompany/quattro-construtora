@@ -9,11 +9,9 @@ import {
   MapPin, 
   Clock, 
   CheckCircle2, 
-  MessageSquare, 
   HardHat, 
   Building2, 
   Briefcase, 
-  UserCheck, 
   AlertCircle,
   HelpCircle
 } from 'lucide-react';
@@ -494,7 +492,7 @@ export const Contato: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. SEÇÃO DE LOCALIZAÇÃO / LOCALIZAÇÃO E MAPA                            */}
+      {/* 4. SEÇÃO DE LOCALIZAÇÃO / MAPA                                           */}
       {/* ========================================================================= */}
       <section className="py-16 px-6 md:px-12 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8 p-8 md:p-12 rounded-3xl bg-zinc-50 border border-zinc-200">
