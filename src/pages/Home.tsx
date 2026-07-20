@@ -1,237 +1,115 @@
-// src/pages/Home.tsx
-import React, { useState } from 'react';
-import { MapPin, Send, CheckCircle2, Shield, Award, Clock, Globe } from 'lucide-react';
-import { Hero } from '../components/Hero';
-import { saveLead } from '../services/firestoreService';
+// src/components/Hero.tsx
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export const Home: React.FC = () => {
-  // Form State
-  const [formData, setFormData] = useState({ nome: '', email: '', telefone: '', mensagem: '' });
-  const [formLoading, setFormLoading] = useState(false);
-  const [formSuccess, setFormSuccess] = useState(false);
+export interface HeroSlide {
+  eyebrow: string;
+  titulo: string;
+  imagem: string;
+  ctaText?: string;
+  ctaLink?: string;
+}
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormLoading(true);
-    const ok = await saveLead(formData);
-    setFormLoading(false);
-    if (ok) {
-      setFormSuccess(true);
-      setFormData({ nome: '', email: '', telefone: '', mensagem: '' });
-    }
-  };
+const DEFAULT_SLIDES: HeroSlide[] = [
+  {
+    eyebrow: "Construct Your Project in the Perfect Ratio",
+    titulo: "THE ONLY WAY TO BUILD",
+    imagem: "/img/bg_hero1.avif",
+    ctaText: "PURCHASE",
+    ctaLink: "#contato"
+  },
+  {
+    eyebrow: "Infraestrutura para Gigantes Globais",
+    titulo: "ENGENHARIA DE ALTA PERFORMANCE",
+    imagem: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2500",
+    ctaText: "SAIBA MAIS",
+    ctaLink: "#contato"
+  }
+];
+
+export const Hero: React.FC = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % DEFAULT_SLIDES.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + DEFAULT_SLIDES.length) % DEFAULT_SLIDES.length);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(nextSlide, 7000);
+    return () => clearInterval(timer);
+  }, [nextSlide]);
 
   return (
-    <div className="w-full bg-zinc-950 text-zinc-100 font-sans">
+    <section className="relative w-full h-screen min-h-[750px] flex items-center justify-center overflow-hidden bg-zinc-950">
       
-      {/* 1. HERO COMPONENTIZADO COM SETAS E NAVEGAÇÃO */}
-      <Hero />
+      {DEFAULT_SLIDES.map((slide, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-all duration-[1500ms] ease-in-out ${
+            index === currentSlide 
+              ? 'opacity-100 scale-100 z-10' 
+              : 'opacity-0 scale-105 z-0 pointer-events-none'
+          }`}
+        >
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('${slide.imagem}')` }}
+          />
+          
+          {/* Overlay Cinza Chumbo Transparente */}
+          <div className="absolute inset-0 bg-zinc-950/65" />
 
-      {/* 2. PROVA SOCIAL & NÚMEROS */}
-      <section className="bg-zinc-900 border-y border-zinc-800 py-12">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div className="space-y-1">
-            <span className="text-3xl md:text-5xl font-extrabold text-amber-500 font-serif">+15</span>
-            <p className="text-xs uppercase tracking-widest text-zinc-400 font-semibold">Anos de Mercado</p>
-          </div>
-          <div className="space-y-1">
-            <span className="text-3xl md:text-5xl font-extrabold text-amber-500 font-serif">+1.000</span>
-            <p className="text-xs uppercase tracking-widest text-zinc-400 font-semibold">Obras Concluídas</p>
-          </div>
-          <div className="space-y-1">
-            <span className="text-3xl md:text-5xl font-extrabold text-amber-500 font-serif">100%</span>
-            <p className="text-xs uppercase tracking-widest text-zinc-400 font-semibold">Entregas no Prazo</p>
-          </div>
-          <div className="space-y-1">
-            <span className="text-3xl md:text-5xl font-extrabold text-amber-500 font-serif">Brasil</span>
-            <p className="text-xs uppercase tracking-widest text-zinc-400 font-semibold">Cobertura Nacional</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. SOBRE A CONSTRUTORA */}
-      <section className="py-28 px-6 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-6">
-            <span className="text-xs font-bold text-amber-500 uppercase tracking-[0.3em]">
-              Engenharia de Alta Performance
-            </span>
-            <h2 className="text-3xl md:text-5xl font-serif text-white leading-tight">
-              Transformamos projetos exigentes em realidade sólida.
-            </h2>
-            <div className="w-16 h-1 bg-amber-500" />
+          {/* Conteúdo Centralizado */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 mt-20 max-w-[1800px] mx-auto">
             
-            <p className="text-zinc-400 text-sm leading-relaxed font-light">
-              A <strong className="text-white">Quattro Construtora</strong> atua em todo o Brasil, levando soluções de engenharia desde os grandes centros até os municípios mais distantes. Conduzimos todas as fases da sua obra ou reforma com máxima transparência, segurança e pontualidade.
+            {/* Eyebrow Text (Subtítulo delicado) */}
+            <p className="text-zinc-300 text-xs md:text-sm font-light tracking-[0.3em] uppercase mb-6 drop-shadow-md">
+              {slide.eyebrow}
             </p>
             
-            <p className="text-zinc-400 text-sm leading-relaxed font-light">
-              Nossa equipe é continuamente treinada em conformidade com as normas técnicas rigorosas e o <span className="text-amber-500 font-semibold">Padrão Quattro de Qualidade</span>, consolidando parcerias duradouras com empresas e arquitetos renomados.
-            </p>
+            {/* Título Massivo Ultra-Thin (font-thin / Inter weight 100) */}
+            <h1 className="text-5xl sm:text-7xl md:text-[90px] lg:text-[110px] xl:text-[130px] font-thin tracking-[0.12em] md:tracking-[0.16em] uppercase text-white leading-[1.08] max-w-7xl drop-shadow-2xl font-sans">
+              {slide.titulo}
+            </h1>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 text-xs font-semibold text-zinc-300">
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-amber-500" /> <span>Atuação Nacional</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-500" /> <span>Pontualidade Britânica</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-amber-500" /> <span>Rigor Técnico NBR</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Award className="w-4 h-4 text-amber-500" /> <span>Pioneiros em Steel Frame</span>
-              </div>
+            {/* Botão Pill Outline Ratio */}
+            <div className="mt-14">
+              <a 
+                href={slide.ctaLink} 
+                className="inline-block rounded-full border border-white/50 px-12 py-4 text-[10px] md:text-[11px] font-medium tracking-[0.3em] text-white uppercase transition-all duration-500 hover:border-amber-500 hover:text-amber-500 bg-transparent hover:bg-amber-500/10 backdrop-blur-xs shadow-2xl"
+              >
+                {slide.ctaText}
+              </a>
             </div>
-          </div>
 
-          <div className="relative aspect-square md:aspect-[4/3] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 shadow-2xl">
-            <img 
-              src="https://images.unsplash.com/photo-1504307651254-35680f356f58?q=80&w=1600" 
-              alt="Engenharia Quattro" 
-              className="w-full h-full object-cover"
-            />
           </div>
         </div>
-      </section>
+      ))}
 
-      {/* 4. SETORES DE ATUAÇÃO */}
-      <section className="py-24 bg-zinc-900 border-y border-zinc-800">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 border-b border-zinc-800 pb-8">
-            <div>
-              <span className="text-xs font-bold text-amber-500 uppercase tracking-[0.3em] block mb-2">Expertise Multidisciplinar</span>
-              <h2 className="text-3xl md:text-5xl font-serif text-white">Nossos Setores</h2>
-            </div>
-            <p className="text-xs text-zinc-400 max-w-md mt-4 md:mt-0 font-light">
-              Soluções completas para ambientes corporativos, industriais, hospitalares e residenciais.
-            </p>
-          </div>
+      {/* Setas Finas de Navegação */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 p-2 text-white/40 hover:text-amber-500 transition-colors focus:outline-none"
+        aria-label="Anterior"
+      >
+        <ChevronLeft className="w-10 h-10 md:w-12 md:h-12 stroke-[0.5]" />
+      </button>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
-            {[
-              { num: '01', title: 'Hospitalar', desc: 'Infraestrutura de alta complexidade técnica, laboratórios e centros cirúrgicos com rigoroso controle de higiene e climatização.' },
-              { num: '02', title: 'Industrial', desc: 'Construção e reforma de galpões logísticos, plantas industriais e centros de distribuição de grande porte.' },
-              { num: '03', title: 'Manutenção', desc: 'Manutenção industrial e predial preventiva/corretiva, gerenciamento de obras e atendimento contínuo de facilities.' },
-              { num: '04', title: 'Residencial', desc: 'Incorporação de empreendimentos habitacionais, loteamentos e edifícios inovadores de alto padrão.' },
-            ].map((item, idx) => (
-              <div key={idx} className="group border-b border-zinc-800/60 pb-8">
-                <div className="flex items-start gap-6">
-                  <span className="text-2xl font-serif text-amber-500/80 font-bold group-hover:text-amber-500 transition-colors">
-                    {item.num}
-                  </span>
-                  <div className="space-y-2">
-                    <h3 className="text-2xl font-serif text-white group-hover:translate-x-1 transition-transform">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm text-zinc-400 font-light leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <button
+        onClick={nextSlide}
+        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-2 text-white/40 hover:text-amber-500 transition-colors focus:outline-none"
+        aria-label="Próximo"
+      >
+        <ChevronRight className="w-10 h-10 md:w-12 md:h-12 stroke-[0.5]" />
+      </button>
 
-      {/* 5. FORMULÁRIO DE CONTATO */}
-      <section id="contato" className="py-28 bg-zinc-950">
-        <div className="max-w-5xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-start">
-          <div className="space-y-6">
-            <span className="text-xs font-bold text-amber-500 uppercase tracking-[0.3em] block">
-              Atendimento Corporativo
-            </span>
-            <h2 className="text-3xl md:text-5xl font-serif text-white">Fale com a Construtora</h2>
-            <p className="text-zinc-400 text-sm font-light leading-relaxed">
-              Para conhecer melhor nosso portfólio de serviços e obras ou tirar suas dúvidas técnicas, entre em contato conosco!
-            </p>
-
-            <div className="pt-6 space-y-4 text-xs text-zinc-300 border-t border-zinc-900">
-              <div className="flex items-center gap-3">
-                <MapPin className="text-amber-500 w-5 h-5 shrink-0" />
-                <span>Barueri – SP | Atendimento em todo o Brasil</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-zinc-900 border border-zinc-800/80 p-8 md:p-10 rounded-xl shadow-2xl">
-            {formSuccess ? (
-              <div className="text-center space-y-4 py-8">
-                <CheckCircle2 className="w-12 h-12 text-amber-500 mx-auto" />
-                <h3 className="text-xl font-serif text-white">Solicitação Enviada!</h3>
-                <p className="text-xs text-zinc-400 font-light">
-                  Sua mensagem foi entregue à nossa equipe técnica. Retornaremos em breve.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleFormSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">Seu Nome</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ex: Roberto Silva"
-                    value={formData.nome}
-                    onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">E-mail</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="seu@email.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">Telefone</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="(11) 90000-0000"
-                      value={formData.telefone}
-                      onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">Mensagem</label>
-                  <textarea
-                    rows={4}
-                    required
-                    placeholder="Como podemos ajudar em seu projeto?"
-                    value={formData.mensagem}
-                    onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={formLoading}
-                  className="w-full py-4 bg-amber-500 hover:bg-amber-600 text-zinc-950 font-black rounded-lg uppercase tracking-widest text-xs transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-amber-500/10 cursor-pointer disabled:opacity-50"
-                >
-                  {formLoading ? 'Enviando...' : (
-                    <>
-                      <span>Enviar Mensagem</span>
-                      <Send className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      </section>
-
-    </div>
+      {/* Detalhe Dourado de Acabamento no Rodapé */}
+      <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-amber-600/30 via-amber-500 to-amber-600/30 z-30" />
+    </section>
   );
 };
