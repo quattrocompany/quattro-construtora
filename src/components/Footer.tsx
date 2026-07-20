@@ -1,4 +1,3 @@
-// src/components/Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -10,7 +9,6 @@ import {
   HardHat
 } from 'lucide-react';
 
-// SVGs Inline para Redes Sociais (Evita erros de import do lucide-react e otimiza o bundle)
 const FacebookIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
   <svg className={`${className} fill-current`} viewBox="0 0 24 24">
     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -39,7 +37,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="bg-zinc-950 text-zinc-400 font-sans border-t border-zinc-900 relative overflow-hidden">
       
-      {/* Marca d'água de fundo sutil */}
+      {/* Marca d'água de fundo */}
       <div className="absolute -bottom-10 right-0 opacity-5 pointer-events-none select-none text-right font-bold text-[180px] tracking-tighter text-white leading-none">
         QUATTRO
       </div>
@@ -47,23 +45,20 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-20 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
           
-          {/* COLUNA 1: Sobre & Marca */}
+          {/* COLUNA 1: LOGO LIMPO (SEM MOLDURA CINZA) */}
           <div className="lg:col-span-2 space-y-6">
             <Link to="/" className="inline-block">
-              <div className="bg-zinc-900 border border-zinc-800 px-4 py-2.5 rounded-xl inline-block">
-                <img 
-                  src="/logo/logo_quattro-construtora.svg" 
-                  alt="Quattro Construtora" 
-                  className="h-10 w-auto object-contain"
-                />
-              </div>
+              <img 
+                src="/logo/Logo_Quattro Construtora_cut.svg" 
+                alt="Quattro Construtora" 
+                className="h-12 w-auto object-contain"
+              />
             </Link>
 
             <p className="text-xs text-zinc-400 font-light leading-relaxed max-w-sm">
               Engenharia de precisão, flexibilidade técnica e inovação. Construindo soluções de alta performance para o setor corporativo, industrial, hospitalar e residencial em todo o Brasil.
             </p>
 
-            {/* Redes Sociais usando os novos SVGs */}
             <div className="flex items-center gap-3">
               {[
                 { icon: <FacebookIcon />, href: 'https://facebook.com', label: 'Facebook' },
@@ -85,7 +80,7 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* COLUNA 2: Navegação Institucional */}
+          {/* COLUNA 2: Navegação */}
           <div className="space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-white">Navegação</h4>
             <ul className="space-y-2.5 text-xs font-light">
@@ -127,7 +122,6 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
-            {/* Acessos Rápidos B2B */}
             <div className="pt-2 space-y-2">
               <a 
                 href="https://portal.quattroconstrutora.com.br/cliente" 
@@ -159,7 +153,6 @@ export const Footer: React.FC = () => {
 
         </div>
 
-        {/* Rodapé Inferior: Copyright & Termos */}
         <div className="pt-8 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-light text-zinc-500">
           <p>© {new Date().getFullYear()} Quattro Construtora. Todos os direitos reservados.</p>
           <div className="flex items-center gap-6">

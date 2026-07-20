@@ -1,25 +1,20 @@
-// src/components/Navbar.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowRight, User, HardHat } from 'lucide-react';
 
-export const Navbar: React.FC = () => {
+export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
-  // Otimização: Fecha o menu mobile automaticamente ao trocar de rota
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  // Listener de Scroll otimizado para o Glassmorphism
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      setIsScrolled(window.scrollY > 30);
     };
-    
-    // Adiciona o listener passivo para melhor performance (não bloqueia a thread de renderização)
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -37,28 +32,28 @@ export const Navbar: React.FC = () => {
       className={`fixed top-0 w-full z-50 transition-all duration-500 font-sans ${
         isScrolled
           ? 'bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/80 py-3 shadow-2xl'
-          : 'bg-gradient-to-b from-zinc-950/90 via-zinc-950/40 to-transparent py-5'
+          : 'bg-gradient-to-b from-zinc-950/90 via-zinc-950/40 to-transparent py-4'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between relative">
         
-        {/* ================= 1. LOGOTIPO (AGORA CORTADO E LIMPO) ================= */}
+        {/* ==================== LOGO CORTE NO TOPO (FLUSH TOP-0) ==================== */}
         <Link 
           to="/" 
-          className="flex items-center group focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded-xl z-50"
-          aria-label="Ir para a página inicial"
+          className="absolute top-0 left-6 md:left-12 z-50 focus:outline-none group"
+          aria-label="Quattro Construtora - Página Inicial"
         >
-          {/* O bloco chumbo em volta do logo é mantido para garantir contraste em qualquer fundo */}
-          <div className="bg-zinc-900 border border-zinc-800 px-4 py-2.5 rounded-xl shadow-xl group-hover:border-amber-500/40 transition-all duration-300 flex items-center justify-center">
-            <img 
-              src="/logo/Logo_Quattro Construtora_cut.svg" 
-              alt="Quattro Construtora" 
-              className="h-7 md:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-            />
-          </div>
+          <img 
+            src="/logo/Logo_Quattro Construtora_cut.svg" 
+            alt="Quattro Construtora" 
+            className="h-16 md:h-20 lg:h-24 w-auto object-contain object-top drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)] transition-transform duration-300 group-hover:scale-105"
+          />
         </Link>
 
-        {/* ================= 2. NAVEGAÇÃO DESKTOP ================= */}
+        {/* ESPAÇADOR RECURSIVO (Evita que o menu sobreponha o logo no desktop) */}
+        <div className="w-32 md:w-44 lg:w-52 h-10 shrink-0" />
+
+        {/* ==================== NAVEGAÇÃO DESKTOP ==================== */}
         <nav className="hidden lg:flex items-center gap-8" aria-label="Navegação Principal">
           <div className="flex items-center gap-6">
             {navItems.map((item) => (
@@ -67,7 +62,8 @@ export const Navbar: React.FC = () => {
                 to={item.path}
                 className={({ isActive }) => `
                   text-[11px] font-semibold uppercase tracking-[0.2em] transition-all duration-300 relative py-2
-                  ${isActive ? 'text-amber-500' : 'text-zinc-300 hover:text-white'}
+                  after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-amber-500 after:transition-all after:duration-300
+                  ${isActive ? 'text-amber-500 after:w-full' : 'text-zinc-300 hover:text-white hover:after:w-1/2'}
                 `}
               >
                 {item.name}
@@ -75,13 +71,13 @@ export const Navbar: React.FC = () => {
             ))}
           </div>
 
-          {/* ================= 3. CTAs CORPORATIVOS (B2B) ================= */}
+          {/* ==================== BOTÕES B2B & ORÇAMENTO ==================== */}
           <div className="flex items-center gap-4 pl-8 border-l border-zinc-800">
             <a
               href="https://portal.quattroconstrutora.com.br/cliente"
               target="_blank"
               rel="noreferrer"
-              className="px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-amber-500 hover:border-amber-500/40 text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="px-4 py-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-300 hover:text-amber-500 hover:border-amber-500/40 text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2"
             >
               <User className="w-3.5 h-3.5 text-amber-500" />
               <span>Portal Cliente</span>
@@ -89,7 +85,7 @@ export const Navbar: React.FC = () => {
 
             <Link
               to="/contato"
-              className="px-6 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-zinc-950 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 shadow-lg shadow-amber-500/10 flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 hover:-translate-y-0.5"
+              className="px-6 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-zinc-950 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 shadow-lg shadow-amber-500/10 flex items-center gap-2 hover:-translate-y-0.5"
             >
               <span>Orçamento</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -97,23 +93,21 @@ export const Navbar: React.FC = () => {
           </div>
         </nav>
 
-        {/* ================= 4. TOGGLE MOBILE ================= */}
+        {/* ==================== TOGGLE MOBILE ==================== */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="lg:hidden text-white p-2 focus:outline-none z-50 rounded-lg bg-zinc-900 border border-zinc-800"
+          className="lg:hidden text-white p-2.5 focus:outline-none z-50 rounded-xl bg-zinc-900 border border-zinc-800"
           aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
-          aria-expanded={isMenuOpen}
         >
           {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
-      {/* ================= 5. OVERLAY MENU MOBILE ================= */}
+      {/* ==================== MENU MOBILE DRAWER ==================== */}
       <div 
         className={`fixed inset-0 bg-zinc-950/98 backdrop-blur-2xl z-40 lg:hidden transition-all duration-500 flex flex-col justify-between p-8 pt-32 ${
           isMenuOpen ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none -translate-y-4'
         }`}
-        aria-hidden={!isMenuOpen}
       >
         <div className="space-y-6">
           <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-500">Navegação</p>
