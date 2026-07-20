@@ -22,7 +22,7 @@ import { Hero } from '../components/Hero';
 import { saveLead } from '../services/firestoreService';
 
 // ============================================================================
-// DADOS ESTÁTICOS (Declarados fora do componente para evitar garbage collection)
+// DADOS ESTÁTICOS (Isolados do ciclo de renderização do React para performance)
 // ============================================================================
 
 const SETORES = [
@@ -52,7 +52,7 @@ const SETORES = [
   },
   {
     id: '04',
-    title: 'Residencial de Luxo',
+    title: 'Residencial',
     desc: 'Incorporação imobiliária de alto padrão, residências de grande porte e edifícios projetados com arquitetura autoral.',
     icon: Building2,
     image: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1600',
@@ -130,13 +130,13 @@ export const Home: React.FC = () => {
   const SelectedSectorIcon = SETORES[activeSector].icon;
 
   return (
-    <div className="w-full bg-zinc-950 text-zinc-100 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
+    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
       
       {/* 1. HERO SLIDER */}
       <Hero />
 
-      {/* 2. MANIFESTO / SOBRE A QUATTRO */}
-      <section className="bg-zinc-50 text-zinc-900 py-24 px-6 md:px-12 border-b border-zinc-200">
+      {/* 2. MANIFESTO / SOBRE A QUATTRO (CINZA 20% - bg-zinc-50) */}
+      <section className="bg-zinc-50 py-24 px-6 md:px-12 border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-4">
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block mb-2">
@@ -148,41 +148,41 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="lg:col-span-8 space-y-6">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-zinc-950 leading-tight">
+            <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-950 leading-tight">
               Para quem busca soluções de engenharia extraordinárias e segurança absoluta em cada fase da obra.
             </h2>
             <div className="w-16 h-1 bg-amber-500 rounded-full" />
-            <p className="text-zinc-600 text-sm md:text-base leading-relaxed font-light">
+            <p className="text-zinc-600 text-sm md:text-base leading-relaxed font-normal">
               Conduzimos todas as etapas da sua construção ou reforma com transparência total, garantindo o rigoroso cumprimento de prazos e orçamentos através do Padrão Quattro de Qualidade.
             </p>
           </div>
         </div>
       </section>
 
-      {/* 3. SHOWCASE / PORTFÓLIO DESTAQUES */}
-      <section className="py-24 bg-zinc-950 border-b border-zinc-900">
+      {/* 3. SHOWCASE / PORTFÓLIO DESTAQUES (BRANCO PURO) */}
+      <section className="py-24 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12">
           
           <div className="mb-12 flex items-end justify-between">
             <div>
-              <span className="text-amber-500 text-xs font-bold uppercase tracking-[0.3em] block mb-2">
+              <span className="text-amber-600 text-xs font-bold uppercase tracking-[0.3em] block mb-2">
                 Portfólio em Destaque
               </span>
-              <h3 className="text-2xl md:text-4xl font-bold text-white">Projetos Recentes</h3>
+              <h3 className="text-2xl md:text-4xl font-extrabold text-zinc-950">Projetos Recentes</h3>
             </div>
             
-            {/* Controles do Carrossel */}
+            {/* Controles do Carrossel com Estilo Light */}
             <div className="flex gap-3">
               <button 
                 onClick={handlePrevPortfolio}
-                className="p-3 rounded-full border border-zinc-800 text-zinc-400 hover:text-amber-500 hover:border-amber-500/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                className="p-3 rounded-full border border-zinc-300 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer"
                 aria-label="Projeto Anterior"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button 
                 onClick={handleNextPortfolio}
-                className="p-3 rounded-full border border-zinc-800 text-zinc-400 hover:text-amber-500 hover:border-amber-500/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                className="p-3 rounded-full border border-zinc-300 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer"
                 aria-label="Próximo Projeto"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -190,12 +190,12 @@ export const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Grid Responsivo com Transição */}
+          {/* Grid Responsivo de Cards do Portfólio */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 transition-all duration-500">
             {PORTFOLIO_ITEMS.slice(portfolioIndex, portfolioIndex + 3).map((item) => (
               <div 
                 key={item.id} 
-                className="group relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 aspect-[4/5] hover:border-amber-500/50 transition-all duration-500 shadow-xl"
+                className="group relative rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200 aspect-[4/5] hover:border-amber-500/50 transition-all duration-500 shadow-md hover:shadow-xl"
               >
                 <img 
                   src={item.img} 
@@ -203,11 +203,12 @@ export const Home: React.FC = () => {
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent p-6 md:p-8 flex flex-col justify-end">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full w-fit mb-3 backdrop-blur-sm">
+                {/* Overlay escuro mantido apenas na imagem para legibilidade do texto contrastante */}
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-zinc-950/20 to-transparent p-6 md:p-8 flex flex-col justify-end">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-950 bg-amber-500 px-3 py-1 rounded-full w-fit mb-3 font-mono shadow-sm">
                     {item.tag}
                   </span>
-                  <h4 className="text-xl font-bold text-white group-hover:text-amber-500 transition-colors leading-snug">
+                  <h4 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors leading-snug">
                     {item.title}
                   </h4>
                 </div>
@@ -218,27 +219,21 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. SETORES DE ATUAÇÃO INTERATIVOS */}
-      <section className="relative py-28 bg-zinc-900/50 overflow-hidden border-b border-zinc-800">
+      {/* 4. SETORES DE ATUAÇÃO INTERATIVOS (CINZA 20% - bg-zinc-50) */}
+      <section className="relative py-28 bg-zinc-50 overflow-hidden border-b border-zinc-200">
         
-        {/* Background Image Preview Dynamic */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-10 transition-all duration-700 blur-sm pointer-events-none"
-          style={{ backgroundImage: `url('${SETORES[activeSector].image}')` }}
-        />
-
         <div className="relative max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 items-center z-10">
           
           {/* Lado Esquerdo: Lista Tabulada */}
           <div className="lg:col-span-6 space-y-6">
             <div>
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block mb-2">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block mb-2">
                 Soluções Completas
               </span>
-              <h2 className="text-3xl md:text-5xl font-bold text-white">
+              <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950">
                 Setores de Atuação
               </h2>
-              <p className="text-zinc-400 text-sm font-light max-w-md mt-2">
+              <p className="text-zinc-600 text-sm font-normal max-w-md mt-2">
                 Selecione um setor para explorar nossa capacidade técnica e engenharia especializada.
               </p>
             </div>
@@ -256,12 +251,12 @@ export const Home: React.FC = () => {
                     onMouseEnter={() => setActiveSector(index)}
                     className={`w-full text-left p-4 md:p-5 rounded-2xl transition-all duration-300 flex items-center justify-between border cursor-pointer ${
                       isSelected
-                        ? 'bg-zinc-950 border-amber-500 text-amber-500 shadow-2xl scale-[1.01]'
-                        : 'bg-zinc-950/40 border-zinc-800/80 text-zinc-400 hover:text-white hover:border-zinc-700'
+                        ? 'bg-white border-amber-500 text-amber-600 shadow-lg scale-[1.01]'
+                        : 'bg-white/60 border-zinc-200 text-zinc-600 hover:text-zinc-950 hover:border-zinc-300 hover:bg-white'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <span className="text-xs font-bold tracking-widest opacity-60 font-mono">{setor.id}</span>
+                      <span className="text-xs font-bold tracking-widest opacity-60 font-mono text-zinc-500">{setor.id}</span>
                       <span className="text-base md:text-lg font-bold">{setor.title}</span>
                     </div>
                     <ArrowRight className={`w-4 h-4 transition-transform duration-300 ${isSelected ? 'translate-x-1 text-amber-500' : 'opacity-0'}`} />
@@ -271,24 +266,24 @@ export const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Lado Direito: Card de Detalhes do Setor */}
+          {/* Lado Direito: Card de Detalhes do Setor (Light Glassmorphism) */}
           <div className="lg:col-span-6">
             <div 
               id={`sector-panel-${SETORES[activeSector].id}`}
               role="tabpanel"
-              className="bg-zinc-950 border border-zinc-800 p-8 md:p-10 rounded-3xl shadow-2xl space-y-6 animate-in fade-in duration-300"
+              className="bg-white border border-zinc-200 p-8 md:p-10 rounded-3xl shadow-xl space-y-6 animate-in fade-in duration-300"
             >
-              <div className="p-3.5 bg-zinc-900 rounded-2xl border border-zinc-800 w-fit">
+              <div className="p-3.5 bg-zinc-100 rounded-2xl border border-zinc-200 w-fit">
                 <SelectedSectorIcon className="w-6 h-6 text-amber-500" />
               </div>
 
-              <h3 className="text-2xl font-bold text-white">{SETORES[activeSector].title}</h3>
+              <h3 className="text-2xl font-bold text-zinc-950">{SETORES[activeSector].title}</h3>
               
-              <p className="text-zinc-400 text-sm leading-relaxed font-light">
+              <p className="text-zinc-600 text-sm leading-relaxed font-normal">
                 {SETORES[activeSector].desc}
               </p>
 
-              <div className="aspect-video rounded-2xl overflow-hidden border border-zinc-800 shadow-inner">
+              <div className="aspect-video rounded-2xl overflow-hidden border border-zinc-200 shadow-inner">
                 <img 
                   src={SETORES[activeSector].image} 
                   alt={SETORES[activeSector].title} 
@@ -298,7 +293,7 @@ export const Home: React.FC = () => {
 
               <Link 
                 to={`/setores/${SETORES[activeSector].slug}`}
-                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-500 hover:text-amber-400 transition-colors pt-2 group"
+                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-600 hover:text-amber-700 transition-colors pt-2 group"
               >
                 <span>Conhecer Detalhes do Setor</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -309,22 +304,22 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. MÉTRICAS E NÚMEROS */}
-      <section className="bg-zinc-50 text-zinc-900 py-24 px-6 md:px-12 border-b border-zinc-200">
+      {/* 5. MÉTRICAS E NÚMEROS (BRANCO PURO) */}
+      <section className="bg-white text-zinc-900 py-24 px-6 md:px-12 border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto space-y-16">
           <div className="max-w-3xl space-y-4">
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
               Performance Comprovada
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-zinc-950 leading-tight">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950 leading-tight">
               Uma trajetória pautada por compromisso, pontualidade e inovação tecnológica.
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {METRICAS.map((metric, idx) => (
-              <div key={idx} className="border-t border-zinc-300 pt-6 space-y-2">
-                <span className="text-4xl md:text-5xl font-extrabold text-amber-600 block font-sans">
+              <div key={idx} className="border-t border-zinc-200 pt-6 space-y-2">
+                <span className="text-4xl md:text-5xl font-black text-amber-600 block font-sans">
                   {metric.num}
                 </span>
                 <p className="text-xs text-zinc-600 leading-relaxed font-medium">
@@ -336,15 +331,15 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. DIFERENCIAIS (GLASSMORPHISM) */}
-      <section className="py-28 bg-zinc-950 border-b border-zinc-900">
+      {/* 6. DIFERENCIAIS EXCLUSIVOS (CINZA 20% - bg-zinc-50) */}
+      <section className="py-28 bg-zinc-50 border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
           
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
               Diferenciais Exclusivos
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-white">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950">
               Colaboramos para transformar seu projeto em uma realidade sólida.
             </h2>
           </div>
@@ -355,13 +350,13 @@ export const Home: React.FC = () => {
               return (
                 <div 
                   key={idx} 
-                  className="bg-zinc-900/60 border border-zinc-800/80 p-8 rounded-3xl backdrop-blur-md hover:border-amber-500/40 transition-all duration-300 space-y-4 group shadow-xl"
+                  className="bg-white border border-zinc-200 p-8 rounded-3xl hover:border-amber-500/50 hover:shadow-xl transition-all duration-300 space-y-4 shadow-sm group"
                 >
-                  <div className="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 w-fit group-hover:border-amber-500/30 transition-colors">
+                  <div className="p-3 bg-zinc-100 rounded-2xl border border-zinc-200 w-fit group-hover:border-amber-500/30 transition-colors">
                     <CardIcon className="w-6 h-6 text-amber-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-white">{card.title}</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed font-light">{card.desc}</p>
+                  <h3 className="text-xl font-bold text-zinc-950">{card.title}</h3>
+                  <p className="text-xs text-zinc-600 leading-relaxed font-normal">{card.desc}</p>
                 </div>
               );
             })}
@@ -370,14 +365,14 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 7. FORMULÁRIO DE ATENDIMENTO */}
-      <section id="contato" className="py-28 bg-zinc-900">
+      {/* 7. FORMULÁRIO DE ATENDIMENTO (ÂNCORA ESCURA - bg-zinc-950) */}
+      <section id="contato" className="py-28 bg-zinc-950">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="bg-zinc-950 border border-zinc-800 p-8 md:p-12 rounded-3xl shadow-2xl space-y-8">
+          <div className="bg-zinc-900 border border-zinc-800 p-8 md:p-12 rounded-3xl shadow-2xl space-y-8">
             
             <div className="text-center space-y-3">
               <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block">Atendimento Direto</span>
-              <h2 className="text-3xl font-bold text-white">Fale com a Construtora</h2>
+              <h2 className="text-3xl font-extrabold text-white">Fale com a Construtora</h2>
               <p className="text-xs text-zinc-400 max-w-lg mx-auto leading-relaxed">
                 Entre em contato com nossos engenheiros e consultores para tirar dúvidas técnicas ou solicitar uma cotação personalizada.
               </p>
@@ -402,13 +397,13 @@ export const Home: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setFormSuccess(false)}
-                  className="px-6 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white rounded-full text-xs font-bold uppercase tracking-wider transition-colors"
+                  className="px-6 py-2.5 bg-zinc-950 border border-zinc-800 text-zinc-300 hover:text-white rounded-full text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
                 >
                   Enviar Nova Mensagem
                 </button>
               </div>
             ) : (
-              /* Formulário */
+              /* Formulário em Dark Mode para contraste de fechamento */
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="nome" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
@@ -421,7 +416,7 @@ export const Home: React.FC = () => {
                     placeholder="Seu Nome ou Razão Social"
                     value={formData.nome}
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                    className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
                   />
                 </div>
 
@@ -437,7 +432,7 @@ export const Home: React.FC = () => {
                       placeholder="seu@empresa.com.br"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
                     />
                   </div>
 
@@ -452,7 +447,7 @@ export const Home: React.FC = () => {
                       placeholder="(11) 90000-0000"
                       value={formData.telefone}
                       onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                      className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -468,7 +463,7 @@ export const Home: React.FC = () => {
                     placeholder="Descreva a localização, metragem ou necessidade da sua obra..."
                     value={formData.mensagem}
                     onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
-                    className="w-full bg-zinc-900/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors resize-none"
                   />
                 </div>
 
@@ -493,7 +488,7 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* NOTA DE ARQUITETURA: O <Footer /> foi removido daqui pois está sendo renderizado no App.tsx */}
+      {/* NOTA DE ARQUITETURA: O <Footer /> é mantido centralizado na raiz do App.tsx */}
 
     </div>
   );

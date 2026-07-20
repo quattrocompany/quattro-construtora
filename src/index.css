@@ -2,39 +2,25 @@
 
 @theme {
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-
-  /* ==========================================================================
-     REDEFINIÇÃO DA PALETA AMBER / OURO INSTITUCIONAL QUATTRO (#fbb03b)
-     ========================================================================== */
   --color-amber-300: #fdd88d;
   --color-amber-400: #fcc262;
-  --color-amber-500: #fbb03b; /* Tom Oficial do Branding Quattro */
-  --color-amber-600: #df9824; /* Variacao para hovers e bordas ativas */
+  --color-amber-500: #fbb03b; 
+  --color-amber-600: #df9824; 
   --color-amber-700: #b87713;
-
-  /* Alias de fácil leitura */
-  --color-brand-gold: #fbb03b;
 }
 
-/* Configurações Globais de Renderização */
 html {
   scroll-behavior: smooth;
 }
 
 body {
   font-family: var(--font-sans);
-  
-  /* Degradê Grafite Chumbo */
-  background: linear-gradient(to bottom, #353535 0%, #202020 100%);
-  background-attachment: fixed;
-  min-height: 100vh;
-  
-  color: #f4f4f5;
+  background-color: #ffffff; /* Fundo totalmente branco */
+  color: #52525b; /* text-zinc-600 (Cinza 90% para leitura suave) */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Customização de Seleção de Texto (Branding Ratio) */
 ::selection {
   background-color: #fbb03b;
   color: #09090b;

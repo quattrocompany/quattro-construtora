@@ -10,7 +10,7 @@ export interface ModalColaboradorProps {
 }
 
 export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onClose }) => {
-  // 1. Fechamento via Tecla ESC (Acessibilidade)
+  // 1. Fechamento via Tecla ESC (Acessibilidade WCAG)
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -20,7 +20,7 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
     [onClose]
   );
 
-  // 2. Ciclo de vida: Bloqueio de scroll do body e registro de listeners
+  // 2. Ciclo de Vida: Trava do Scroll do Body + Event Listeners
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -35,7 +35,6 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
     };
   }, [isOpen, handleKeyDown]);
 
-  // Se estiver fechado, não polui a árvore de renderização do DOM
   if (!isOpen) return null;
 
   return (
@@ -46,12 +45,12 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
       aria-modal="true"
       aria-labelledby="modal-colaborador-title"
     >
-      {/* CARD PRINCIPAL (GLASSMORPHISM GRAPHITE) */}
+      {/* CARD DO MODAL (GLASSMORPHISM DARK) */}
       <div
         className="bg-zinc-900/95 border border-zinc-800 rounded-3xl max-w-lg w-full p-8 md:p-10 relative shadow-2xl transition-transform duration-300 scale-100 text-center animate-in zoom-in-95 overflow-hidden font-sans"
-        onClick={(e) => e.stopPropagation()} // Previne fechamento involuntário ao clicar dentro do card
+        onClick={(e) => e.stopPropagation()} // Evita fechar ao clicar no interior do card
       >
-        {/* Detalhe superior Ouro Quattro (#fbb03b) */}
+        {/* Detalhe Superior Ouro (#fbb03b) */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-80" />
 
         {/* Botão Fechar [X] */}
@@ -64,7 +63,7 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
           <X className="w-5 h-5 stroke-[1.5]" />
         </button>
 
-        {/* LOGO INSTITUCIONAL COM LARGURA VINCULADA À VARIÁVEL --spacing */}
+        {/* LOGO INSTITUCIONAL COMPLETO */}
         <div className="flex justify-center mb-6 pt-2">
           <img
             src="/logo/logo_quattro-construtora.svg"
@@ -73,7 +72,7 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
           />
         </div>
 
-        {/* Título com Quebra de Linha Balanceada (Evita palavras órfãs) */}
+        {/* Título com Quebra de Linha Balanceada */}
         <h3
           id="modal-colaborador-title"
           className="text-zinc-200 text-base md:text-lg font-light leading-relaxed mb-8 max-w-sm mx-auto text-balance"
@@ -81,12 +80,12 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
           Caro Colaborador, selecione o portal de acesso desejado:
         </h3>
 
-        {/* GRID DE CARDS DE ACESSO */}
+        {/* GRID DOS CARDS DE ACESSO */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           
-          {/* CARD TI */}
+          {/* PORTAL DE TI */}
           <a
-            href="https://ti.quattroconstrutora.com.br"
+            href="http://177.126.7.42:3391/"
             target="_blank"
             rel="noreferrer"
             className="group p-5 bg-zinc-950/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl transition-all duration-300 flex flex-col items-center text-center justify-between hover:-translate-y-1 shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500/50"
@@ -103,9 +102,9 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
             </div>
           </a>
 
-          {/* CARD FROTAS */}
+          {/* PORTAL DE FROTAS */}
           <a
-            href="https://frotas.quattroconstrutora.com.br"
+            href="http://177.126.7.42:3392/"
             target="_blank"
             rel="noreferrer"
             className="group p-5 bg-zinc-950/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl transition-all duration-300 flex flex-col items-center text-center justify-between hover:-translate-y-1 shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500/50"
