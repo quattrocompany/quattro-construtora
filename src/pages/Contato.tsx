@@ -141,7 +141,7 @@ export const Contato: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
+    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
       
       {/* ========================================================================= */}
       {/* 1. HERO INSTITUCIONAL (PADRÃO DE GRID MESTRE: max-w-[1440px] px-6 md:px-12) */}
@@ -150,15 +150,15 @@ export const Contato: React.FC = () => {
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
 
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 relative z-10">
-          <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
+          <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500 font-['Montserrat',sans-serif]">
             <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
             <span className="text-amber-600 font-bold">Contato</span>
           </nav>
 
           <div className="max-w-3xl space-y-4">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
-              Canais de Atendimento
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
+              Canaiss de Atendimento
             </span>
             <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
               Fale com a equipe técnica da Quattro.
@@ -173,13 +173,13 @@ export const Contato: React.FC = () => {
       {/* ========================================================================= */}
       {/* 2. FORMULÁRIO & CANAIS                                                    */}
       {/* ========================================================================= */}
-      <section className="py-24 px-6 md:px-12 bg-white border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      <section className="py-24 bg-white border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
           <div className="lg:col-span-7 bg-zinc-50 border border-zinc-200 p-8 md:p-12 rounded-3xl shadow-sm space-y-8">
             
             <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
                 Envie uma Mensagem
               </span>
               <h2 className="text-2xl md:text-4xl font-extrabold text-zinc-950">
@@ -202,7 +202,7 @@ export const Contato: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsSuccess(false)}
-                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer"
+                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer font-['Montserrat',sans-serif]"
                 >
                   Enviar Nova Mensagem
                 </button>
@@ -219,7 +219,7 @@ export const Contato: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label htmlFor="nome" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
+                    <label htmlFor="nome" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
                       Nome Completo *
                     </label>
                     <input
@@ -230,12 +230,12 @@ export const Contato: React.FC = () => {
                       value={formData.nome}
                       onChange={handleChange}
                       placeholder="Ex: Roberto Silva"
-                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-['Inter',sans-serif]"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
+                    <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
                       E-mail Corporativo *
                     </label>
                     <input
@@ -246,14 +246,14 @@ export const Contato: React.FC = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="roberto@empresa.com.br"
-                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-['Inter',sans-serif]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label htmlFor="telefone" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
+                    <label htmlFor="telefone" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
                       Telefone / WhatsApp *
                     </label>
                     <input
@@ -264,12 +264,12 @@ export const Contato: React.FC = () => {
                       value={formData.telefone}
                       onChange={handleChange}
                       placeholder="(11) 99999-9999"
-                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-['Inter',sans-serif]"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="empresa" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
+                    <label htmlFor="empresa" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
                       Empresa / Razão Social
                     </label>
                     <input
@@ -279,13 +279,13 @@ export const Contato: React.FC = () => {
                       value={formData.empresa}
                       onChange={handleChange}
                       placeholder="Nome da sua empresa (opcional)"
-                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all"
+                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-['Inter',sans-serif]"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="assunto" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
+                  <label htmlFor="assunto" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
                     Qual o motivo do seu contato? *
                   </label>
                   <select
@@ -294,7 +294,7 @@ export const Contato: React.FC = () => {
                     required
                     value={formData.assunto}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all cursor-pointer"
+                    className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all cursor-pointer font-['Inter',sans-serif]"
                   >
                     {OPCOES_ASSUNTO.map((opcao) => (
                       <option key={opcao.value} value={opcao.value} disabled={opcao.value === ''}>
@@ -308,7 +308,7 @@ export const Contato: React.FC = () => {
                   <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3 text-amber-900 text-xs font-medium animate-in fade-in">
                     <HardHat className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold block text-amber-950 mb-0.5">Atendimento Comunitário Prioritário</span>
+                      <span className="font-bold block text-amber-950 mb-0.5 font-['Montserrat',sans-serif]">Atendimento Comunitário Prioritário</span>
                       Mensagens de vizinhos de obras ativas são roteadas diretamente para a equipe de engenharia residente do canteiro.
                     </div>
                   </div>
@@ -318,14 +318,14 @@ export const Contato: React.FC = () => {
                   <div className="p-4 bg-zinc-200/60 border border-zinc-300 rounded-xl flex items-start gap-3 text-zinc-800 text-xs font-medium animate-in fade-in">
                     <Building2 className="w-5 h-5 text-zinc-600 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold block text-zinc-950 mb-0.5">Homologação de Fornecedores</span>
+                      <span className="font-bold block text-zinc-950 mb-0.5 font-['Montserrat',sans-serif]">Homologação de Fornecedores</span>
                       Informe no campo de mensagem seus principais produtos/serviços e regiões de atendimento para cadastro no nosso setor de compras.
                     </div>
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <label htmlFor="mensagem" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block">
+                  <label htmlFor="mensagem" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
                     Sua Mensagem *
                   </label>
                   <textarea
@@ -336,7 +336,7 @@ export const Contato: React.FC = () => {
                     value={formData.mensagem}
                     onChange={handleChange}
                     placeholder="Descreva detalhes sobre sua solicitação, projeto, obra ou dúvida..."
-                    className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all resize-none"
+                    className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all resize-none font-['Inter',sans-serif]"
                   />
                 </div>
 
@@ -349,7 +349,7 @@ export const Contato: React.FC = () => {
                     onChange={handleChange}
                     className="mt-1 h-4 w-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
                   />
-                  <label htmlFor="termoAceito" className="text-xs text-zinc-600 font-normal leading-relaxed cursor-pointer">
+                  <label htmlFor="termoAceito" className="text-xs text-zinc-600 font-normal leading-relaxed cursor-pointer font-['Inter',sans-serif]">
                     Concordo com o tratamento dos meus dados pessoais para a finalidade de atendimento do contato, em conformidade com a Lei Geral de Proteção de Dados (LGPD).
                   </label>
                 </div>
@@ -357,7 +357,7 @@ export const Contato: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 px-8 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-widest transition-all duration-300 shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5"
+                  className="w-full py-4 px-8 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-widest transition-all duration-300 shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 font-['Montserrat',sans-serif]"
                 >
                   {isSubmitting ? (
                     <span>Enviando mensagem...</span>
@@ -377,7 +377,7 @@ export const Contato: React.FC = () => {
           <div className="lg:col-span-5 space-y-8">
             
             <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
                 Atendimento Direto
               </span>
               <h2 className="text-2xl md:text-3xl font-extrabold text-zinc-950">
@@ -398,7 +398,7 @@ export const Contato: React.FC = () => {
                     </div>
 
                     <div className="space-y-1">
-                      <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 block">
+                      <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 block font-['Montserrat',sans-serif]">
                         {canal.titulo}
                       </span>
                       
@@ -407,17 +407,17 @@ export const Contato: React.FC = () => {
                           href={canal.href} 
                           target="_blank" 
                           rel="noreferrer"
-                          className="text-sm md:text-base font-bold text-zinc-950 hover:text-amber-600 transition-colors block"
+                          className="text-sm md:text-base font-bold text-zinc-950 hover:text-amber-600 transition-colors block font-['Inter',sans-serif]"
                         >
                           {canal.info}
                         </a>
                       ) : (
-                        <p className="text-sm md:text-base font-bold text-zinc-950">
+                        <p className="text-sm md:text-base font-bold text-zinc-950 font-['Inter',sans-serif]">
                           {canal.info}
                         </p>
                       )}
 
-                      <p className="text-xs text-zinc-500 font-normal">
+                      <p className="text-xs text-zinc-500 font-normal font-['Inter',sans-serif]">
                         {canal.sub}
                       </p>
                     </div>
@@ -431,9 +431,9 @@ export const Contato: React.FC = () => {
                 <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-500">
                   <Briefcase className="w-5 h-5" />
                 </div>
-                <h3 className="text-base font-bold text-white">Carreiras & Trabalhe Conosco</h3>
+                <h3 className="text-base font-bold text-white font-['Montserrat',sans-serif]">Carreiras & Trabalhe Conosco</h3>
               </div>
-              <p className="text-xs text-zinc-400 font-light leading-relaxed">
+              <p className="text-xs text-zinc-400 font-light leading-relaxed font-['Inter',sans-serif]">
                 Quer fazer parte do nosso time de engenheiros, mestres de obra e projetistas? Selecione a opção "Trabalhe Conosco" no formulário ou envie seu currículo diretamente para nosso banco de talentos.
               </p>
             </div>
@@ -444,13 +444,13 @@ export const Contato: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. PERGUNTAS FREQUENTES                                                  */}
+      {/* 3. PERGUNTAS FREQUENTES                                                   */}
       {/* ========================================================================= */}
-      <section className="py-20 px-6 md:px-12 bg-zinc-50 border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto space-y-12">
+      <section className="py-20 bg-zinc-50 border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
           
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
               Esclarecimentos Rápidos
             </span>
             <h2 className="text-2xl md:text-4xl font-extrabold text-zinc-950">
@@ -461,7 +461,7 @@ export const Contato: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {FAQS_CONTATO.map((faq, idx) => (
               <div key={idx} className="bg-white border border-zinc-200 p-8 rounded-2xl space-y-3 shadow-xs">
-                <div className="flex items-center gap-2 text-amber-600">
+                <div className="flex items-center gap-2 text-amber-600 font-['Montserrat',sans-serif]">
                   <HelpCircle className="w-5 h-5 shrink-0" />
                   <span className="text-xs font-bold uppercase tracking-wider">Dúvida Frequente</span>
                 </div>
@@ -477,29 +477,31 @@ export const Contato: React.FC = () => {
       {/* ========================================================================= */}
       {/* 4. LOCALIZAÇÃO                                                           */}
       {/* ========================================================================= */}
-      <section className="py-16 px-6 md:px-12 bg-white border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-8 p-8 md:p-12 rounded-3xl bg-zinc-50 border border-zinc-200">
-          <div className="space-y-2 max-w-xl">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
-              Visitas Agendadas
-            </span>
-            <h3 className="text-2xl font-extrabold text-zinc-950">
-              Venha conhecer nosso escritório central em São Paulo
-            </h3>
-            <p className="text-xs text-zinc-600 font-normal leading-relaxed">
-              Atendemos clientes e parceiros para reuniões de alinhamento de projetos mediante agendamento prévio.
-            </p>
-          </div>
+      <section className="py-16 bg-white border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 md:p-12 rounded-3xl bg-zinc-50 border border-zinc-200">
+            <div className="space-y-2 max-w-xl">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
+                Visitas Agendadas
+              </span>
+              <h3 className="text-2xl font-extrabold text-zinc-950">
+                Venha conhecer nosso escritório central em São Paulo
+              </h3>
+              <p className="text-xs text-zinc-600 font-normal leading-relaxed">
+                Atendemos clientes e parceiros para reuniões de alinhamento de projetos mediante agendamento prévio.
+              </p>
+            </div>
 
-          <a
-            href="https://maps.google.com"
-            target="_blank"
-            rel="noreferrer"
-            className="px-8 py-4 rounded-xl bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 whitespace-nowrap shrink-0"
-          >
-            <MapPin className="w-4 h-4 text-amber-500" />
-            <span>Abrir no Google Maps</span>
-          </a>
+            <a
+              href="https://maps.google.com"
+              target="_blank"
+              rel="noreferrer"
+              className="px-8 py-4 rounded-xl bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 whitespace-nowrap shrink-0 font-['Montserrat',sans-serif]"
+            >
+              <MapPin className="w-4 h-4 text-amber-500" />
+              <span>Abrir no Google Maps</span>
+            </a>
+          </div>
         </div>
       </section>
 

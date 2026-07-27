@@ -124,7 +124,7 @@ const FLUXO_TRABALHO = [
 
 export const Servicos: React.FC = () => {
   return (
-    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
+    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
       
       {/* ========================================================================= */}
       {/* 1. HERO INSTITUCIONAL (PADRÃO DE GRID MESTRE: max-w-[1440px] px-6 md:px-12) */}
@@ -134,14 +134,14 @@ export const Servicos: React.FC = () => {
 
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 relative z-10">
           
-          <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
+          <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500 font-['Montserrat',sans-serif]">
             <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
             <span className="text-amber-600 font-bold">Serviços & Engenharia</span>
           </nav>
 
           <div className="max-w-3xl space-y-4">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
               Soluções Integradas
             </span>
             <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
@@ -158,11 +158,11 @@ export const Servicos: React.FC = () => {
       {/* ========================================================================= */}
       {/* 2. GRID DE SERVIÇOS PRINCIPAIS                                           */}
       {/* ========================================================================= */}
-      <section className="py-24 px-6 md:px-12 bg-white border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto space-y-16">
+      <section className="py-24 bg-white border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
           
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
               Nossas Especialidades
             </span>
             <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950">
@@ -190,7 +190,7 @@ export const Servicos: React.FC = () => {
                     </p>
 
                     <div className="pt-4 border-t border-zinc-200/80 space-y-2.5">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block mb-2 font-['Montserrat',sans-serif]">
                         O que inclui:
                       </span>
                       {servico.entregaveis.map((item, idx) => (
@@ -205,7 +205,7 @@ export const Servicos: React.FC = () => {
                   <div className="pt-6">
                     <Link
                       to="/contato"
-                      className="w-full py-3 rounded-xl bg-white hover:bg-zinc-100 border border-zinc-200 text-zinc-800 hover:text-zinc-950 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-xs"
+                      className="w-full py-3 rounded-xl bg-white hover:bg-zinc-100 border border-zinc-200 text-zinc-800 hover:text-zinc-950 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-xs font-['Montserrat',sans-serif]"
                     >
                       <span>Solicitar Proposta</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -220,14 +220,14 @@ export const Servicos: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. METODOLOGIA DE EXECUÇÃO                                               */}
+      {/* 3. METODOLOGIA DE EXECUÇÃO                                                */}
       {/* ========================================================================= */}
-      <section className="py-24 px-6 md:px-12 bg-zinc-50 border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto space-y-16">
+      <section className="py-24 bg-zinc-50 border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="max-w-2xl space-y-3">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
                 Processo Estruturado
               </span>
               <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950">
@@ -246,7 +246,7 @@ export const Servicos: React.FC = () => {
                 className="bg-white border border-zinc-200 p-8 rounded-2xl relative overflow-hidden shadow-sm space-y-4"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-3xl font-black font-mono text-amber-600">
+                  <span className="text-3xl font-black font-['Inter',sans-serif] text-amber-600">
                     {etapa.passo}
                   </span>
                   <HardHat className="w-5 h-5 text-zinc-300" />
@@ -265,10 +265,10 @@ export const Servicos: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. GARANTIA & RIGOR TÉCNICO                                              */}
+      {/* 4. GARANTIA & RIGOR TÉCNICO                                               */}
       {/* ========================================================================= */}
-      <section className="py-20 px-6 md:px-12 bg-white border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto grid md:grid-cols-3 gap-8">
+      <section className="py-20 bg-white border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid md:grid-cols-3 gap-8">
           
           <div className="flex items-start gap-4 p-6 rounded-2xl bg-zinc-50 border border-zinc-200">
             <ShieldCheck className="w-8 h-8 text-amber-600 shrink-0 mt-1" />
@@ -304,40 +304,42 @@ export const Servicos: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. ÂNCORA DE CONVERSÃO / CTA                                             */}
+      {/* 5. ÂNCORA DE CONVERSÃO / CTA                                              */}
       {/* ========================================================================= */}
-      <section className="py-24 px-6 md:px-12 bg-zinc-950 text-white">
-        <div className="max-w-[1440px] mx-auto bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-8 md:p-16 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="py-24 bg-zinc-950 text-white">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+          <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-8 md:p-16 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 max-w-3xl space-y-8">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block">
-              Proposta Personalizada
-            </span>
+            <div className="relative z-10 max-w-3xl space-y-8">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block font-['Montserrat',sans-serif]">
+                Proposta Personalizada
+              </span>
 
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">
-              Precisa de um orçamento detalhado para o seu projeto?
-            </h2>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">
+                Precisa de um orçamento detalhado para o seu projeto?
+              </h2>
 
-            <p className="text-zinc-400 text-sm md:text-base font-light leading-relaxed">
-              Nossa equipe técnica realiza a análise preliminar do seu projeto ou necessidade e envia uma proposta comercial transparente em poucos dias.
-            </p>
+              <p className="text-zinc-400 text-sm md:text-base font-light leading-relaxed">
+                Nossa equipe técnica realiza a análise preliminar do seu projeto ou necessidade e envia uma proposta comercial transparente em poucos dias.
+              </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
-              <Link
-                to="/contato"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-xl shadow-amber-500/10 flex items-center justify-center gap-2 hover:-translate-y-0.5"
-              >
-                <span>Solicitar Cotação de Serviço</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+                <Link
+                  to="/contato"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-xl shadow-amber-500/10 flex items-center justify-center gap-2 hover:-translate-y-0.5 font-['Montserrat',sans-serif]"
+                >
+                  <span>Solicitar Cotação de Serviço</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
 
-              <Link
-                to="/setores"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2"
-              >
-                <span>Conhecer Nossos Setores</span>
-              </Link>
+                <Link
+                  to="/setores-e-obras"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 font-['Montserrat',sans-serif]"
+                >
+                  <span>Conhecer Nossos Setores</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

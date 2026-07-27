@@ -8,14 +8,16 @@ import { QuemSomos } from './pages/QuemSomos';
 import { Setores } from './pages/Setores';
 import { Servicos } from './pages/Servicos';
 import { Contato } from './pages/Contato';
+import { BlogIndex } from './pages/Blog/BlogIndex';
+import { BlogPost } from './pages/Blog/BlogPost';
 
 export const App: React.FC = () => {
   return (
     <Router>
       {/* Wrapper Mestre com Light Theme Nativo (bg-white e text-zinc-900) */}
-      <div className="min-h-screen bg-white text-zinc-900 selection:bg-amber-500 selection:text-zinc-950 flex flex-col justify-between font-sans antialiased">
+      <div className="min-h-screen bg-white text-zinc-900 selection:bg-amber-500 selection:text-zinc-950 flex flex-col justify-between font-['Inter',sans-serif] antialiased">
         
-        {/* Header Dinâmico (Mutante de Fundo Transparente -> Vidro Branco no Scroll) */}
+        {/* Header Dinâmico */}
         <Header />
 
         {/* Área Principal de Conteúdo das Páginas */}
@@ -27,10 +29,15 @@ export const App: React.FC = () => {
             {/* Rota Institucional A QUATTRO / QUEM SOMOS */}
             <Route path="/quem-somos" element={<QuemSomos />} />
             
-            {/* Adicione futuras rotas aqui (ex: /setores, /servicos, /contato) */}
+            {/* Rotas de Setores, Serviços e Contato */}
             <Route path="/setores" element={<Setores />} />
+            <Route path="/setores-e-obras" element={<Setores />} />
             <Route path="/servicos" element={<Servicos />} />
             <Route path="/contato" element={<Contato />} />
+
+            {/* Rotas do Blog */}
+            <Route path="/blog" element={<BlogIndex />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
           </Routes>
         </main>
 

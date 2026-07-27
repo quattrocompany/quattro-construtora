@@ -28,32 +28,32 @@ import { saveLead } from '../services/firestoreService';
 const SETORES = [
   {
     id: '01',
-    title: 'Industrial & Logística',
-    desc: 'Construção de galpões logísticos de alta tonelagem, centros de distribuição automatizados e plantas industriais completas.',
+    title: 'Setor Industrial',
+    desc: 'Infraestrutura robusta para gigantes do mercado. Executamos galpões logísticos (como a megaobra da Amazon), parques fabris e instalações complexas. Unimos agilidade, tecnologia e engenharia de precisão para garantir que a sua operação atinja a eficiência máxima no prazo combinado.',
     icon: Factory,
     image: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1600',
     slug: 'industrial'
   },
   {
     id: '02',
-    title: 'Setor Hospitalar',
-    desc: 'Engenharia de precisão para centros cirúrgicos, laboratórios de alta complexidade e áreas de contaminação controlada.',
-    icon: Stethoscope,
-    image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1600',
-    slug: 'hospitalar'
+    title: 'Setor Corporativo',
+    desc: 'Sedes empresariais e escritórios que refletem a força da sua marca. Construímos espaços inteligentes, sustentáveis e sofisticados, desenhados sob medida para impulsionar a produtividade, a inovação e o bem-estar da sua equipe.',
+    icon: Building2,
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1600',
+    slug: 'corporativo'
   },
   {
     id: '03',
-    title: 'Manutenção & Facilities',
-    desc: 'Gestão contínua de infraestrutura predial, automação de ativos e manutenção industrial preventiva e corretiva.',
-    icon: Wrench,
-    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1600',
-    slug: 'manutencao'
+    title: 'Setor Farmacêutico',
+    desc: 'Neste setor, não há margem para erros. Temos a expertise necessária para executar projetos de altíssima complexidade, garantindo o rigoroso cumprimento das normas técnicas, regulatórias e sanitárias. Desenvolvemos ambientes controlados e infraestrutura de ponta com excelência laboratorial.',
+    icon: Stethoscope,
+    image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1600',
+    slug: 'farmaceutico'
   },
   {
     id: '04',
-    title: 'Residencial',
-    desc: 'Incorporação imobiliária de alto padrão, residências de grande porte e edifícios projetados com arquitetura autoral.',
+    title: 'Setor Residencial',
+    desc: 'Do projeto à fundação, até o acabamento de altíssimo nível. Edificamos empreendimentos e clubes residenciais (como o Lumini) concebidos para proporcionar conforto, segurança e exclusividade. Nós não construímos apenas prédios; entregamos um novo padrão de vida.',
     icon: Building2,
     image: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1600',
     slug: 'residencial'
@@ -61,17 +61,17 @@ const SETORES = [
 ];
 
 const PORTFOLIO_ITEMS = [
-  { id: 1, title: 'Galpão Logístico Amazon', tag: 'Industrial', img: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1000' },
-  { id: 2, title: 'Lumini Clube Residencial 2', tag: 'Residencial', img: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1000' },
-  { id: 3, title: 'Complexo Hospitalar São Lucas', tag: 'Hospitalar', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000' },
-  { id: 4, title: 'Centro de Distribuição Mercado Livre', tag: 'Industrial', img: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1000' },
+  { id: 1, title: 'Galpão Logístico Amazon', tag: 'Galpão Logístico', img: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1000' },
+  { id: 2, title: 'CIS Tamboré', tag: 'Corporativo', img: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1000' },
+  { id: 3, title: 'Lumini Clube Residencial', tag: 'Residencial', img: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1000' },
+  { id: 4, title: 'Complexo Hospitalar São Lucas', tag: 'Hospitalar', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000' },
 ];
 
 const METRICAS = [
-  { num: '+15', label: 'Anos de experiência comprovada no mercado de engenharia e construção civil.' },
-  { num: '+1.000', label: 'Projetos e obras executadas com rigoroso padrão técnico em todo o Brasil.' },
-  { num: '100%', label: 'Compromisso absoluto com o cumprimento de prazos e orçamentos firmados.' },
-  { num: 'Pioneiros', label: 'No uso otimizado do método construtivo Steel Frame em escala nacional.' }
+  { num: '+15', label: 'Anos transformando grandes desafios de engenharia em realidades sólidas.' },
+  { num: '100%', label: 'Pontualidade absoluta na entrega e fidelidade aos orçamentos firmados.' },
+  { num: 'Nível A', label: 'Acreditação máxima no PBQP-H, garantindo excelência técnica e sustentabilidade.' },
+  { num: 'ALC / ISO', label: 'Certificação NBR ISO 9001:2015 com controle milimétrico do planejamento ao acabamento.' }
 ];
 
 const DIFERENCIAIS = [
@@ -130,17 +130,17 @@ export const Home: React.FC = () => {
   const SelectedSectorIcon = SETORES[activeSector].icon;
 
   return (
-    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
+    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
       
       {/* 1. HERO SLIDER */}
       <Hero />
 
       {/* 2. MANIFESTO / SOBRE A QUATTRO (CINZA 20% - bg-zinc-50) */}
-      <section className="bg-zinc-50 py-24 px-6 md:px-12 border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto grid lg:grid-cols-12 gap-12 items-center">
+      <section className="bg-zinc-50 py-24 border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-4">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block mb-2">
-              Sobre a Quattro
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block mb-2 font-['Montserrat',sans-serif]">
+              Nosso Diferencial
             </span>
             <p className="text-sm text-zinc-500 font-medium">
               Excelência e Rigor Técnico NBR
@@ -149,11 +149,14 @@ export const Home: React.FC = () => {
 
           <div className="lg:col-span-8 space-y-6">
             <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-950 leading-tight">
-              Para quem busca soluções de engenharia extraordinárias e segurança absoluta em cada fase da obra.
+              A Base Sólida para o Seu Próximo Grande Passo
             </h2>
             <div className="w-16 h-1 bg-amber-500 rounded-full" />
             <p className="text-zinc-600 text-sm md:text-base leading-relaxed font-normal">
-              Conduzimos todas as etapas da sua construção ou reforma com transparência total, garantindo o rigoroso cumprimento de prazos e orçamentos através do Padrão Quattro de Qualidade.
+              Com forte atuação em todo o território nacional, a Quattro Construtora é sinônimo de confiabilidade e excelência técnica. Nosso propósito é conduzir todas as etapas da sua obra ou reforma com máxima transparência, segurança e respeito aos prazos.
+            </p>
+            <p className="text-zinc-600 text-sm md:text-base leading-relaxed font-normal">
+              Nosso trabalho é fundamentado no rigoroso Padrão Quattro de Qualidade. Contamos com uma equipe de profissionais continuamente treinados, garantindo fidelidade absoluta ao projeto original. É por essa união de engenharia de precisão e preço competitivo que consolidamos parcerias duradouras com gigantes globais e escritórios de arquitetura renomados.
             </p>
           </div>
         </div>
@@ -165,8 +168,8 @@ export const Home: React.FC = () => {
           
           <div className="mb-12 flex items-end justify-between">
             <div>
-              <span className="text-amber-600 text-xs font-bold uppercase tracking-[0.3em] block mb-2">
-                Portfólio em Destaque
+              <span className="text-amber-600 text-xs font-bold uppercase tracking-[0.3em] block mb-2 font-['Montserrat',sans-serif]">
+                Destaques
               </span>
               <h3 className="text-2xl md:text-4xl font-extrabold text-zinc-950">Projetos Recentes</h3>
             </div>
@@ -175,14 +178,14 @@ export const Home: React.FC = () => {
             <div className="flex gap-3">
               <button 
                 onClick={handlePrevPortfolio}
-                className="p-3 rounded-full border border-zinc-300 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer"
+                className="p-3 rounded-full border border-zinc-300 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer font-['Montserrat',sans-serif]"
                 aria-label="Projeto Anterior"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button 
                 onClick={handleNextPortfolio}
-                className="p-3 rounded-full border border-zinc-300 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer"
+                className="p-3 rounded-full border border-zinc-300 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer font-['Montserrat',sans-serif]"
                 aria-label="Próximo Projeto"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -197,23 +200,37 @@ export const Home: React.FC = () => {
                 key={item.id} 
                 className="group relative rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200 aspect-[4/5] hover:border-amber-500/50 transition-all duration-500 shadow-md hover:shadow-xl"
               >
+                {/* Faixinha de Tag no topo esquerdo (Montserrat Font) */}
+                <div className="absolute top-4 left-4 z-10 bg-amber-500 text-zinc-950 text-[10px] font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full font-['Montserrat',sans-serif] shadow-md border border-amber-400">
+                  {item.tag}
+                </div>
+
                 <img 
                   src={item.img} 
                   alt={item.title} 
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                 />
-                {/* Overlay escuro mantido apenas na imagem para legibilidade do texto contrastante */}
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-zinc-950/20 to-transparent p-6 md:p-8 flex flex-col justify-end">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-950 bg-amber-500 px-3 py-1 rounded-full w-fit mb-3 font-mono shadow-sm">
-                    {item.tag}
-                  </span>
+                
+                {/* Overlay escuro mantido na imagem para legibilidade */}
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/85 via-zinc-950/20 to-transparent p-6 md:p-8 flex flex-col justify-end">
                   <h4 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors leading-snug">
                     {item.title}
                   </h4>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Botão direcionado para a seção de portfólio em Setores e Obras */}
+          <div className="mt-14 text-center">
+            <Link
+              to="/setores#portfolio"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-zinc-950 hover:bg-zinc-900 text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300 border border-zinc-800 hover:border-amber-500 shadow-lg hover:shadow-amber-500/10 group cursor-pointer font-['Montserrat',sans-serif]"
+            >
+              <span>Confira nosso portfólio completo</span>
+              <ArrowRight className="w-4 h-4 text-amber-500 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
         </div>
@@ -227,14 +244,14 @@ export const Home: React.FC = () => {
           {/* Lado Esquerdo: Lista Tabulada */}
           <div className="lg:col-span-6 space-y-6">
             <div>
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block mb-2">
-                Soluções Completas
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block mb-2 font-['Montserrat',sans-serif]">
+                Setores de Atuação
               </span>
               <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950">
-                Setores de Atuação
+                Especialistas Onde a Precisão é Fundamental
               </h2>
               <p className="text-zinc-600 text-sm font-normal max-w-md mt-2">
-                Selecione um setor para explorar nossa capacidade técnica e engenharia especializada.
+                Nossa inteligência construtiva atende aos mais altos níveis de exigência em quatro frentes principais:
               </p>
             </div>
 
@@ -249,14 +266,14 @@ export const Home: React.FC = () => {
                     aria-controls={`sector-panel-${setor.id}`}
                     onClick={() => setActiveSector(index)}
                     onMouseEnter={() => setActiveSector(index)}
-                    className={`w-full text-left p-4 md:p-5 rounded-2xl transition-all duration-300 flex items-center justify-between border cursor-pointer ${
+                    className={`w-full text-left p-4 md:p-5 rounded-2xl transition-all duration-300 flex items-center justify-between border cursor-pointer font-['Montserrat',sans-serif] ${
                       isSelected
                         ? 'bg-white border-amber-500 text-amber-600 shadow-lg scale-[1.01]'
                         : 'bg-white/60 border-zinc-200 text-zinc-600 hover:text-zinc-950 hover:border-zinc-300 hover:bg-white'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <span className="text-xs font-bold tracking-widest opacity-60 font-mono text-zinc-500">{setor.id}</span>
+                      <span className="text-xs font-bold tracking-widest opacity-60 font-['Inter',sans-serif] text-zinc-500">{setor.id}</span>
                       <span className="text-base md:text-lg font-bold">{setor.title}</span>
                     </div>
                     <ArrowRight className={`w-4 h-4 transition-transform duration-300 ${isSelected ? 'translate-x-1 text-amber-500' : 'opacity-0'}`} />
@@ -293,7 +310,7 @@ export const Home: React.FC = () => {
 
               <Link 
                 to={`/setores/${SETORES[activeSector].slug}`}
-                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-600 hover:text-amber-700 transition-colors pt-2 group"
+                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-600 hover:text-amber-700 transition-colors pt-2 group font-['Montserrat',sans-serif]"
               >
                 <span>Conhecer Detalhes do Setor</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -305,21 +322,21 @@ export const Home: React.FC = () => {
       </section>
 
       {/* 5. MÉTRICAS E NÚMEROS (BRANCO PURO) */}
-      <section className="bg-white text-zinc-900 py-24 px-6 md:px-12 border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto space-y-16">
+      <section className="bg-white text-zinc-900 py-24 border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
           <div className="max-w-3xl space-y-4">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
               Performance Comprovada
             </span>
             <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950 leading-tight">
-              Uma trajetória pautada por compromisso, pontualidade e inovação tecnológica.
+              Obras que Falam por Nós
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {METRICAS.map((metric, idx) => (
               <div key={idx} className="border-t border-zinc-200 pt-6 space-y-2">
-                <span className="text-4xl md:text-5xl font-black text-amber-600 block font-sans">
+                <span className="text-4xl md:text-5xl font-black text-amber-600 block font-['Inter',sans-serif]">
                   {metric.num}
                 </span>
                 <p className="text-xs text-zinc-600 leading-relaxed font-medium">
@@ -336,7 +353,7 @@ export const Home: React.FC = () => {
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
           
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
               Diferenciais Exclusivos
             </span>
             <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950">
@@ -367,11 +384,11 @@ export const Home: React.FC = () => {
 
       {/* 7. FORMULÁRIO DE ATENDIMENTO (ÂNCORA ESCURA - bg-zinc-950) */}
       <section id="contato" className="py-28 bg-zinc-950">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="bg-zinc-900 border border-zinc-800 p-8 md:p-12 rounded-3xl shadow-2xl space-y-8">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+          <div className="max-w-4xl mx-auto bg-zinc-900 border border-zinc-800 p-8 md:p-12 rounded-3xl shadow-2xl space-y-8">
             
             <div className="text-center space-y-3">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block">Atendimento Direto</span>
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block font-['Montserrat',sans-serif]">Atendimento Direto</span>
               <h2 className="text-3xl font-extrabold text-white">Fale com a Construtora</h2>
               <p className="text-xs text-zinc-400 max-w-lg mx-auto leading-relaxed">
                 Entre em contato com nossos engenheiros e consultores para tirar dúvidas técnicas ou solicitar uma cotação personalizada.
@@ -397,7 +414,7 @@ export const Home: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setFormSuccess(false)}
-                  className="px-6 py-2.5 bg-zinc-950 border border-zinc-800 text-zinc-300 hover:text-white rounded-full text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                  className="px-6 py-2.5 bg-zinc-950 border border-zinc-800 text-zinc-300 hover:text-white rounded-full text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer font-['Montserrat',sans-serif]"
                 >
                   Enviar Nova Mensagem
                 </button>
@@ -406,7 +423,7 @@ export const Home: React.FC = () => {
               /* Formulário em Dark Mode para contraste de fechamento */
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="nome" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
+                  <label htmlFor="nome" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2 font-['Montserrat',sans-serif]">
                     Nome Completo
                   </label>
                   <input
@@ -416,13 +433,13 @@ export const Home: React.FC = () => {
                     placeholder="Seu Nome ou Razão Social"
                     value={formData.nome}
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors font-['Inter',sans-serif]"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="email" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
+                    <label htmlFor="email" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2 font-['Montserrat',sans-serif]">
                       E-mail Profissional
                     </label>
                     <input
@@ -432,12 +449,12 @@ export const Home: React.FC = () => {
                       placeholder="seu@empresa.com.br"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors font-['Inter',sans-serif]"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="telefone" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
+                    <label htmlFor="telefone" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2 font-['Montserrat',sans-serif]">
                       Telefone / WhatsApp
                     </label>
                     <input
@@ -447,13 +464,13 @@ export const Home: React.FC = () => {
                       placeholder="(11) 90000-0000"
                       value={formData.telefone}
                       onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors"
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors font-['Inter',sans-serif]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="mensagem" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2">
+                  <label htmlFor="mensagem" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2 font-['Montserrat',sans-serif]">
                     Detalhes do Projeto
                   </label>
                   <textarea
@@ -463,14 +480,14 @@ export const Home: React.FC = () => {
                     placeholder="Descreva a localização, metragem ou necessidade da sua obra..."
                     value={formData.mensagem}
                     onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors resize-none font-['Inter',sans-serif]"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-xl text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-xl shadow-amber-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold rounded-xl text-xs uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-xl shadow-amber-500/10 disabled:opacity-50 disabled:cursor-not-allowed font-['Montserrat',sans-serif]"
                 >
                   {formLoading ? (
                     <span>Processando envio...</span>
@@ -487,8 +504,6 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* NOTA DE ARQUITETURA: O <Footer /> é mantido centralizado na raiz do App.tsx */}
 
     </div>
   );

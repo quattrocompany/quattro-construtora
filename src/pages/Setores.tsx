@@ -158,7 +158,7 @@ export const Setores: React.FC = () => {
     : PORTFOLIO_OBRAS.filter((obra) => obra.categoriaSlug === categoriaAtiva);
 
   return (
-    <div className="w-full bg-white text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
+    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
       
       {/* ========================================================================= */}
       {/* 1. HERO INSTITUCIONAL (PADRÃO DE GRID MESTRE: max-w-[1440px] px-6 md:px-12) */}
@@ -167,14 +167,14 @@ export const Setores: React.FC = () => {
         <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
 
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 relative z-10">
-          <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">
+          <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500 font-['Montserrat',sans-serif]">
             <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
             <span className="text-amber-600 font-bold">Setores & Obras</span>
           </nav>
 
           <div className="max-w-3xl space-y-4">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
               Capacidade Técnica Multisetorial
             </span>
             <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
@@ -190,11 +190,11 @@ export const Setores: React.FC = () => {
       {/* ========================================================================= */}
       {/* 2. VISÃO GERAL DOS SETORES                                               */}
       {/* ========================================================================= */}
-      <section className="py-24 px-6 md:px-12 bg-white border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto space-y-16">
+      <section className="py-24 bg-white border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
           
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
               Especialidades
             </span>
             <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950">
@@ -241,7 +241,7 @@ export const Setores: React.FC = () => {
                   <div className="pt-4 border-t border-zinc-200">
                     <button
                       onClick={() => setCategoriaAtiva(setor.slug)}
-                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-600 hover:text-amber-700 transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-600 hover:text-amber-700 transition-colors cursor-pointer font-['Montserrat',sans-serif]"
                     >
                       <span>Ver Obras Deste Setor</span>
                       <ArrowRight className="w-4 h-4" />
@@ -256,14 +256,14 @@ export const Setores: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. GALERIA & FILTRO DE OBRAS                                             */}
+      {/* 3. GALERIA & FILTRO DE OBRAS (PORTFÓLIO)                                 */}
       {/* ========================================================================= */}
-      <section className="py-24 px-6 md:px-12 bg-zinc-50 border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto space-y-12">
+      <section id="portfolio" className="py-24 bg-zinc-50 border-b border-zinc-200">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
           
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div className="space-y-3">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
                 Acervo Executivo
               </span>
               <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950">
@@ -281,7 +281,7 @@ export const Setores: React.FC = () => {
                     role="tab"
                     aria-selected={isActive}
                     onClick={() => setCategoriaAtiva(cat.id)}
-                    className={`px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-300 cursor-pointer ${
+                    className={`px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-300 cursor-pointer font-['Montserrat',sans-serif] ${
                       isActive
                         ? 'bg-amber-500 text-zinc-950 shadow-md scale-105'
                         : 'bg-white border border-zinc-200 text-zinc-600 hover:border-zinc-300 hover:text-zinc-950'
@@ -310,13 +310,13 @@ export const Setores: React.FC = () => {
                     />
                     
                     <div className="absolute top-4 left-4 flex gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-widest bg-zinc-950/80 text-amber-500 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30">
+                      <span className="text-[10px] font-bold uppercase tracking-widest bg-zinc-950/80 text-amber-500 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30 font-['Montserrat',sans-serif]">
                         {obra.categoriaLabel}
                       </span>
                     </div>
 
                     <div className="absolute top-4 right-4">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full backdrop-blur-md ${
+                      <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full backdrop-blur-md font-['Montserrat',sans-serif] ${
                         obra.status === 'Concluído' 
                           ? 'bg-emerald-500/90 text-white' 
                           : 'bg-amber-500/90 text-zinc-950'
@@ -340,7 +340,7 @@ export const Setores: React.FC = () => {
                         <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                         <span>{obra.local}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 font-mono">
+                      <div className="flex items-center gap-1.5 font-['Inter',sans-serif]">
                         <Maximize2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                         <span>{obra.area}</span>
                       </div>
@@ -351,7 +351,7 @@ export const Setores: React.FC = () => {
                 <div className="px-6 md:px-8 pb-6">
                   <Link
                     to="/contato"
-                    className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-800 hover:text-zinc-950 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-800 hover:text-zinc-950 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 font-['Montserrat',sans-serif]"
                   >
                     <span>Solicitar Projeto Similar</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -365,40 +365,42 @@ export const Setores: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. ÂNCORA DE CONVERSÃO / CTA                                             */}
+      {/* 4. ÂNCORA DE CONVERSÃO / CTA                                              */}
       {/* ========================================================================= */}
-      <section className="py-24 px-6 md:px-12 bg-zinc-950 text-white">
-        <div className="max-w-[1440px] mx-auto bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-8 md:p-16 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="py-24 bg-zinc-950 text-white">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+          <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-8 md:p-16 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 max-w-3xl space-y-8">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block">
-              Consultoria Técnica de Engenharia
-            </span>
+            <div className="relative z-10 max-w-3xl space-y-8">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block font-['Montserrat',sans-serif]">
+                Consultoria Técnica de Engenharia
+              </span>
 
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">
-              Sua obra precisa de rigor técnico e previsibilidade absoluta?
-            </h2>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">
+                Sua obra precisa de rigor técnico e previsibilidade absoluta?
+              </h2>
 
-            <p className="text-zinc-400 text-sm md:text-base font-light leading-relaxed">
-              Fale diretamente com os engenheiros responsáveis da Quattro Construtora. Analisamos o escopo do seu projeto e desenvolvemos a proposta ideal para o seu setor.
-            </p>
+              <p className="text-zinc-400 text-sm md:text-base font-light leading-relaxed">
+                Fale diretamente com os engenheiros responsáveis da Quattro Construtora. Analisamos o escopo do seu projeto e desenvolvemos a proposta ideal para o seu setor.
+              </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
-              <Link
-                to="/contato"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-xl shadow-amber-500/10 flex items-center justify-center gap-2 hover:-translate-y-0.5"
-              >
-                <span>Falar com um Engenheiro</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+                <Link
+                  to="/contato"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-xl shadow-amber-500/10 flex items-center justify-center gap-2 hover:-translate-y-0.5 font-['Montserrat',sans-serif]"
+                >
+                  <span>Falar com um Engenheiro</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
 
-              <Link
-                to="/servicos"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2"
-              >
-                <span>Ver Serviços & Engenharia</span>
-              </Link>
+                <Link
+                  to="/servicos"
+                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 font-['Montserrat',sans-serif]"
+                >
+                  <span>Ver Serviços & Engenharia</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
