@@ -50,7 +50,7 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             <Link to="/" className="inline-block group focus:outline-none">
               <img 
-                src="/logo/Logo_Quattro Construtora_cut.svg" 
+                src="/logo/logo_quattro-construtora.svg" 
                 alt="Quattro Construtora" 
                 className="h-16 md:h-20 lg:h-22 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />

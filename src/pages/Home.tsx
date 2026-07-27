@@ -15,7 +15,6 @@ import {
   Building2,
   Factory,
   Stethoscope,
-  Wrench,
   AlertCircle
 } from 'lucide-react';
 import { Hero } from '../components/Hero';
@@ -144,7 +143,7 @@ export const Home: React.FC = () => {
       } else {
         setFormError('Não foi possível enviar sua solicitação. Por favor, tente novamente.');
       }
-    } catch (err) {
+    } catch {
       setFormError('Falha na comunicação com o servidor. Verifique sua conexão.');
     } finally {
       setFormLoading(false);
@@ -154,13 +153,13 @@ export const Home: React.FC = () => {
   const SelectedSectorIcon = SETORES[activeSector].icon;
 
   return (
-    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
+    <div className="w-full text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
       
       {/* 1. HERO SLIDER */}
       <Hero />
 
-      {/* 2. MANIFESTO / SOBRE A QUATTRO (CINZA 20% - bg-zinc-50) */}
-      <section className="bg-zinc-50 py-24 border-b border-zinc-200">
+      {/* 2. MANIFESTO / SOBRE A QUATTRO */}
+      <section className="bg-zinc-50/90 backdrop-blur-xs py-24 border-b border-zinc-200/80">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-4">
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block mb-2 font-['Montserrat',sans-serif]">
@@ -186,8 +185,8 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. SHOWCASE / PORTFÓLIO DESTAQUES (BRANCO PURO) */}
-      <section className="py-24 bg-white border-b border-zinc-200">
+      {/* 3. SHOWCASE / PORTFÓLIO DESTAQUES */}
+      <section className="py-24 bg-white/90 backdrop-blur-xs border-b border-zinc-200/80">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12">
           
           <div className="mb-12 flex items-end justify-between">
@@ -202,14 +201,14 @@ export const Home: React.FC = () => {
             <div className="flex gap-3">
               <button 
                 onClick={handlePrevPortfolio}
-                className="p-3 rounded-full border border-zinc-300 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer font-['Montserrat',sans-serif]"
+                className="p-3 rounded-full border border-zinc-300 bg-white/80 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer font-['Montserrat',sans-serif]"
                 aria-label="Projeto Anterior"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button 
                 onClick={handleNextPortfolio}
-                className="p-3 rounded-full border border-zinc-300 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer font-['Montserrat',sans-serif]"
+                className="p-3 rounded-full border border-zinc-300 bg-white/80 text-zinc-600 hover:text-amber-600 hover:border-amber-500 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer font-['Montserrat',sans-serif]"
                 aria-label="Próximo Projeto"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -224,7 +223,7 @@ export const Home: React.FC = () => {
                 key={item.id} 
                 className="group relative rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200 aspect-[4/5] hover:border-amber-500/50 transition-all duration-500 shadow-md hover:shadow-xl"
               >
-                {/* Faixinha de Tag no topo esquerdo (Montserrat Font) */}
+                {/* Faixinha de Tag no topo esquerdo */}
                 <div className="absolute top-4 left-4 z-10 bg-amber-500 text-zinc-950 text-[10px] font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full font-['Montserrat',sans-serif] shadow-md border border-amber-400">
                   {item.tag}
                 </div>
@@ -236,7 +235,7 @@ export const Home: React.FC = () => {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                 />
                 
-                {/* Overlay escuro mantido na imagem para legibilidade */}
+                {/* Overlay escuro na imagem */}
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/85 via-zinc-950/20 to-transparent p-6 md:p-8 flex flex-col justify-end">
                   <h4 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors leading-snug">
                     {item.title}
@@ -260,8 +259,8 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. SETORES DE ATUAÇÃO INTERATIVOS (CINZA 20% - bg-zinc-50) */}
-      <section className="relative py-28 bg-zinc-50 overflow-hidden border-b border-zinc-200">
+      {/* 4. SETORES DE ATUAÇÃO INTERATIVOS */}
+      <section className="relative py-28 bg-zinc-50/90 backdrop-blur-xs overflow-hidden border-b border-zinc-200/80">
         
         <div className="relative max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 items-center z-10">
           
@@ -307,12 +306,12 @@ export const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Lado Direito: Card de Detalhes do Setor (Light Glassmorphism) */}
+          {/* Lado Direito: Card de Detalhes do Setor */}
           <div className="lg:col-span-6">
             <div 
               id={`sector-panel-${SETORES[activeSector].id}`}
               role="tabpanel"
-              className="bg-white border border-zinc-200 p-8 md:p-10 rounded-3xl shadow-xl space-y-6 animate-in fade-in duration-300"
+              className="bg-white/95 border border-zinc-200 p-8 md:p-10 rounded-3xl shadow-xl space-y-6 animate-in fade-in duration-300"
             >
               <div className="p-3.5 bg-zinc-100 rounded-2xl border border-zinc-200 w-fit">
                 <SelectedSectorIcon className="w-6 h-6 text-amber-500" />
@@ -333,7 +332,7 @@ export const Home: React.FC = () => {
               </div>
 
               <Link 
-                to={`/setores/${SETORES[activeSector].slug}`}
+                to={`/setores`}
                 className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-600 hover:text-amber-700 transition-colors pt-2 group font-['Montserrat',sans-serif]"
               >
                 <span>Conhecer Detalhes do Setor</span>
@@ -345,8 +344,8 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. MÉTRICAS E NÚMEROS (BRANCO PURO) */}
-      <section className="bg-white text-zinc-900 py-24 border-b border-zinc-200">
+      {/* 5. MÉTRICAS E NÚMEROS */}
+      <section className="bg-white/90 backdrop-blur-xs text-zinc-900 py-24 border-b border-zinc-200/80">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
           <div className="max-w-3xl space-y-4">
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
@@ -372,8 +371,8 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. DIFERENCIAIS EXCLUSIVOS (CINZA 20% - bg-zinc-50) */}
-      <section className="py-28 bg-zinc-50 border-b border-zinc-200">
+      {/* 6. DIFERENCIAIS EXCLUSIVOS */}
+      <section className="py-28 bg-zinc-50/90 backdrop-blur-xs border-b border-zinc-200/80">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
           
           <div className="text-center max-w-3xl mx-auto space-y-3">
@@ -391,7 +390,7 @@ export const Home: React.FC = () => {
               return (
                 <div 
                   key={idx} 
-                  className="bg-white border border-zinc-200 p-8 rounded-3xl hover:border-amber-500/50 hover:shadow-xl transition-all duration-300 space-y-4 shadow-sm group"
+                  className="bg-white/95 border border-zinc-200 p-8 rounded-3xl hover:border-amber-500/50 hover:shadow-xl transition-all duration-300 space-y-4 shadow-sm group"
                 >
                   <div className="p-3 bg-zinc-100 rounded-2xl border border-zinc-200 w-fit group-hover:border-amber-500/30 transition-colors">
                     <CardIcon className="w-6 h-6 text-amber-500" />
@@ -406,10 +405,10 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 7. FORMULÁRIO DE ATENDIMENTO (ÂNCORA ESCURA - bg-zinc-950) */}
-      <section id="contato" className="py-28 bg-zinc-950">
+      {/* 7. FORMULÁRIO DE ATENDIMENTO */}
+      <section id="contato" className="py-28 bg-zinc-950/95 backdrop-blur-xs">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-          <div className="max-w-4xl mx-auto bg-zinc-900 border border-zinc-800 p-8 md:p-12 rounded-3xl shadow-2xl space-y-8">
+          <div className="max-w-4xl mx-auto bg-zinc-900/90 border border-zinc-800 p-8 md:p-12 rounded-3xl shadow-2xl space-y-8">
             
             <div className="text-center space-y-3">
               <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-500 block font-['Montserrat',sans-serif]">Atendimento Direto</span>
@@ -444,7 +443,6 @@ export const Home: React.FC = () => {
                 </button>
               </div>
             ) : (
-              /* Formulário em Dark Mode para contraste de fechamento */
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="nome" className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-2 font-['Montserrat',sans-serif]">
@@ -457,7 +455,7 @@ export const Home: React.FC = () => {
                     placeholder="Seu Nome ou Razão Social"
                     value={formData.nome}
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors font-['Inter',sans-serif]"
+                    className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors font-['Inter',sans-serif]"
                   />
                 </div>
 
@@ -473,7 +471,7 @@ export const Home: React.FC = () => {
                       placeholder="seu@empresa.com.br"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors font-['Inter',sans-serif]"
+                      className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors font-['Inter',sans-serif]"
                     />
                   </div>
 
@@ -488,7 +486,7 @@ export const Home: React.FC = () => {
                       placeholder="(11) 90000-0000"
                       value={formData.telefone}
                       onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors font-['Inter',sans-serif]"
+                      className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors font-['Inter',sans-serif]"
                     />
                   </div>
                 </div>
@@ -504,7 +502,7 @@ export const Home: React.FC = () => {
                     placeholder="Descreva a localização, metragem ou necessidade da sua obra..."
                     value={formData.mensagem}
                     onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors resize-none font-['Inter',sans-serif]"
+                    className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-4 py-3.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 transition-colors resize-none font-['Inter',sans-serif]"
                   />
                 </div>
 

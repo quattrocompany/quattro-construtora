@@ -16,9 +16,17 @@ import { Termos } from './pages/Termos';
 export const App: React.FC = () => {
   return (
     <Router>
-      <div className="min-h-screen bg-white text-zinc-900 selection:bg-amber-500 selection:text-zinc-950 flex flex-col justify-between font-['Inter',sans-serif] antialiased">
+      <div className="relative min-h-screen w-full bg-white text-zinc-900 selection:bg-amber-500 selection:text-zinc-950 flex flex-col justify-between font-['Inter',sans-serif] antialiased overflow-x-hidden">
+        
+        {/* MARCA D'ÁGUA EM CAMADA SUPERIOR */}
+        <div 
+          className="absolute inset-0 w-full h-full z-30 pointer-events-none opacity-35 bg-cover bg-center bg-no-repeat mix-blend-multiply"
+          style={{ backgroundImage: "url('/img/bg_construtora1.jpg')" }}
+        />
+
         <Header />
-        <main className="grow">
+        
+        <main className="grow relative z-10 w-full">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/quem-somos" element={<QuemSomos />} />
@@ -32,6 +40,7 @@ export const App: React.FC = () => {
             <Route path="/blog/:slug" element={<BlogPost />} />
           </Routes>
         </main>
+
         <Footer />
       </div>
     </Router>
