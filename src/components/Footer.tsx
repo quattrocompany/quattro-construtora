@@ -46,11 +46,11 @@ export const Footer: React.FC = () => {
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-20 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
           
-          {/* COLUNA 1: LOGO COMPLETO E EXPANDIDO (SEM MOLDURA CINZA) */}
+          {/* COLUNA 1: LOGO COMPLETO E EXPANDIDO */}
           <div className="lg:col-span-2 space-y-6">
             <Link to="/" className="inline-block group focus:outline-none">
               <img 
-                src="/logo/logo_quattro-construtora.svg" 
+                src="/logo/Logo_Quattro Construtora_cut.svg" 
                 alt="Quattro Construtora" 
                 className="h-16 md:h-20 lg:h-22 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
@@ -98,10 +98,10 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-white">Setores</h4>
             <ul className="space-y-2.5 text-xs font-light">
-              <li><Link to="/setores/industrial" className="hover:text-amber-500 transition-colors">Industrial & Logística</Link></li>
-              <li><Link to="/setores/hospitalar" className="hover:text-amber-500 transition-colors">Setor Hospitalar</Link></li>
-              <li><Link to="/setores/manutencao" className="hover:text-amber-500 transition-colors">Manutenção & Facilities</Link></li>
-              <li><Link to="/setores/residencial" className="hover:text-amber-500 transition-colors">Residencial de Luxo</Link></li>
+              <li><Link to="/setores" className="hover:text-amber-500 transition-colors">Industrial & Logística</Link></li>
+              <li><Link to="/setores" className="hover:text-amber-500 transition-colors">Setor Hospitalar</Link></li>
+              <li><Link to="/setores" className="hover:text-amber-500 transition-colors">Manutenção & Facilities</Link></li>
+              <li><Link to="/setores" className="hover:text-amber-500 transition-colors">Residencial de Luxo</Link></li>
             </ul>
           </div>
 
@@ -138,7 +138,7 @@ export const Footer: React.FC = () => {
               </a>
 
               <a 
-                href="https://portal.quattroconstrutora.com.br/colaborador" 
+                href="https://conecta.quattrocompany.com.br" 
                 target="_blank" 
                 rel="noreferrer"
                 className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] text-zinc-300 font-semibold hover:border-amber-500/40 transition-all"

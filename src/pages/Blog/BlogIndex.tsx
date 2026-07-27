@@ -2,21 +2,26 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  ChevronRight, 
   ArrowRight, 
   Calendar, 
   Clock, 
   Search, 
   User, 
-  Tag, 
   BookOpen, 
   Send,
   Filter
 } from 'lucide-react';
+import { Hero } from '../../components/Hero';
 
 // ============================================================================
 // DADOS ESTÁTICOS DO BLOG E CATEGORIAS
 // ============================================================================
+
+const HERO_BLOG_IMAGES = [
+  'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=2000',
+  'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000',
+  'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2000'
+];
 
 const CATEGORIAS_BLOG = [
   { id: 'todos', label: 'Todos os Artigos' },
@@ -131,39 +136,24 @@ export const BlogIndex: React.FC = () => {
   });
 
   return (
-    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
+    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
       
       {/* ========================================================================= */}
-      {/* 1. HERO DO BLOG (GRID MESTRE 1440px)                                      */}
+      {/* 1. HERO COM MESMA ALTURA E FORMATO DA HOMEPAGE                             */}
       {/* ========================================================================= */}
-      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-20 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
-
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 relative z-10">
-          <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500 font-['Montserrat',sans-serif]">
-            <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
-            <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
-            <span className="text-amber-600 font-bold">Blog & Conhecimento</span>
-          </nav>
-
-          <div className="max-w-3xl space-y-4">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
-              Engenharia & Conteúdo
-            </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
-              Artigos técnicos, inovações e inteligência construtiva.
-            </h1>
-            <p className="text-zinc-600 text-base md:text-lg font-normal leading-relaxed pt-2">
-              Acompanhe as análises exclusivas dos nossos engenheiros sobre tendências do setor, normas técnicas, tecnologia BIM e gestão de grandes obras.
-            </p>
-          </div>
-        </div>
-      </section>
+      <Hero 
+        eyebrow="Engenharia & Conteúdo"
+        title="Artigos técnicos, inovações e inteligência construtiva."
+        subtitle="Acompanhe as análises exclusivas dos nossos engenheiros sobre tendências do setor, normas técnicas, tecnologia BIM e gestão de grandes obras."
+        images={HERO_BLOG_IMAGES}
+        ctaText="Explorar Artigos"
+        ctaLink="#destaque"
+      />
 
       {/* ========================================================================= */}
-      {/* 2. ARTIGO EM DESTAQUE PRINCIPAL                                            */}
+      {/* 2. ARTIGO EM DESTAQUE PRINCIPAL                                           */}
       {/* ========================================================================= */}
-      <section className="py-16 bg-white border-b border-zinc-200">
+      <section id="destaque" className="py-16 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12">
           
           <div className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl grid lg:grid-cols-12 items-center group">

@@ -75,12 +75,36 @@ const METRICAS = [
 ];
 
 const DIFERENCIAIS = [
-  { icon: ShieldCheck, title: 'Flexibilidade Técnica', desc: 'Ajustes ágeis de escopo executivo sem comprometer a data final de entrega do projeto.' },
-  { icon: Globe, title: 'Atuação Nacional', desc: 'Capacidade de mobilização logística e equipes de engenharia de campo em todo o país.' },
-  { icon: Clock, title: 'Pontualidade Britânica', desc: 'Rigoroso controle de cronograma físico-financeiro com relatórios periódicos em tempo real.' },
-  { icon: Award, title: 'Equipe Qualificada', desc: 'Engenheiros e mestres de obra em contínuo treinamento de conformidade NBR e NR-35.' },
-  { icon: Layers, title: 'Soluções One-Stop', desc: 'Atendimento integral: da fundação principal até o retrofit, manutenção e facilities.' },
-  { icon: CheckCircle2, title: 'Regularização Completa', desc: 'Expertise no gerenciamento de licenças, habite-se, AVCB, CLCB e aprovações de órgãos públicos.' }
+  { 
+    icon: ShieldCheck, 
+    title: 'Engenharia Consultiva e Flexibilidade', 
+    desc: 'Capacidade de adaptação e ajustes ágeis de escopo executivo em campo, mantendo a integridade técnica e sem comprometer a data final do projeto.' 
+  },
+  { 
+    icon: Globe, 
+    title: 'Mobilização e Escala Nacional', 
+    desc: 'Prontidão logística para estruturar canteiros de obra e mobilizar equipes de engenharia qualificadas em qualquer região do Brasil.' 
+  },
+  { 
+    icon: Clock, 
+    title: 'Previsibilidade Executiva', 
+    desc: 'Acompanhamento físico-financeiro milimétrico, com mitigação contínua de riscos e relatórios de progresso transparentes e em tempo real.' 
+  },
+  { 
+    icon: Award, 
+    title: 'Corpo Técnico Especializado', 
+    desc: 'Engenheiros e mestres de obras com treinamento contínuo nas normas NBR, rígidos protocolos de SST (Segurança do Trabalho) e Padrão Quattro de Qualidade.' 
+  },
+  { 
+    icon: Layers, 
+    title: 'Soluções End-to-End (Turnkey)', 
+    desc: 'Gestão integral do ciclo de vida da obra: desde a infraestrutura inicial até o retrofit, manutenção preditiva e facilidades operacionais.' 
+  },
+  { 
+    icon: CheckCircle2, 
+    title: 'Compliance & Gestão Regulatória', 
+    desc: 'Domínio completo da burocracia técnica: gerenciamento e aprovação de licenças, Habite-se, AVCB, CLCB e trâmites junto aos órgãos públicos.' 
+  }
 ];
 
 // ============================================================================
@@ -352,12 +376,12 @@ export const Home: React.FC = () => {
       <section className="py-28 bg-zinc-50 border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
           
-          <div className="text-center max-w-2xl mx-auto space-y-3">
+          <div className="text-center max-w-3xl mx-auto space-y-3">
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
-              Diferenciais Exclusivos
+              DIFERENCIAIS EXCLUSIVOS
             </span>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950">
-              Colaboramos para transformar seu projeto em uma realidade sólida.
+            <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-950 leading-tight">
+              A inteligência técnica e a disciplina operacional que garantem o sucesso da sua obra.
             </h2>
           </div>
 

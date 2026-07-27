@@ -48,9 +48,9 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
       {/* CARD DO MODAL (GLASSMORPHISM DARK) */}
       <div
         className="bg-zinc-900/95 border border-zinc-800 rounded-3xl max-w-lg w-full p-8 md:p-10 relative shadow-2xl transition-transform duration-300 scale-100 text-center animate-in zoom-in-95 overflow-hidden font-sans"
-        onClick={(e) => e.stopPropagation()} // Evita fechar ao clicar no interior do card
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Detalhe Superior Ouro (#fbb03b) */}
+        {/* Detalhe Superior Ouro */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-80" />
 
         {/* Botão Fechar [X] */}
@@ -66,16 +66,16 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
         {/* LOGO INSTITUCIONAL COMPLETO */}
         <div className="flex justify-center mb-6 pt-2">
           <img
-            src="/logo/logo_quattro-construtora.svg"
+            src="/logo/Logo_Quattro Construtora_cut.svg"
             alt="Quattro Construtora"
-            className="w-[calc(var(--spacing)*40)] h-auto object-contain"
+            className="h-10 md:h-12 w-auto object-contain"
           />
         </div>
 
         {/* Título com Quebra de Linha Balanceada */}
         <h3
           id="modal-colaborador-title"
-          className="text-zinc-200 text-base md:text-lg font-light leading-relaxed mb-8 max-w-sm mx-auto text-balance"
+          className="text-zinc-200 text-base md:text-lg font-light leading-relaxed mb-8 max-w-sm mx-auto text-balance font-['Montserrat',sans-serif]"
         >
           Caro Colaborador, selecione o portal de acesso desejado:
         </h3>
@@ -94,7 +94,7 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
               <Mail className="w-6 h-6" />
             </div>
             <div>
-              <div className="flex items-center justify-center gap-1.5 text-white group-hover:text-amber-500 font-bold text-sm uppercase tracking-wider transition-colors">
+              <div className="flex items-center justify-center gap-1.5 text-white group-hover:text-amber-500 font-bold text-sm uppercase tracking-wider transition-colors font-['Montserrat',sans-serif]">
                 <span>WEBMAIL</span>
                 <ArrowUpRight className="w-4 h-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               </div>
@@ -113,7 +113,7 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
               <Users className="w-6 h-6" />
             </div>
             <div>
-              <div className="flex items-center justify-center gap-1.5 text-white group-hover:text-amber-500 font-bold text-sm uppercase tracking-wider transition-colors">
+              <div className="flex items-center justify-center gap-1.5 text-white group-hover:text-amber-500 font-bold text-sm uppercase tracking-wider transition-colors font-['Montserrat',sans-serif]">
                 <span>Q CONECTA</span>
                 <ArrowUpRight className="w-4 h-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               </div>
@@ -127,3 +127,5 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
     </div>
   );
 };
+
+export default ModalColaborador;

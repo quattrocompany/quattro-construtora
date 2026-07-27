@@ -6,17 +6,23 @@ import {
   Stethoscope, 
   Wrench, 
   Building2, 
-  ChevronRight, 
   ArrowRight, 
   MapPin, 
   Maximize2, 
   CheckCircle2,
   Filter
 } from 'lucide-react';
+import { Hero } from '../components/Hero';
 
 // ============================================================================
 // DADOS ESTÁTICOS DE SETORES E OBRAS
 // ============================================================================
+
+const HERO_SETORES_IMAGES = [
+  'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=2000',
+  'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2000',
+  'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000'
+];
 
 const CATEGORIAS_FILTRO = [
   { id: 'todos', label: 'Todos os Setores' },
@@ -158,37 +164,22 @@ export const Setores: React.FC = () => {
     : PORTFOLIO_OBRAS.filter((obra) => obra.categoriaSlug === categoriaAtiva);
 
   return (
-    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden pt-20 md:pt-24">
+    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
       
       {/* ========================================================================= */}
-      {/* 1. HERO INSTITUCIONAL (PADRÃO DE GRID MESTRE: max-w-[1440px] px-6 md:px-12) */}
+      {/* 1. HERO COM MESMA ALTURA E FORMATO DA HOMEPAGE                             */}
       {/* ========================================================================= */}
-      <section className="bg-zinc-50 border-b border-zinc-200 py-16 md:py-20 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-amber-500/5 to-transparent pointer-events-none" />
-
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 relative z-10">
-          <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-500 font-['Montserrat',sans-serif]">
-            <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
-            <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
-            <span className="text-amber-600 font-bold">Setores & Obras</span>
-          </nav>
-
-          <div className="max-w-3xl space-y-4">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
-              Capacidade Técnica Multisetorial
-            </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold text-zinc-950 tracking-tight leading-tight">
-              Soluções de engenharia sob medida para cada setor.
-            </h1>
-            <p className="text-zinc-600 text-base md:text-lg font-normal leading-relaxed pt-2">
-              Conheça nossas áreas de especialização técnica e navegue pelo portfólio de obras que atestam o Padrão Quattro de Qualidade em todo o país.
-            </p>
-          </div>
-        </div>
-      </section>
+      <Hero 
+        eyebrow="Capacidade Técnica Multisetorial"
+        title="Soluções de engenharia sob medida para cada setor."
+        subtitle="Conheça nossas áreas de especialização técnica e navegue pelo portfólio de obras que atestam o Padrão Quattro de Qualidade em todo o país."
+        images={HERO_SETORES_IMAGES}
+        ctaText="Falar com Engenheiro"
+        ctaLink="/contato"
+      />
 
       {/* ========================================================================= */}
-      {/* 2. VISÃO GERAL DOS SETORES                                               */}
+      {/* 2. VISÃO GERAL DOS SETORES                                                */}
       {/* ========================================================================= */}
       <section className="py-24 bg-white border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-16">
@@ -256,7 +247,7 @@ export const Setores: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 3. GALERIA & FILTRO DE OBRAS (PORTFÓLIO)                                 */}
+      {/* 3. GALERIA & FILTRO DE OBRAS (PORTFÓLIO)                                  */}
       {/* ========================================================================= */}
       <section id="portfolio" className="py-24 bg-zinc-50 border-b border-zinc-200">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
