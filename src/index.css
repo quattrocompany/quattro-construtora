@@ -18,8 +18,8 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: #09090b;
-  color: #52525b;
+  background-color: #f8f9f6;
+  color: #18181b;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -29,23 +29,60 @@ body {
   color: #09090b;
 }
 
-.bg-white,
-div.bg-white,
-section.bg-white {
-  background-color: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(2px);
+/* ==========================================================================
+   HEADER / MENU
+   ========================================================================== */
+
+/* Barra mais fina (h-14 / h-16) */
+.header-bar {
+  @apply fixed top-0 left-0 w-full z-50 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800/80 h-14 md:h-16 transition-all duration-300;
 }
 
-.bg-zinc-50,
-div.bg-zinc-50,
-section.bg-zinc-50 {
-  background-color: rgba(244, 244, 245, 0.85) !important;
-  backdrop-filter: blur(2px);
+.header-container {
+  @apply max-w-[1440px] mx-auto h-full px-6 md:px-12 flex items-center justify-between relative;
 }
 
-.bg-zinc-950,
-div.bg-zinc-950,
-section.bg-zinc-950,
-footer.bg-zinc-950 {
-  background-color: rgba(9, 9, 11, 0.95) !important;
+/* Logo colado no teto e sem borda/caixa cinza */
+.logo-hanging {
+  @apply absolute top-0 left-6 md:left-12 z-50 transition-transform duration-300 hover:scale-105 block pt-1;
+}
+
+.logo-hanging img {
+  @apply h-12 md:h-20 w-auto object-contain object-top block drop-shadow-md;
+}
+
+/* Menu alinhado à direita com fonte Inter Medium */
+.nav-menu {
+  @apply hidden lg:flex items-center gap-6 xl:gap-8 ml-auto mr-8 font-sans font-medium text-[11px] xl:text-xs uppercase tracking-wider;
+}
+
+.nav-item {
+  @apply text-zinc-300 hover:text-amber-500 transition-colors py-2 relative whitespace-nowrap;
+}
+
+.nav-item.active {
+  @apply text-amber-500 font-semibold;
+}
+
+/* Botão retangular preenchendo 100% da altura, sem borda inferior */
+.btn-header-cta {
+  @apply hidden lg:flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-['Montserrat'] font-bold text-xs uppercase tracking-wider px-8 h-full transition-colors cursor-pointer shrink-0 rounded-none border-none outline-none;
+}
+
+/* ==========================================================================
+   CARDS COM RECORTE TRANSPARENTE (NOTCH REAL VIA CSS MASK)
+   ========================================================================== */
+
+.card-notched-transparent {
+  border-radius: 2rem;
+  border: none !important;
+  box-shadow: none !important;
+  position: relative;
+  /* Recorta os pixels reais do canto inferior esquerdo (135px de largura x 46px de altura) */
+  -webkit-mask-image: 
+    linear-gradient(to right, transparent 135px, #000 135px),
+    linear-gradient(to top, transparent 46px, #000 46px);
+  mask-image: 
+    linear-gradient(to right, transparent 135px, #000 135px),
+    linear-gradient(to top, transparent 46px, #000 46px);
 }
