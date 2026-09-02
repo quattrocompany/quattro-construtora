@@ -1,6 +1,6 @@
 // src/App.tsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
@@ -13,9 +13,20 @@ import { BlogPost } from './pages/Blog/BlogPost';
 import { Privacidade } from './pages/Privacidade';
 import { Termos } from './pages/Termos';
 
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 export const App: React.FC = () => {
   return (
     <Router>
+      <ScrollToTop />
       <div className="relative min-h-screen w-full bg-white text-zinc-900 selection:bg-amber-500 selection:text-zinc-950 flex flex-col justify-between font-['Inter',sans-serif] antialiased overflow-x-hidden">
         
         {/* MARCA D'ÁGUA EM CAMADA SUPERIOR */}

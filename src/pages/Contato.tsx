@@ -1,38 +1,13 @@
 // src/pages/Contato.tsx
-import React, { useState } from 'react';
-import { 
-  Send, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
-  CheckCircle2, 
-  HardHat, 
-  Building2, 
-  Briefcase, 
-  AlertCircle,
-  HelpCircle
-} from 'lucide-react';
+import React from 'react';
+import { Phone, Mail, MapPin, Clock, HelpCircle } from 'lucide-react';
 import { Hero } from '../components/Hero';
-
-// ============================================================================
-// DADOS ESTÁTICOS E CANAIS
-// ============================================================================
+import { LeadForm } from '../components/LeadForm';
 
 const HERO_CONTATO_IMAGES = [
   'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000',
   'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=2000',
   'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2000'
-];
-
-const OPCOES_ASSUNTO = [
-  { value: '', label: 'Selecione o assunto do contato...' },
-  { value: 'orcamento', label: 'Solicitação de Orçamento / Cotação de Obra' },
-  { value: 'geral', label: 'Contato Geral & Dúvidas' },
-  { value: 'vizinho_obra', label: 'Sou Vizinho de Obra (Atendimento à Comunidade)' },
-  { value: 'fornecedor', label: 'Sou Fornecedor / Parceria Comercial' },
-  { value: 'trabalhe_conosco', label: 'Trabalhe Conosco (RH / Envio de Currículo)' },
-  { value: 'imprensa', label: 'Assessoria de Imprensa & Comunicação' }
 ];
 
 const CANAIS_DIRETOS = [
@@ -53,9 +28,9 @@ const CANAIS_DIRETOS = [
   {
     icon: MapPin,
     titulo: 'Sede Administrativa',
-    info: 'Av. das Nações Unidas, 12901 - 18º Andar',
-    sub: 'Brooklin Paulista – São Paulo / SP',
-    href: 'https://maps.google.com'
+    info: 'Al. Rio Negro, 503 - Conj 907',
+    sub: 'Alphaville Industrial – Barueri / SP - CEP 06454-000',
+    href: 'https://www.google.com/maps/dir/-23.5012724,-46.8485149/Quattro+Construtora,+Al.+Rio+Negro,+503+-+Conj+907+-+Alphaville+Industrial,+Barueri+-+SP,+06454-000/@-23.5017254,-46.8509089,17z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x94ce574f51a7c4bd:0x6406a5f3e39d192b!2m2!1d-46.8486349!2d-23.5022332?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D'
   },
   {
     icon: Clock,
@@ -69,88 +44,22 @@ const CANAIS_DIRETOS = [
 const FAQS_CONTATO = [
   {
     pergunta: 'Sou vizinho de uma obra em andamento. Como relatar um imprevisto?',
-    resposta: 'Selecione a opção "Sou Vizinho de Obra" no formulário ao lado. Essa mensagem é direcionada com prioridade ALTA para o nosso engenheiro residente da unidade responsável.'
+    resposta: 'Selecione a opção "Sou Vizinho de Obra" no formulário. Essa mensagem é direcionada com prioridade ao engenheiro residente.'
   },
   {
     pergunta: 'Como cadastrar minha empresa para ser fornecedor de insumos?',
-    resposta: 'Utilize a opção "Sou Fornecedor / Parceria Comercial". Nosso departamento de suprimentos analisará suas homologações e certificações técnicas.'
+    resposta: 'Utilize a opção "Sou Fornecedor / Parceria Comercial". Nosso departamento de suprimentos analisará suas homologações técnicas.'
   },
   {
     pergunta: 'Qual o prazo médio de retorno para solicitações de cotação?',
-    resposta: 'Propostas preliminares são enviadas em até 48 horas úteis após o recebimento dos memoriais descritivos ou projetos em BIM.'
+    resposta: 'Propostas preliminares são enviadas em até 48 horas úteis após o recebimento dos memoriais descritivos ou projetos.'
   }
 ];
 
-// ============================================================================
-// COMPONENTE PRINCIPAL CONTATO
-// ============================================================================
-
 export const Contato: React.FC = () => {
-  const [formData, setFormData] = useState({
-    nome: '',
-    email: '',
-    telefone: '',
-    empresa: '',
-    assunto: '',
-    mensagem: '',
-    termoAceito: false
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    if (type === 'checkbox') {
-      const { checked } = e.target as HTMLInputElement;
-      setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage('');
-
-    if (!formData.assunto) {
-      setErrorMessage('Por favor, selecione o assunto do seu contato.');
-      return;
-    }
-
-    if (!formData.termoAceito) {
-      setErrorMessage('É necessário aceitar os termos de privacidade para continuar.');
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      setIsSuccess(true);
-      setFormData({
-        nome: '',
-        email: '',
-        telefone: '',
-        empresa: '',
-        assunto: '',
-        mensagem: '',
-        termoAceito: false
-      });
-    } catch {
-      setErrorMessage('Ocorreu um erro ao enviar sua mensagem. Tente novamente em instantes.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
-    <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif] selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
-      
-      {/* ========================================================================= */}
-      {/* 1. HERO COM MESMA ALTURA E FORMATO DA HOMEPAGE                             */}
-      {/* ========================================================================= */}
+    <div className="w-full bg-[#f8f9f6] text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
+      {/* HERO SECTION */}
       <Hero 
         eyebrow="Canais de Atendimento"
         title="Fale com a equipe técnica da Quattro."
@@ -160,235 +69,38 @@ export const Contato: React.FC = () => {
         ctaLink="#formulario"
       />
 
-      {/* ========================================================================= */}
-      {/* 2. FORMULÁRIO & CANAIS                                                    */}
-      {/* ========================================================================= */}
-      <section id="formulario" className="py-24 bg-white border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      {/* SEÇÃO PRINCIPAL DE CONTATO E FORMULÁRIO */}
+      <section id="formulario" className="py-20 bg-[#f8f9f6] border-t border-zinc-200/80">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
           
-          <div className="lg:col-span-7 bg-zinc-50 border border-zinc-200 p-8 md:p-12 rounded-3xl shadow-sm space-y-8">
-            
-            <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
-                Envie uma Mensagem
-              </span>
-              <h2 className="text-2xl md:text-4xl font-extrabold text-zinc-950">
-                Formulário de Atendimento
-              </h2>
-              <p className="text-xs md:text-sm text-zinc-600 font-normal">
-                Preencha os campos abaixo para direcionarmos sua mensagem ao departamento responsável.
-              </p>
-            </div>
-
-            {isSuccess ? (
-              <div className="bg-emerald-50 border border-emerald-200 p-8 rounded-2xl text-center space-y-4 animate-in fade-in">
-                <div className="w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-emerald-950">Mensagem Enviada com Sucesso!</h3>
-                <p className="text-xs md:text-sm text-emerald-800 leading-relaxed font-normal max-w-md mx-auto">
-                  Agradecemos seu contato. Nossa equipe técnica analisará sua mensagem e retornará em breve.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setIsSuccess(false)}
-                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer font-['Montserrat',sans-serif]"
-                >
-                  Enviar Nova Mensagem
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                
-                {errorMessage && (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-800 text-xs font-medium">
-                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-                    <span>{errorMessage}</span>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label htmlFor="nome" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
-                      Nome Completo *
-                    </label>
-                    <input
-                      type="text"
-                      id="nome"
-                      name="nome"
-                      required
-                      value={formData.nome}
-                      onChange={handleChange}
-                      placeholder="Ex: Roberto Silva"
-                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-['Inter',sans-serif]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
-                      E-mail Corporativo *
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="roberto@empresa.com.br"
-                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-['Inter',sans-serif]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label htmlFor="telefone" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
-                      Telefone / WhatsApp *
-                    </label>
-                    <input
-                      type="tel"
-                      id="telefone"
-                      name="telefone"
-                      required
-                      value={formData.telefone}
-                      onChange={handleChange}
-                      placeholder="(11) 99999-9999"
-                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-['Inter',sans-serif]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="empresa" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
-                      Empresa / Razão Social
-                    </label>
-                    <input
-                      type="text"
-                      id="empresa"
-                      name="empresa"
-                      value={formData.empresa}
-                      onChange={handleChange}
-                      placeholder="Nome da sua empresa (opcional)"
-                      className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-['Inter',sans-serif]"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="assunto" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
-                    Qual o motivo do seu contato? *
-                  </label>
-                  <select
-                    id="assunto"
-                    name="assunto"
-                    required
-                    value={formData.assunto}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all cursor-pointer font-['Inter',sans-serif]"
-                  >
-                    {OPCOES_ASSUNTO.map((opcao) => (
-                      <option key={opcao.value} value={opcao.value} disabled={opcao.value === ''}>
-                        {opcao.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {formData.assunto === 'vizinho_obra' && (
-                  <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-3 text-amber-900 text-xs font-medium animate-in fade-in">
-                    <HardHat className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-bold block text-amber-950 mb-0.5 font-['Montserrat',sans-serif]">Atendimento Comunitário Prioritário</span>
-                      Mensagens de vizinhos de obras ativas são roteadas diretamente para a equipe de engenharia residente do canteiro.
-                    </div>
-                  </div>
-                )}
-
-                {formData.assunto === 'fornecedor' && (
-                  <div className="p-4 bg-zinc-200/60 border border-zinc-300 rounded-xl flex items-start gap-3 text-zinc-800 text-xs font-medium animate-in fade-in">
-                    <Building2 className="w-5 h-5 text-zinc-600 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-bold block text-zinc-950 mb-0.5 font-['Montserrat',sans-serif]">Homologação de Fornecedores</span>
-                      Informe no campo de mensagem seus principais produtos/serviços e regiões de atendimento para cadastro no nosso setor de compras.
-                    </div>
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <label htmlFor="mensagem" className="text-xs font-bold uppercase tracking-wider text-zinc-700 block font-['Montserrat',sans-serif]">
-                    Sua Mensagem *
-                  </label>
-                  <textarea
-                    id="mensagem"
-                    name="mensagem"
-                    required
-                    rows={5}
-                    value={formData.mensagem}
-                    onChange={handleChange}
-                    placeholder="Descreva detalhes sobre sua solicitação, projeto, obra ou dúvida..."
-                    className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all resize-none font-['Inter',sans-serif]"
-                  />
-                </div>
-
-                <div className="flex items-start gap-3 pt-2">
-                  <input
-                    type="checkbox"
-                    id="termoAceito"
-                    name="termoAceito"
-                    checked={formData.termoAceito}
-                    onChange={handleChange}
-                    className="mt-1 h-4 w-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
-                  />
-                  <label htmlFor="termoAceito" className="text-xs text-zinc-600 font-normal leading-relaxed cursor-pointer font-['Inter',sans-serif]">
-                    Concordo com o tratamento dos meus dados pessoais para a finalidade de atendimento do contato, em conformidade com a Lei Geral de Proteção de Dados (LGPD).
-                  </label>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-4 px-8 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-widest transition-all duration-300 shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 font-['Montserrat',sans-serif]"
-                >
-                  {isSubmitting ? (
-                    <span>Enviando mensagem...</span>
-                  ) : (
-                    <>
-                      <span>Enviar Mensagem</span>
-                      <Send className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-
-              </form>
-            )}
-
+          {/* FORMULÁRIO ESQUERDA */}
+          <div className="lg:col-span-7 flex flex-col h-full">
+            <LeadForm showSubjectSelect={true} />
           </div>
 
-          <div className="lg:col-span-5 space-y-8">
-            
-            <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
-                Atendimento Direto
-              </span>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-zinc-950">
+          {/* CANAIS DIREITA (ALINHADO PERFEITAMENTE) */}
+          <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
+            <div className="space-y-1.5">
+              <span className="approach-badge">Atendimento Direto</span>
+              <h2 className="approach-title">
                 Outras Formas de Contato
               </h2>
             </div>
 
-            <div className="space-y-4">
+            <div className="flex-1 flex flex-col justify-between gap-3 pt-2">
               {CANAIS_DIRETOS.map((canal, idx) => {
                 const CanalIcon = canal.icon;
                 return (
                   <div 
                     key={idx}
-                    className="p-6 bg-zinc-50 border border-zinc-200 rounded-2xl flex items-start gap-4 hover:border-amber-500/40 transition-colors shadow-xs"
+                    className="p-5 bg-white border border-zinc-200/80 rounded-2xl flex items-center gap-4 hover:border-amber-500/40 transition-colors shadow-xs flex-1"
                   >
-                    <div className="p-3 bg-white border border-zinc-200 rounded-xl text-amber-600 shrink-0">
+                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-600 shrink-0">
                       <CanalIcon className="w-5 h-5" />
                     </div>
 
-                    <div className="space-y-1">
-                      <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 block font-['Montserrat',sans-serif]">
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block font-['Montserrat']">
                         {canal.titulo}
                       </span>
                       
@@ -397,17 +109,17 @@ export const Contato: React.FC = () => {
                           href={canal.href} 
                           target="_blank" 
                           rel="noreferrer"
-                          className="text-sm md:text-base font-bold text-zinc-950 hover:text-amber-600 transition-colors block font-['Inter',sans-serif]"
+                          className="text-xs md:text-sm font-bold text-zinc-950 hover:text-amber-600 transition-colors block font-sans leading-snug"
                         >
                           {canal.info}
                         </a>
                       ) : (
-                        <p className="text-sm md:text-base font-bold text-zinc-950 font-['Inter',sans-serif]">
+                        <p className="text-xs md:text-sm font-bold text-zinc-950 font-sans leading-snug">
                           {canal.info}
                         </p>
                       )}
 
-                      <p className="text-xs text-zinc-500 font-normal font-['Inter',sans-serif]">
+                      <p className="text-[11px] text-zinc-500 font-sans">
                         {canal.sub}
                       </p>
                     </div>
@@ -415,55 +127,35 @@ export const Contato: React.FC = () => {
                 );
               })}
             </div>
-
-            <div className="p-6 bg-zinc-950 text-white rounded-2xl border border-zinc-800 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-500">
-                  <Briefcase className="w-5 h-5" />
-                </div>
-                <h3 className="text-base font-bold text-white font-['Montserrat',sans-serif]">Carreiras & Trabalhe Conosco</h3>
-              </div>
-              <p className="text-xs text-zinc-400 font-light leading-relaxed font-['Inter',sans-serif]">
-                Quer fazer parte do nosso time de engenheiros, mestres de obra e projetistas? Selecione a opção "Trabalhe Conosco" no formulário ou envie seu currículo diretamente para nosso banco de talentos.
-              </p>
-            </div>
-
           </div>
 
         </div>
       </section>
 
-      {/* ========================================================================= */}
-      {/* 3. PERGUNTAS FREQUENTES                                                   */}
-      {/* ========================================================================= */}
-      <section className="py-20 bg-zinc-50 border-b border-zinc-200">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
-          
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-amber-600 block font-['Montserrat',sans-serif]">
-              Esclarecimentos Rápidos
-            </span>
-            <h2 className="text-2xl md:text-4xl font-extrabold text-zinc-950">
+      {/* PERGUNTAS FREQUENTES */}
+      <section className="py-20 bg-white border-t border-zinc-200/80">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-10">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <span className="approach-badge">ESCLARECIMENTOS RÁPIDOS</span>
+            <h2 className="approach-title">
               Dúvidas Frequentes sobre Atendimento
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {FAQS_CONTATO.map((faq, idx) => (
-              <div key={idx} className="bg-white border border-zinc-200 p-8 rounded-2xl space-y-3 shadow-xs">
-                <div className="flex items-center gap-2 text-amber-600 font-['Montserrat',sans-serif]">
-                  <HelpCircle className="w-5 h-5 shrink-0" />
-                  <span className="text-xs font-bold uppercase tracking-wider">Dúvida Frequente</span>
+              <div key={idx} className="bg-[#f8f9f6] border border-zinc-200/80 p-6 md:p-7 rounded-2xl space-y-2 shadow-xs">
+                <div className="flex items-center gap-2 text-amber-600 font-['Montserrat']">
+                  <HelpCircle className="w-4 h-4 shrink-0" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Dúvida Frequente</span>
                 </div>
-                <h3 className="text-base font-bold text-zinc-950 leading-snug">{faq.pergunta}</h3>
-                <p className="text-xs text-zinc-600 leading-relaxed font-normal">{faq.resposta}</p>
+                <h3 className="text-sm font-bold text-zinc-950 font-['Montserrat'] leading-snug">{faq.pergunta}</h3>
+                <p className="text-xs text-zinc-600 font-sans leading-relaxed">{faq.resposta}</p>
               </div>
             ))}
           </div>
-
         </div>
       </section>
-
     </div>
   );
 };

@@ -33,56 +33,360 @@ body {
    HEADER / MENU
    ========================================================================== */
 
-/* Barra mais fina (h-14 / h-16) */
+.top-bar {
+  @apply relative z-10 w-full bg-white text-zinc-900 text-[11px] font-medium py-2.5 border-none font-['Montserrat'];
+}
+
 .header-bar {
-  @apply fixed top-0 left-0 w-full z-50 bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800/80 h-14 md:h-16 transition-all duration-300;
+  @apply relative z-0 w-full bg-zinc-100/95 backdrop-blur-md border-b border-zinc-200/80 h-12 transition-all duration-300 font-['Montserrat'];
+}
+
+.header-bar.scrolled {
+  @apply bg-zinc-100/95 backdrop-blur-lg shadow-sm border-zinc-300/60;
 }
 
 .header-container {
   @apply max-w-[1440px] mx-auto h-full px-6 md:px-12 flex items-center justify-between relative;
 }
 
-/* Logo colado no teto e sem borda/caixa cinza */
 .logo-hanging {
-  @apply absolute top-0 left-6 md:left-12 z-50 transition-transform duration-300 hover:scale-105 block pt-1;
+  @apply flex items-start h-full relative z-20 transition-transform duration-300 hover:scale-105 pt-0 mt-0;
 }
 
 .logo-hanging img {
-  @apply h-12 md:h-20 w-auto object-contain object-top block drop-shadow-md;
+  @apply h-18 md:h-24 w-auto object-contain object-top block drop-shadow-sm;
 }
 
-/* Menu alinhado à direita com fonte Inter Medium */
 .nav-menu {
-  @apply hidden lg:flex items-center gap-6 xl:gap-8 ml-auto mr-8 font-sans font-medium text-[11px] xl:text-xs uppercase tracking-wider;
+  @apply hidden lg:flex items-center gap-6 xl:gap-8 ml-auto mr-8 font-['Montserrat'] font-medium text-[11px] uppercase tracking-wider h-12;
 }
 
 .nav-item {
-  @apply text-zinc-300 hover:text-amber-500 transition-colors py-2 relative whitespace-nowrap;
+  @apply text-zinc-900 hover:text-amber-500 transition-colors py-2 relative whitespace-nowrap;
 }
 
 .nav-item.active {
-  @apply text-amber-500 font-semibold;
+  @apply text-amber-500 font-bold;
 }
 
-/* Botão retangular preenchendo 100% da altura, sem borda inferior */
 .btn-header-cta {
-  @apply hidden lg:flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-['Montserrat'] font-bold text-xs uppercase tracking-wider px-8 h-full transition-colors cursor-pointer shrink-0 rounded-none border-none outline-none;
+  @apply hidden lg:flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-['Montserrat'] font-bold text-xs uppercase tracking-wider px-8 transition-colors cursor-pointer shrink-0 rounded-none border-none outline-none shadow-none -mr-6 md:-mr-12 relative z-10 h-[calc(100%+1px)] -mb-px;
+}
+
+.mobile-dropdown-glass {
+  @apply fixed inset-0 z-40 lg:hidden transition-all duration-300 flex flex-col justify-between p-8 pt-28 bg-zinc-100/95 backdrop-blur-xl font-['Montserrat'];
 }
 
 /* ==========================================================================
-   CARDS COM RECORTE TRANSPARENTE (NOTCH REAL VIA CSS MASK)
+   PADRONIZAÇÃO UNIFICADA DE TIPOGRAFIA E BADGES
    ========================================================================== */
 
-.card-notched-transparent {
-  border-radius: 2rem;
-  border: none !important;
-  box-shadow: none !important;
-  position: relative;
-  /* Recorta os pixels reais do canto inferior esquerdo (135px de largura x 46px de altura) */
-  -webkit-mask-image: 
-    linear-gradient(to right, transparent 135px, #000 135px),
-    linear-gradient(to top, transparent 46px, #000 46px);
-  mask-image: 
-    linear-gradient(to right, transparent 135px, #000 135px),
-    linear-gradient(to top, transparent 46px, #000 46px);
+.approach-badge,
+.about-mosaic-badge,
+.sectors-badge,
+.contact-badge {
+  @apply inline-block bg-amber-500 text-zinc-950 text-[10px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-md w-fit font-['Montserrat'];
+}
+
+.approach-title,
+.about-mosaic-title,
+.sectors-title,
+.contact-title {
+  @apply text-2xl sm:text-3xl md:text-4xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight;
+}
+
+.approach-description,
+.about-mosaic-text,
+.sectors-description,
+.contact-description {
+  @apply text-zinc-600 text-sm md:text-base font-normal leading-relaxed font-sans max-w-lg;
+}
+
+/* ==========================================================================
+   APPROACH SECTION
+   ========================================================================== */
+
+.approach-section {
+  @apply py-16 max-w-[1440px] mx-auto px-6 md:px-12 bg-[#f8f9f6];
+}
+
+.approach-header {
+  @apply grid lg:grid-cols-12 gap-6 lg:gap-12 items-end mb-10;
+}
+
+.approach-header > div:first-child {
+  @apply lg:col-span-6 space-y-2.5;
+}
+
+.approach-header > div:last-child {
+  @apply lg:col-span-6;
+}
+
+.approach-grid {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-8;
+}
+
+.approach-card {
+  @apply relative rounded-[2rem] rounded-bl-none p-6 md:p-7 min-h-[260px] flex flex-col justify-start border-none shadow-none;
+}
+
+.approach-card-white {
+  @apply bg-white text-zinc-950;
+}
+
+.approach-card-amber {
+  @apply bg-amber-500 text-zinc-950;
+}
+
+.approach-card-dark {
+  @apply bg-zinc-950 text-white;
+}
+
+.approach-card-content {
+  @apply space-y-3 mb-12;
+}
+
+.approach-icon-box {
+  @apply w-11 h-11 rounded-2xl flex items-center justify-center;
+}
+
+.approach-icon-box-white {
+  @apply bg-zinc-100 border border-zinc-200 text-zinc-800;
+}
+
+.approach-icon-box-amber {
+  @apply bg-zinc-950/10 border border-zinc-950/20 text-zinc-950;
+}
+
+.approach-icon-box-dark {
+  @apply bg-zinc-900 border border-zinc-800 text-amber-500;
+}
+
+.approach-card-title {
+  @apply text-lg font-bold font-['Montserrat'] leading-snug;
+}
+
+.approach-card-text {
+  @apply text-xs md:text-sm leading-relaxed font-sans;
+}
+
+.approach-notch-wrapper {
+  @apply absolute -bottom-px -left-px z-10 flex items-end;
+}
+
+.approach-notch-box {
+  @apply relative bg-[#f8f9f6] p-1.5 rounded-tr-2xl;
+}
+
+.approach-notch-svg-top {
+  @apply absolute -top-4 left-0 w-4 h-4 text-[#f8f9f6] pointer-events-none block;
+}
+
+.approach-notch-svg-right {
+  @apply absolute bottom-0 -right-4 w-4 h-4 text-[#f8f9f6] pointer-events-none block;
+}
+
+.approach-btn {
+  @apply inline-flex items-center gap-2 text-xs font-bold px-5 py-2.5 rounded-xl transition-colors font-['Montserrat'];
+}
+
+.approach-btn-white {
+  @apply bg-zinc-100 hover:bg-zinc-200 text-zinc-900;
+}
+
+.approach-btn-amber {
+  @apply bg-amber-400 hover:bg-amber-300 text-zinc-950;
+}
+
+.approach-btn-dark {
+  @apply bg-zinc-900 hover:bg-zinc-800 text-amber-500 border border-zinc-800;
+}
+
+/* ==========================================================================
+   ABOUT MOSAIC SECTION
+   ========================================================================== */
+
+.about-mosaic-section {
+  @apply relative py-20 bg-cover bg-center border-y border-zinc-200/80 font-['Montserrat'] overflow-hidden;
+  background-image: url('/img/bg_construtora1.jpg');
+}
+
+.about-mosaic-overlay {
+  @apply absolute inset-0 bg-white/92 backdrop-blur-xs z-0;
+}
+
+.about-mosaic-container {
+  @apply relative z-10 max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-12 items-center;
+}
+
+.about-mosaic-left {
+  @apply lg:col-span-6 grid grid-cols-12 gap-4 items-stretch;
+}
+
+.about-mosaic-top-img {
+  @apply col-span-12 rounded-2xl overflow-hidden border border-zinc-200/80 h-[260px] shadow-sm;
+}
+
+.about-mosaic-stat-card {
+  @apply col-span-5 bg-amber-500 rounded-2xl p-6 flex flex-col justify-between text-zinc-950 shadow-sm min-h-[160px];
+}
+
+.about-mosaic-bottom-img {
+  @apply col-span-7 rounded-2xl overflow-hidden border border-zinc-200/80 h-[160px] shadow-sm;
+}
+
+.about-mosaic-right {
+  @apply lg:col-span-6 space-y-5;
+}
+
+.about-mosaic-header-group {
+  @apply space-y-2.5;
+}
+
+.about-mosaic-actions {
+  @apply flex items-center pt-1;
+}
+
+.about-mosaic-btn {
+  @apply inline-flex items-center gap-3 bg-zinc-950 text-white px-7 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-zinc-800 transition-colors shadow-md;
+}
+
+.about-mosaic-seals-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-zinc-200/80;
+}
+
+.about-mosaic-seal-card {
+  @apply bg-white/90 backdrop-blur-xs p-4 rounded-2xl border border-zinc-200/80 flex flex-col justify-between space-y-3 shadow-xs hover:border-amber-500/40 transition-colors;
+}
+
+.about-seal-img-wrapper {
+  @apply flex items-center justify-center bg-white p-2 rounded-xl border border-zinc-100 shadow-2xs h-16 w-full;
+}
+
+.about-seal-img {
+  @apply h-full w-auto object-contain;
+}
+
+/* ==========================================================================
+   SECTORS SECTION
+   ========================================================================== */
+
+.sectors-section {
+  @apply py-20 max-w-[1440px] mx-auto px-6 md:px-12 font-['Montserrat'];
+}
+
+.sectors-header {
+  @apply grid lg:grid-cols-12 gap-6 lg:gap-12 items-end mb-12;
+}
+
+.sectors-header > div:first-child {
+  @apply lg:col-span-6 space-y-2.5;
+}
+
+.sectors-header > div:last-child {
+  @apply lg:col-span-6;
+}
+
+.sectors-grid {
+  @apply grid lg:grid-cols-12 gap-8 items-stretch;
+}
+
+.sectors-nav {
+  @apply lg:col-span-5 flex flex-col justify-start gap-2.5;
+}
+
+.sectors-item-btn {
+  @apply w-full text-left p-3.5 md:p-4 rounded-2xl transition-all duration-300 flex items-center justify-between border cursor-pointer;
+}
+
+.sectors-item-btn-active {
+  @apply bg-zinc-950 text-white border-zinc-900 shadow-xl;
+}
+
+.sectors-item-btn-inactive {
+  @apply bg-white text-zinc-800 border-zinc-200/80 hover:bg-zinc-50 hover:border-zinc-300;
+}
+
+.sectors-icon-box {
+  @apply w-9 h-9 rounded-xl flex items-center justify-center transition-colors shrink-0;
+}
+
+.sectors-icon-box-active {
+  @apply bg-amber-500 text-zinc-950;
+}
+
+.sectors-icon-box-inactive {
+  @apply bg-zinc-100 text-zinc-600;
+}
+
+.sectors-preview-card {
+  @apply lg:col-span-7 relative min-h-[420px] rounded-3xl overflow-hidden border border-zinc-200/80 shadow-lg flex flex-col justify-end bg-zinc-950;
+}
+
+.sectors-btn-cta {
+  @apply inline-flex items-center gap-2 bg-white hover:bg-amber-500 text-zinc-950 px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors font-['Montserrat'] shadow-md;
+}
+
+/* ==========================================================================
+   METRICS SECTION
+   ========================================================================== */
+
+.metrics-section {
+  @apply relative py-16 md:py-20 border-y border-zinc-800/80 font-['Montserrat'] overflow-hidden text-white w-full;
+  background-image: url('/img/BG_QuattroConstrutora_Site_Black.jpg');
+  background-position: center bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.metrics-overlay {
+  @apply absolute inset-0 bg-zinc-950/65 backdrop-blur-xs z-0;
+}
+
+.metrics-container {
+  @apply relative z-10 max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+}
+
+.metrics-card {
+  @apply relative bg-zinc-900/35 hover:bg-zinc-900/60 border border-white/10 hover:border-amber-500/50 rounded-2xl p-6 md:p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-amber-500/10 flex flex-col justify-between overflow-hidden backdrop-blur-md min-h-[250px];
+}
+
+.metrics-num {
+  @apply text-2xl sm:text-3xl md:text-3xl font-black text-amber-500 leading-tight tracking-tight font-['Montserrat'] block;
+}
+
+.metrics-card-title {
+  @apply text-xs font-bold text-zinc-200 uppercase tracking-wider font-['Montserrat'];
+}
+
+.metrics-card-label {
+  @apply text-xs text-zinc-300 font-sans leading-relaxed;
+}
+
+/* ==========================================================================
+   CONTACT / CTA SECTION (CLEAN CINZA 3% #f8f9f6)
+   ========================================================================== */
+
+.contact-section {
+  @apply py-20 bg-[#f8f9f6] border-t border-zinc-200/80 font-['Montserrat'] overflow-hidden text-zinc-900 w-full;
+}
+
+.contact-container {
+  @apply max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-10 items-start;
+}
+
+.contact-info-col {
+  @apply lg:col-span-5 space-y-6;
+}
+
+.contact-form-col {
+  @apply lg:col-span-7;
+}
+
+.contact-input {
+  @apply w-full bg-[#f8f9f6] border border-zinc-200 focus:border-amber-500 text-zinc-900 placeholder-zinc-400 px-4 py-3.5 rounded-xl text-xs font-sans outline-none transition-colors;
+}
+
+.contact-btn-submit {
+  @apply w-full inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-['Montserrat'] font-bold text-xs uppercase tracking-wider py-4 px-8 rounded-xl transition-colors cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed;
 }
