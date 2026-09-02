@@ -6,7 +6,7 @@ import { LeadForm } from './LeadForm';
 export const Contact_Home: React.FC = () => {
   return (
     <section id="contato" className="contact-section">
-      <div className="contact-container">
+      <div className="contact-container !items-center">
         <div className="contact-info-col">
           <div className="space-y-3">
             <span className="contact-badge">FALE CONOSCO</span>
@@ -55,7 +55,7 @@ export const Contact_Home: React.FC = () => {
                   rel="noreferrer"
                   className="text-sm font-bold text-zinc-950 hover:text-amber-600 transition-colors block font-sans"
                 >
-                  Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial, Barueri - SP, 06454-000
+                  Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial - Barueri/SP
                 </a>
               </div>
             </div>

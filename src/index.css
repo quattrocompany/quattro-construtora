@@ -34,7 +34,7 @@ body {
    ========================================================================== */
 
 .top-bar {
-  @apply relative z-10 w-full bg-white text-zinc-900 text-[11px] font-medium py-2.5 border-none font-['Montserrat'];
+  @apply relative z-10 w-full bg-white text-zinc-900 text-xs font-medium py-2.5 border-none font-['Montserrat'];
 }
 
 .header-bar {
@@ -58,7 +58,7 @@ body {
 }
 
 .nav-menu {
-  @apply hidden lg:flex items-center gap-6 xl:gap-8 ml-auto mr-8 font-['Montserrat'] font-medium text-[11px] uppercase tracking-wider h-12;
+  @apply hidden lg:flex items-center gap-6 xl:gap-8 ml-auto mr-8 font-['Montserrat'] font-medium text-xs uppercase tracking-wider h-12;
 }
 
 .nav-item {
@@ -69,8 +69,9 @@ body {
   @apply text-amber-500 font-bold;
 }
 
+/* Atualização correspondente no src/index.css */
 .btn-header-cta {
-  @apply hidden lg:flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-['Montserrat'] font-bold text-xs uppercase tracking-wider px-8 transition-colors cursor-pointer shrink-0 rounded-none border-none outline-none shadow-none -mr-6 md:-mr-12 relative z-10 h-[calc(100%+1px)] -mb-px;
+  @apply hidden lg:inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-['Montserrat'] font-bold text-xs uppercase tracking-wider px-6 transition-colors cursor-pointer shrink-0 border-none outline-none h-12 shadow-none rounded-none;
 }
 
 .mobile-dropdown-glass {
@@ -85,7 +86,7 @@ body {
 .about-mosaic-badge,
 .sectors-badge,
 .contact-badge {
-  @apply inline-block bg-amber-500 text-zinc-950 text-[10px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-md w-fit font-['Montserrat'];
+  @apply inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat'];
 }
 
 .approach-title,
@@ -360,11 +361,11 @@ body {
 }
 
 .metrics-card-label {
-  @apply text-xs text-zinc-300 font-sans leading-relaxed;
+  @apply text-xs md:text-sm text-zinc-300 font-sans leading-relaxed;
 }
 
 /* ==========================================================================
-   CONTACT / CTA SECTION (CLEAN CINZA 3% #f8f9f6)
+   CONTACT / CTA SECTION
    ========================================================================== */
 
 .contact-section {
@@ -384,9 +385,57 @@ body {
 }
 
 .contact-input {
-  @apply w-full bg-[#f8f9f6] border border-zinc-200 focus:border-amber-500 text-zinc-900 placeholder-zinc-400 px-4 py-3.5 rounded-xl text-xs font-sans outline-none transition-colors;
+  @apply w-full bg-[#f8f9f6] border border-zinc-200 focus:border-amber-500 text-zinc-900 placeholder-zinc-400 px-4 py-3.5 rounded-xl text-xs md:text-sm font-sans outline-none transition-colors;
 }
 
 .contact-btn-submit {
-  @apply w-full inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-['Montserrat'] font-bold text-xs uppercase tracking-wider py-4 px-8 rounded-xl transition-colors cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply w-full inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-['Montserrat'] font-bold text-xs md:text-sm uppercase tracking-wider py-4 px-8 rounded-xl transition-colors cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+.footer-section {
+  @apply bg-zinc-950 text-zinc-400 font-sans border-t border-zinc-900 relative overflow-hidden pt-20 pb-8;
+}
+
+.footer-watermark {
+  @apply absolute -bottom-10 right-0 opacity-5 pointer-events-none select-none text-right font-bold text-[180px] tracking-tighter text-white leading-none;
+}
+
+.footer-container {
+  @apply max-w-[1440px] mx-auto px-6 md:px-12 relative z-10;
+}
+
+.footer-col-title {
+  @apply text-xs font-bold uppercase tracking-[0.2em] text-white font-['Montserrat'];
+}
+
+.footer-text {
+  @apply text-xs md:text-sm text-zinc-400 font-sans leading-relaxed;
+}
+
+.footer-list {
+  @apply space-y-3 text-xs md:text-sm font-sans;
+}
+
+.footer-link {
+  @apply text-zinc-400 hover:text-amber-500 transition-colors block;
+}
+
+.footer-social-link {
+  @apply p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-amber-500 hover:border-amber-500/40 transition-colors;
+}
+
+.footer-portal-link {
+  @apply flex items-center justify-between px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-bold font-sans text-zinc-300 hover:border-amber-500/40 hover:text-amber-500 transition-colors;
+}
+
+.footer-bottom-bar {
+  @apply pt-8 mt-10 border-t border-zinc-900 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-sans text-zinc-500 uppercase tracking-wider;
+}
+
+.footer-link-bottom {
+  @apply hover:text-amber-500 transition-colors;
 }

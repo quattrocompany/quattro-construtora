@@ -1,3 +1,4 @@
+// src/components/Header.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { 
@@ -71,7 +72,7 @@ export const Header: React.FC = () => {
             </a>
           </div>
 
-          <div className="flex items-center gap-3 ml-auto">
+          <div className="flex items-center gap-3">
             <span className="font-bold tracking-wider uppercase text-[10px] text-zinc-900">
               Siga nossas redes sociais —
             </span>
@@ -109,7 +110,7 @@ export const Header: React.FC = () => {
       </div>
 
       {/* 2. BARRA DE NAVEGAÇÃO PRINCIPAL */}
-      <div className={`header-bar relative !z-50 ${isScrolled ? 'scrolled' : ''}`}>
+      <div className={`header-bar relative z-50 ${isScrolled ? 'scrolled' : ''}`}>
         <div className="header-container">
           <Link to="/" className="logo-hanging" aria-label="Quattro Construtora - Home">
             <img
@@ -142,7 +143,7 @@ export const Header: React.FC = () => {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden text-zinc-900 p-2 rounded-lg bg-transparent hover:bg-zinc-200/50 border-none outline-none ml-auto transition-colors focus:outline-none relative !z-50"
+            className="lg:hidden text-zinc-900 p-2 rounded-lg bg-transparent hover:bg-zinc-200/50 border-none outline-none ml-auto transition-colors focus:outline-none relative z-50"
             aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -152,7 +153,7 @@ export const Header: React.FC = () => {
 
       {/* 3. OVERLAY MENU MOBILE / IPAD */}
       <div 
-        className={`fixed inset-0 !z-40 lg:hidden transition-all duration-300 flex flex-col justify-between pt-16 p-6 md:p-8 h-[100dvh] overflow-y-auto bg-zinc-100/90 backdrop-blur-2xl font-['Montserrat'] ${
+        className={`fixed inset-0 z-40 lg:hidden transition-all duration-300 flex flex-col justify-between pt-16 p-6 md:p-8 h-[100dvh] overflow-y-auto bg-zinc-100/90 backdrop-blur-2xl font-['Montserrat'] ${
           isMenuOpen ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none -translate-y-4'
         }`}
       >

@@ -1,4 +1,3 @@
-// src/components/Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -6,8 +5,7 @@ import {
   Phone, 
   Mail, 
   ArrowUpRight,
-  User,
-  HardHat
+  User
 } from 'lucide-react';
 
 const FacebookIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
@@ -36,15 +34,15 @@ const YoutubeIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-zinc-950 text-zinc-400 font-sans border-t border-zinc-900 relative overflow-hidden">
+    <footer className="footer-section">
       
-      {/* Marca d'água de fundo */}
-      <div className="absolute -bottom-10 right-0 opacity-5 pointer-events-none select-none text-right font-bold text-[180px] tracking-tighter text-white leading-none">
+      {/* Marca d'água de fundo ajustada para menor dimensão */}
+      <div className="footer-watermark !text-[110px] md:!text-[130px] -bottom-6">
         QUATTRO
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-20 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+      <div className="footer-container">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
           
           {/* COLUNA 1: LOGO COMPLETO E EXPANDIDO */}
           <div className="lg:col-span-2 space-y-6">
@@ -52,11 +50,11 @@ export const Footer: React.FC = () => {
               <img 
                 src="/logo/logo_quattro-construtora.svg" 
                 alt="Quattro Construtora" 
-                className="h-16 md:h-20 lg:h-22 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                className="h-16 md:h-18 lg:h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
 
-            <p className="text-xs text-zinc-400 font-light leading-relaxed max-w-sm">
+            <p className="footer-text max-w-sm">
               Engenharia de precisão, flexibilidade técnica e inovação. Construindo soluções de alta performance para o setor corporativo, industrial, hospitalar e residencial em todo o Brasil.
             </p>
 
@@ -73,7 +71,7 @@ export const Footer: React.FC = () => {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={social.label}
-                  className="p-2.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-amber-500 hover:border-amber-500/40 transition-all duration-300"
+                  className="footer-social-link"
                 >
                   {social.icon}
                 </a>
@@ -81,84 +79,78 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* COLUNA 2: Navegação */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-white">Navegação</h4>
-            <ul className="space-y-2.5 text-xs font-light">
-              <li><Link to="/" className="hover:text-amber-500 transition-colors">Home</Link></li>
-              <li><Link to="/quem-somos" className="hover:text-amber-500 transition-colors">A Construtora</Link></li>
-              <li><Link to="/setores" className="hover:text-amber-500 transition-colors">Setores de Atuação</Link></li>
-              <li><Link to="/servicos" className="hover:text-amber-500 transition-colors">Engenharia & Serviços</Link></li>
-              <li><Link to="/blog" className="hover:text-amber-500 transition-colors">Notícias & Blog</Link></li>
-              <li><Link to="/contato" className="hover:text-amber-500 transition-colors">Fale Conosco</Link></li>
+          {/* COLUNA 2: NAVEGAÇÃO */}
+          <div className="space-y-5">
+            <h4 className="footer-col-title">Navegação</h4>
+            <ul className="footer-list">
+              <li><Link to="/" className="footer-link">Home</Link></li>
+              <li><Link to="/quem-somos" className="footer-link">A Construtora</Link></li>
+              <li><Link to="/setores" className="footer-link">Setores de Atuação</Link></li>
+              <li><Link to="/servicos" className="footer-link">Engenharia & Serviços</Link></li>
+              <li><Link to="/blog" className="footer-link">Notícias & Blog</Link></li>
+              <li><Link to="/contato" className="footer-link">Fale Conosco</Link></li>
             </ul>
           </div>
 
-          {/* COLUNA 3: Setores */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-white">Setores</h4>
-            <ul className="space-y-2.5 text-xs font-light">
-              <li><Link to="/setores" className="hover:text-amber-500 transition-colors">Industrial & Logística</Link></li>
-              <li><Link to="/setores" className="hover:text-amber-500 transition-colors">Setor Hospitalar</Link></li>
-              <li><Link to="/setores" className="hover:text-amber-500 transition-colors">Manutenção & Facilities</Link></li>
-              <li><Link to="/setores" className="hover:text-amber-500 transition-colors">Residencial de Luxo</Link></li>
+          {/* COLUNA 3: SETORES */}
+          <div className="space-y-5">
+            <h4 className="footer-col-title">Setores</h4>
+            <ul className="footer-list">
+              <li><Link to="/setores" className="footer-link">Industrial & Logística</Link></li>
+              <li><Link to="/setores" className="footer-link">Setor Corporativo</Link></li>
+              <li><Link to="/setores" className="footer-link">Setor Farmacêutico</Link></li>
+              <li><Link to="/setores" className="footer-link">Habitação & MCMV</Link></li>
             </ul>
           </div>
 
-          {/* COLUNA 4: Atendimento & Portais */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-white">Atendimento</h4>
-            <div className="space-y-3 text-xs font-light">
-              <div className="flex items-start gap-2.5">
+          {/* COLUNA 4: ATENDIMENTO & PORTAIS */}
+          <div className="space-y-5">
+            <h4 className="footer-col-title">Atendimento</h4>
+            <div className="footer-list">
+              <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                <span>Barueri – SP | Atendimento Nacional</span>
+                <a
+                  href="https://www.google.com/maps/dir/-23.5012724,-46.8485149/Quattro+Construtora,+Al.+Rio+Negro,+503+-+Conj+907+-+Alphaville+Industrial,+Barueri+-+SP,+06454-000/@-23.5017254,-46.8509089,17z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x94ce574f51a7c4bd:0x6406a5f3e39d192b!2m2!1d-46.8486349!2d-23.5022332?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-amber-500 transition-colors block"
+                >
+                  Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial, Barueri/SP - CEP: 06454-000
+                </a>
               </div>
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-amber-500 shrink-0" />
                 <span>+55 (11) 4003-0000</span>
               </div>
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-amber-500 shrink-0" />
                 <span>contato@quattroconstrutora.com.br</span>
               </div>
             </div>
 
-            <div className="pt-2 space-y-2">
+            <div className="pt-3">
               <a 
                 href="https://portal.quattroconstrutora.com.br/cliente" 
                 target="_blank" 
                 rel="noreferrer"
-                className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] text-amber-500 font-semibold hover:border-amber-500/40 transition-all"
+                className="footer-portal-link"
               >
                 <div className="flex items-center gap-2">
                   <User className="w-3.5 h-3.5" />
-                  <span>Portal do Cliente</span>
+                  <span className="text-amber-500">Portal do Cliente</span>
                 </div>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </a>
-
-              <a 
-                href="https://conecta.quattrocompany.com.br" 
-                target="_blank" 
-                rel="noreferrer"
-                className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] text-zinc-300 font-semibold hover:border-amber-500/40 transition-all"
-              >
-                <div className="flex items-center gap-2">
-                  <HardHat className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Portal do Colaborador</span>
-                </div>
-                <ArrowUpRight className="w-3.5 h-3.5" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-amber-500" />
               </a>
             </div>
           </div>
 
         </div>
 
-        <div className="pt-8 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-light text-zinc-500">
-          <p>© {new Date().getFullYear()} Quattro Construtora. Todos os direitos reservados.</p>
+        <div className="footer-bottom-bar">
+          <p className="normal-case">2026 © Quattro Company Construtora e Incorporadora Ltda. Todos os direitos reservados.</p>
           <div className="flex items-center gap-6">
-            <Link to="/privacidade" className="hover:text-amber-500 transition-colors">Política de Privacidade</Link>
-            <Link to="/termos" className="hover:text-amber-500 transition-colors">Termos de Uso</Link>
+            <Link to="/privacidade" className="footer-link-bottom">Política de Privacidade</Link>
+            <Link to="/termos" className="footer-link-bottom">Termos de Uso</Link>
           </div>
         </div>
 
