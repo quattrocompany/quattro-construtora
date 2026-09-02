@@ -91,15 +91,35 @@ export const Hero_Home: React.FC = () => {
 
       {/* 3. CONTEÚDO */}
       <div className="max-w-[1440px] w-full mx-auto px-6 md:px-12 relative z-20 flex flex-col justify-between min-h-[50vh]">
-        <div className="max-w-xl space-y-6 mt-8 sm:mt-12 mb-auto">
-          {/* Chamada Principal Ajustada (Aumentado e Entrelinhas Reduzido) */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.92]">
+        <div className="max-w-2xl space-y-6 mt-8 sm:mt-12 mb-auto">
+          {/* Chamada Principal Padronizada (text-2xl sm:text-4xl lg:text-5xl font-extrabold) */}
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold uppercase tracking-tight leading-[1.15]">
             ENGENHARIA <br />
-            <span className="text-amber-500">DE ALTA PERFORMANCE</span> <br />
+            <span className="inline-flex flex-col items-start my-1.5">
+              {/* Linha 2: CIVIL DE + [ALTA] */}
+              <span className="inline-flex items-center">
+                <span className="mr-3 text-white">CIVIL DE</span>
+                <span className="relative bg-amber-500 text-zinc-950 px-3.5 pt-1.5 pb-1 rounded-t-2xl leading-none font-extrabold z-10">
+                  ALTA
+                  {/* Curva SVG Fillet Côncavo Sem Rebarbas */}
+                  <svg
+                    className="absolute bottom-0 -left-4 w-4 h-4 text-amber-500 fill-current pointer-events-none"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M 16 0 V 16 H 0 A 16 16 0 0 0 16 0 Z" />
+                  </svg>
+                </span>
+              </span>
+
+              {/* Linha 3: [PERFORMANCE] */}
+              <span className="bg-amber-500 text-zinc-950 px-3.5 pt-1 pb-2 rounded-2xl leading-none font-extrabold z-0 relative -mt-px">
+                PERFORMANCE
+              </span>
+            </span> <br />
             E PRECISÃO
           </h1>
 
-          {/* Descrição Ajustada (Tamanho do Texto Aumentado) */}
+          {/* Descrição */}
           <p className="text-zinc-300 text-sm sm:text-base font-normal leading-relaxed font-sans max-w-xl">
             Executamos projetos industriais, corporativos, farmacêuticos e residenciais com rigor técnico NBR, previsibilidade orçamentária e acabamento impecável.
           </p>

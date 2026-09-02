@@ -38,7 +38,7 @@ body {
 }
 
 .header-bar {
-  @apply relative z-0 w-full bg-zinc-100/95 backdrop-blur-md border-b border-zinc-200/80 h-12 transition-all duration-300 font-['Montserrat'];
+  @apply relative z-50 w-full bg-zinc-100/95 backdrop-blur-md border-b border-zinc-200/80 h-12 transition-all duration-300 font-['Montserrat'];
 }
 
 .header-bar.scrolled {
@@ -50,7 +50,7 @@ body {
 }
 
 .logo-hanging {
-  @apply flex items-start h-full relative z-20 transition-transform duration-300 hover:scale-105 pt-0 mt-0;
+  @apply flex items-start h-full relative z-50 transition-transform duration-300 hover:scale-105 pt-0 mt-0;
 }
 
 .logo-hanging img {
@@ -69,7 +69,6 @@ body {
   @apply text-amber-500 font-bold;
 }
 
-/* Atualização correspondente no src/index.css */
 .btn-header-cta {
   @apply hidden lg:inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-['Montserrat'] font-bold text-xs uppercase tracking-wider px-6 transition-colors cursor-pointer shrink-0 border-none outline-none h-12 shadow-none rounded-none;
 }
@@ -85,7 +84,8 @@ body {
 .approach-badge,
 .about-mosaic-badge,
 .sectors-badge,
-.contact-badge {
+.contact-badge,
+.about-badge {
   @apply inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat'];
 }
 
@@ -265,7 +265,7 @@ body {
 }
 
 .about-seal-img {
-  @apply h-full w-auto object-contain;
+  @apply h-auto w-40 object-contain;
 }
 
 /* ==========================================================================
@@ -401,7 +401,7 @@ body {
 }
 
 .footer-watermark {
-  @apply absolute -bottom-10 right-0 opacity-5 pointer-events-none select-none text-right font-bold text-[180px] tracking-tighter text-white leading-none;
+  @apply absolute -bottom-5 right-0 opacity-5 pointer-events-none select-none text-right font-bold text-[180px] tracking-tighter text-white leading-none;
 }
 
 .footer-container {
@@ -433,7 +433,7 @@ body {
 }
 
 .footer-bottom-bar {
-  @apply pt-8 mt-10 border-t border-zinc-900 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-sans text-zinc-500 uppercase tracking-wider;
+  @apply pt-8 mt-10 border-t border-zinc-900 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-sans text-zinc-500 tracking-wider;
 }
 
 .footer-link-bottom {
