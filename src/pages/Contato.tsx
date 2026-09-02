@@ -101,34 +101,33 @@ export const Contato: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. SEÇÃO PRINCIPAL DE CONTATO E FORMULÁRIO (LAYOUT COMPACTADO E SIMÉTRICO) */}
+      {/* 2. SEÇÃO PRINCIPAL DE CONTATO E FORMULÁRIO (SIMETRIA 1:1 EM ALTURA) */}
       <section id="formulario" className="py-16 sm:py-24 bg-[#f8f9f6] border-b border-zinc-200/80 font-['Montserrat']">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
           
           {/* FORMULÁRIO ESQUERDA */}
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-7 flex flex-col justify-stretch">
             <LeadForm showSubjectSelect={true} />
           </div>
 
-          {/* CANAIS DIREITA (BOXES REAJUSTADOS EM TAMANHO E ESPAÇAMENTO PARA EQUILÍBRIO VISUAL) */}
-          <div className="lg:col-span-5 flex flex-col space-y-4">
-            <div className="space-y-2">
+          {/* CANAIS DIREITA (EXPANDIDO PARA ALINHAR PERFEITAMENTE COM O FORMULÁRIO DA ESQUERDA) */}
+          <div className="lg:col-span-5 flex flex-col h-full justify-between">
+            <div className="space-y-2 pb-2">
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Atendimento Direto
               </span>
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
-                Outras Formas <br className="hidden sm:block" />
-                de Contato
+                Outras Formas de Contato
               </h2>
             </div>
 
-            <div className="flex flex-col gap-3 pt-1">
+            <div className="flex-1 flex flex-col justify-between gap-3">
               {CANAIS_DIRETOS.map((canal, idx) => {
                 const CanalIcon = canal.icon;
                 return (
                   <div 
                     key={idx}
-                    className="p-4 sm:p-4.5 bg-white border border-zinc-200/80 rounded-2xl flex items-center gap-4 hover:border-amber-500/50 hover:shadow-md transition-all duration-300 shadow-xs"
+                    className="p-4 sm:p-5 bg-white border border-zinc-200/80 rounded-2xl flex items-center gap-4 hover:border-amber-500/50 hover:shadow-md transition-all duration-300 shadow-xs flex-1"
                   >
                     <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-600 shrink-0">
                       <CanalIcon className="w-5 h-5" />

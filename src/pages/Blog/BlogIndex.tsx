@@ -3,8 +3,7 @@
 // ============================================================================
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, User, ArrowRight, Loader2 } from 'lucide-react';
-import { Hero } from '../../components/Hero';
+import { Calendar, User, ArrowRight, Loader2, ChevronRight } from 'lucide-react';
 import { fetchWordPressPosts } from '../../services/wordpressService';
 
 export const BlogIndex: React.FC = () => {
@@ -26,16 +25,55 @@ export const BlogIndex: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full text-zinc-900 font-['Inter',sans-serif]">
-      <Hero 
-        eyebrow="Conteúdo Técnico"
-        title="Notícias & Blog"
-        subtitle="Acompanhe as últimas tendências, obras e inovações da Quattro Construtora."
-        images={['https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000']}
-      />
+    <div className="w-full bg-[#f8f9f6] text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
+      
+      {/* HERO SECTION */}
+      <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat',sans-serif]">
+        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+          <img
+            src="/img/BG_CTA_QuattroInc_Site.jpeg"
+            alt="Quattro Construtora - Blog"
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
 
-      <section className="py-24 bg-white/90 backdrop-blur-xs border-b border-zinc-200/80">
+        <div className="absolute inset-y-0 left-0 w-full lg:w-7/12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_right,black_60%,transparent_100%)] z-10 pointer-events-none" />
+
+        <div className="max-w-[1440px] w-full mx-auto px-6 md:px-12 relative z-20 flex flex-col justify-center">
+          <div className="max-w-2xl space-y-6">
+            <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-400 font-['Montserrat']">
+              <Link to="/" className="hover:text-amber-500 transition-colors">Home</Link>
+              <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
+              <span className="text-amber-500 font-bold">Blog</span>
+            </nav>
+
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
+              NOTÍCIAS E <br />
+              <span className="bg-amber-500 text-zinc-950 px-3.5 py-1 rounded-md inline-block mt-2 font-black">
+                CONTEÚDOS
+              </span>
+            </h1>
+
+            <p className="text-zinc-300 text-base md:text-lg font-normal leading-relaxed max-w-xl font-sans">
+              Acompanhe as últimas tendências, análises de obras e inovações do setor no Brasil e no mundo.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* BLOG GRID */}
+      <section className="py-20 sm:py-28 bg-[#f8f9f6]">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+          
+          <div className="mb-12 space-y-3">
+            <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
+              Últimas Atualizações
+            </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
+              Artigos Recentes
+            </h2>
+          </div>
+
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <Loader2 className="w-10 h-10 animate-spin text-amber-500" />
@@ -48,20 +86,37 @@ export const BlogIndex: React.FC = () => {
                 const postDate = new Date(post.date).toLocaleDateString('pt-BR');
 
                 return (
-                  <div key={post.id} className="bg-zinc-50 border border-zinc-200 rounded-2xl overflow-hidden group hover:shadow-xl transition-all duration-300">
-                    <div className="aspect-video overflow-hidden">
+                  <div key={post.id} className="bg-white border border-zinc-200/80 rounded-3xl overflow-hidden group hover:shadow-xl hover:border-amber-500/40 transition-all duration-300 flex flex-col h-full">
+                    <div className="aspect-video overflow-hidden border-b border-zinc-100">
                       <img src={imageUrl} alt={post.title.rendered} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     </div>
-                    <div className="p-6 md:p-8 space-y-4">
-                      <div className="flex items-center gap-4 text-xs font-semibold text-zinc-500 font-['Montserrat',sans-serif]">
-                        <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-amber-500" /> {postDate}</span>
-                        <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-amber-500" /> {authorName}</span>
+                    
+                    <div className="p-7 sm:p-8 flex flex-col flex-1">
+                      <div className="flex items-center gap-4 text-[11px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat'] mb-4">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-amber-500" /> {postDate}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <User className="w-3.5 h-3.5 text-amber-500" /> {authorName}
+                        </span>
                       </div>
-                      <h3 className="text-xl font-bold text-zinc-950 line-clamp-2" dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
-                      <div className="text-sm text-zinc-600 line-clamp-3" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
-                      <Link to={`/blog/${post.slug}`} className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-600 hover:text-amber-700 transition-colors pt-4 group-hover:translate-x-1 duration-300 font-['Montserrat',sans-serif]">
+                      
+                      <h3 
+                        className="text-lg sm:text-xl font-bold text-zinc-950 font-['Montserrat'] leading-snug line-clamp-2 mb-3" 
+                        dangerouslySetInnerHTML={{ __html: post.title.rendered }} 
+                      />
+                      
+                      <div 
+                        className="text-sm text-zinc-600 font-sans leading-relaxed line-clamp-3 mb-6 flex-1" 
+                        dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} 
+                      />
+                      
+                      <Link 
+                        to={`/blog/${post.slug}`} 
+                        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-900 group-hover:text-amber-600 transition-colors mt-auto font-['Montserrat']"
+                      >
                         <span>Ler Artigo</span>
-                        <ArrowRight className="w-4 h-4" />
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     </div>
                   </div>
@@ -71,6 +126,7 @@ export const BlogIndex: React.FC = () => {
           )}
         </div>
       </section>
+
     </div>
   );
 };
