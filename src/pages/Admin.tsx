@@ -18,8 +18,7 @@ import {
   Calendar,
   HelpCircle,
   FileText,
-  Smartphone,
-  Monitor,
+
   LayoutGrid,
   Upload,
   Loader2,
