@@ -4,16 +4,23 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Loader2, ChevronRight } from 'lucide-react';
-import { fetchWordPressPosts } from '../../services/wordpressService';
+import type { BlogPost } from '../../types';
+
+// TODO (Etapa 2/5 do plano): trocar por uma leitura real da coleção 'posts'
+// no Firestore. Por enquanto a lista fica vazia e a seção mostra um estado
+// "em breve" para não quebrar a página.
+const fetchPosts = async (): Promise<BlogPost[]> => {
+  return [];
+};
 
 export const BlogIndex: React.FC = () => {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const data = await fetchWordPressPosts(1, 10);
+        const data = await fetchPosts();
         setPosts(data);
       } catch (error) {
         console.error("Erro ao carregar posts:", error);
@@ -78,17 +85,21 @@ export const BlogIndex: React.FC = () => {
             <div className="flex justify-center items-center py-20">
               <Loader2 className="w-10 h-10 animate-spin text-amber-500" />
             </div>
+          ) : posts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center text-center py-20 border border-dashed border-zinc-300 rounded-3xl">
+              <p className="text-zinc-500 font-sans text-sm">
+                Nenhum artigo publicado ainda. Em breve, novidades por aqui.
+              </p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post) => {
-                const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=800';
-                const authorName = post._embedded?.author?.[0]?.name || 'Equipe Quattro';
                 const postDate = new Date(post.date).toLocaleDateString('pt-BR');
 
                 return (
                   <div key={post.id} className="bg-white border border-zinc-200/80 rounded-3xl overflow-hidden group hover:shadow-xl hover:border-amber-500/40 transition-all duration-300 flex flex-col h-full">
                     <div className="aspect-video overflow-hidden border-b border-zinc-100">
-                      <img src={imageUrl} alt={post.title.rendered} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     </div>
                     
                     <div className="p-7 sm:p-8 flex flex-col flex-1">
@@ -97,19 +108,17 @@ export const BlogIndex: React.FC = () => {
                           <Calendar className="w-3.5 h-3.5 text-amber-500" /> {postDate}
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <User className="w-3.5 h-3.5 text-amber-500" /> {authorName}
+                          <User className="w-3.5 h-3.5 text-amber-500" /> {post.author}
                         </span>
                       </div>
                       
-                      <h3 
-                        className="text-lg sm:text-xl font-bold text-zinc-950 font-['Montserrat'] leading-snug line-clamp-2 mb-3" 
-                        dangerouslySetInnerHTML={{ __html: post.title.rendered }} 
-                      />
+                      <h3 className="text-lg sm:text-xl font-bold text-zinc-950 font-['Montserrat'] leading-snug line-clamp-2 mb-3">
+                        {post.title}
+                      </h3>
                       
-                      <div 
-                        className="text-sm text-zinc-600 font-sans leading-relaxed line-clamp-3 mb-6 flex-1" 
-                        dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} 
-                      />
+                      <p className="text-sm text-zinc-600 font-sans leading-relaxed line-clamp-3 mb-6 flex-1">
+                        {post.excerpt}
+                      </p>
                       
                       <Link 
                         to={`/blog/${post.slug}`} 

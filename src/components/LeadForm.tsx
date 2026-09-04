@@ -1,7 +1,7 @@
 // src/components/LeadForm.tsx
 import React, { useState } from 'react';
 import { Send, AlertCircle, CheckCircle2, HardHat, Building2 } from 'lucide-react';
-import { saveLead } from '../services/firestoreService';
+import { saveLead } from '../lib/firebase';
 
 export interface LeadFormProps {
   empreendimentoId?: string;
@@ -68,7 +68,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         ...formData,
         ...(empreendimentoId ? { empreendimentoId } : {})
       };
-      const ok = await saveLead(payload as any);
+      const ok = await saveLead(payload);
       if (ok) {
         setSucesso(true);
         setFormData({

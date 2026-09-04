@@ -4,18 +4,24 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Loader2 } from 'lucide-react';
-import { fetchWordPressPostBySlug } from '../../services/wordpressService';
+import type { BlogPost as BlogPostType } from '../../types';
+
+// TODO (Etapa 2/5 do plano): trocar por uma leitura real do Firestore
+// (coleção 'posts', filtrando por slug).
+const fetchPostBySlug = async (_slug: string): Promise<BlogPostType | null> => {
+  return null;
+};
 
 export const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost] = useState<any>(null);
+  const [post, setPost] = useState<BlogPostType | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadPost = async () => {
       if (!slug) return;
       try {
-        const data = await fetchWordPressPostBySlug(slug);
+        const data = await fetchPostBySlug(slug);
         setPost(data);
       } catch (error) {
         console.error("Erro ao carregar o post:", error);
@@ -43,15 +49,13 @@ export const BlogPost: React.FC = () => {
     );
   }
 
-  const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000';
-  const authorName = post._embedded?.author?.[0]?.name || 'Equipe Quattro';
   const postDate = new Date(post.date).toLocaleDateString('pt-BR');
 
   return (
     <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif]">
       <div className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 bg-zinc-950 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={imageUrl} alt="" className="w-full h-full object-cover opacity-20" />
+          <img src={post.coverImage} alt="" className="w-full h-full object-cover opacity-20" />
           <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
         </div>
         
@@ -61,11 +65,11 @@ export const BlogPost: React.FC = () => {
             <span>Voltar para o Blog</span>
           </Link>
           
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight" dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">{post.title}</h1>
           
           <div className="flex items-center justify-center gap-6 text-xs font-semibold text-zinc-400 font-['Montserrat',sans-serif] pt-6">
             <span className="flex items-center gap-2"><Calendar className="w-4 h-4 text-amber-500" /> {postDate}</span>
-            <span className="flex items-center gap-2"><User className="w-4 h-4 text-amber-500" /> {authorName}</span>
+            <span className="flex items-center gap-2"><User className="w-4 h-4 text-amber-500" /> {post.author}</span>
           </div>
         </div>
       </div>
@@ -74,7 +78,7 @@ export const BlogPost: React.FC = () => {
         <div className="max-w-[800px] mx-auto px-6">
           <div 
             className="prose prose-zinc prose-lg max-w-none prose-headings:font-bold prose-a:text-amber-600 prose-img:rounded-2xl [&>p]:mb-6"
-            dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+            dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </div>
       </section>

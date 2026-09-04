@@ -1,10 +1,16 @@
+// src/lib/firebase.ts
+// Ponto único de acesso ao Firebase/Firestore do projeto.
+// (Antes esta lógica estava duplicada entre src/lib/firebase.ts e
+// src/services/firestoreService.ts, com nomes de campo inconsistentes
+// entre eles: createdAt vs criadoEm. Unificado aqui.)
+
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs, 
-  serverTimestamp 
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  serverTimestamp,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -20,6 +26,10 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 export const db = getFirestore(app);
 
+// ---------------------------------------------------------------------------
+// Empreendimentos
+// ---------------------------------------------------------------------------
+
 export interface Empreendimento {
   id?: string;
   titulo: string;
@@ -32,16 +42,6 @@ export interface Empreendimento {
   createdAt?: any;
 }
 
-export interface Lead {
-  id?: string;
-  nome: string;
-  email: string;
-  telefone: string;
-  mensagem: string;
-  empreendimentoId?: string;
-  createdAt?: any;
-}
-
 export const getEmpreendimentos = async (): Promise<Empreendimento[]> => {
   const querySnapshot = await getDocs(collection(db, 'empreendimentos'));
   return querySnapshot.docs.map((docSnap) => ({
@@ -50,10 +50,40 @@ export const getEmpreendimentos = async (): Promise<Empreendimento[]> => {
   })) as Empreendimento[];
 };
 
-export const createLead = async (lead: Omit<Lead, 'id' | 'createdAt'>): Promise<string> => {
-  const docRef = await addDoc(collection(db, 'leads'), {
-    ...lead,
-    createdAt: serverTimestamp(),
-  });
-  return docRef.id;
+// ---------------------------------------------------------------------------
+// Leads (formulário de contato / LeadForm)
+// ---------------------------------------------------------------------------
+
+export interface Lead {
+  id?: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  empresa?: string;
+  assunto?: string;
+  mensagem?: string;
+  termoAceito?: boolean;
+  empreendimentoId?: string;
+  origem?: string;
+  createdAt?: any;
+}
+
+export type LeadData = Omit<Lead, 'id' | 'createdAt'>;
+
+/**
+ * Salva a captação de lead (B2B/B2C) na coleção 'leads' do Firestore.
+ * Retorna true/false para o formulário decidir o feedback ao usuário.
+ */
+export const saveLead = async (data: LeadData): Promise<boolean> => {
+  try {
+    await addDoc(collection(db, 'leads'), {
+      ...data,
+      origem: data.origem || 'Site Oficial Quattro',
+      createdAt: serverTimestamp(),
+    });
+    return true;
+  } catch (error) {
+    console.error('Erro ao salvar lead no Firestore:', error);
+    return false;
+  }
 };
