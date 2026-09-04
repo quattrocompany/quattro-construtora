@@ -19,7 +19,7 @@ const CATEGORIAS_FILTRO = [
   { id: 'industrial', label: 'Industrial & Logística' },
   { id: 'hospitalar', label: 'Setor Hospitalar' },
   { id: 'manutencao', label: 'Manutenção & Facilities' },
-  { id: 'residencial', label: 'Residencial de Luxo' },
+  { id: 'residencial', label: 'Residencial' },
 ];
 
 const SETORES_DETALHADOS = [
@@ -61,7 +61,7 @@ const SETORES_DETALHADOS = [
   },
   {
     slug: 'residencial',
-    title: 'Residencial de Luxo',
+    title: 'Residencial',
     icon: Building2,
     desc: 'Construção e incorporação de residências de alto padrão, vilas corporativas e edifícios de arquitetura autoral com métodos construtivos inovadores.',
     nbrs: ['NBR 15575', 'NBR 9575', 'NBR 5410'],
