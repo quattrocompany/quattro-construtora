@@ -4,7 +4,7 @@ import { Send, AlertCircle, CheckCircle2, HardHat, Building2 } from 'lucide-reac
 import { saveLead } from '../lib/firebase';
 
 export interface LeadFormProps {
-  empreendimentoId?: string;
+  obraId?: string;
   showSubjectSelect?: boolean;
 }
 
@@ -19,7 +19,7 @@ const OPCOES_ASSUNTO = [
 ];
 
 export const LeadForm: React.FC<LeadFormProps> = ({
-  empreendimentoId,
+  obraId,
   showSubjectSelect = false
 }) => {
   const [formData, setFormData] = useState({
@@ -66,7 +66,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
     try {
       const payload = {
         ...formData,
-        ...(empreendimentoId ? { empreendimentoId } : {})
+        ...(obraId ? { obraId } : {})
       };
       const ok = await saveLead(payload);
       if (ok) {

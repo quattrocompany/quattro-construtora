@@ -9,7 +9,6 @@ import {
   getFirestore,
   collection,
   addDoc,
-  getDocs,
   serverTimestamp,
 } from 'firebase/firestore';
 
@@ -27,30 +26,6 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app);
 
 // ---------------------------------------------------------------------------
-// Empreendimentos
-// ---------------------------------------------------------------------------
-
-export interface Empreendimento {
-  id?: string;
-  titulo: string;
-  slug: string;
-  status: 'Lançamento' | 'Em Obras' | 'Entregue';
-  endereco: string;
-  descricao: string;
-  imagemCapa: string;
-  galeria: string[];
-  createdAt?: any;
-}
-
-export const getEmpreendimentos = async (): Promise<Empreendimento[]> => {
-  const querySnapshot = await getDocs(collection(db, 'empreendimentos'));
-  return querySnapshot.docs.map((docSnap) => ({
-    id: docSnap.id,
-    ...docSnap.data(),
-  })) as Empreendimento[];
-};
-
-// ---------------------------------------------------------------------------
 // Leads (formulário de contato / LeadForm)
 // ---------------------------------------------------------------------------
 
@@ -63,7 +38,7 @@ export interface Lead {
   assunto?: string;
   mensagem?: string;
   termoAceito?: boolean;
-  empreendimentoId?: string;
+  obraId?: string; // referencia Obra.id, quando o lead parte da página de uma obra
   origem?: string;
   createdAt?: any;
 }
