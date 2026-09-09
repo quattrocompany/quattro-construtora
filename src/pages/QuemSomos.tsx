@@ -104,7 +104,7 @@ const PILARES_PADRAO = [
   {
     icon: Layers,
     title: 'Engenharia Consultiva',
-    desc: 'Inteligência applied para otimizar projetos. Readequações ágeis em campo que preservam a integridade e a data de entrega.'
+    desc: 'Inteligência aplicada para otimizar projetos. Readequações ágeis em campo que preservam a integridade e a data de entrega.'
   },
   {
     icon: FileCheck2,
@@ -269,7 +269,7 @@ export const QuemSomos: React.FC = () => {
                 to="/contato"
                 className="px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/20 inline-flex items-center justify-center gap-2 font-['Montserrat']"
               >
-                <span>Entre em contato</span>
+                <span>Solicitar Apresentação Técnica</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -309,7 +309,7 @@ export const QuemSomos: React.FC = () => {
 
             <div className="pt-4">
               <Link to="/contato" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-md font-['Montserrat']">
-                <span>Falar Conosco</span>
+                <span>Falar com Nossos Engenheiros</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -384,16 +384,18 @@ export const QuemSomos: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 divide-zinc-200/80 border-t border-b border-zinc-200/80">
+          <div className="grid grid-cols-1 md:grid-cols-3">
             {PILARES_PADRAO.map((pilar, idx) => {
               const PilarIcon = pilar.icon;
               return (
                 <div 
                   key={idx} 
-                  className={`flex flex-col space-y-4 p-8 sm:p-10 ${
-                    idx % 3 !== 0 ? 'md:border-l md:border-zinc-200/80' : ''
+                  className={`flex flex-col space-y-4 py-8 md:p-10 ${
+                    idx !== PILARES_PADRAO.length - 1 ? 'border-b border-zinc-200/80' : ''
                   } ${
-                    idx < 3 ? 'border-b md:border-b md:border-zinc-200/80' : ''
+                    idx >= 3 ? 'md:border-b-0' : ''
+                  } ${
+                    idx % 3 !== 2 ? 'md:border-r md:border-zinc-200/80' : ''
                   }`}
                 >
                   <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl w-fit">
