@@ -1,6 +1,4 @@
 // src/utils/formatHeroTitle.tsx
-import React from 'react';
-
 export const formatHeroTitle = (text: string) => {
   if (!text) return null;
 
