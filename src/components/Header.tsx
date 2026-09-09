@@ -78,7 +78,7 @@ export const Header: React.FC = () => {
             </span>
             <div className="flex items-center gap-3 text-zinc-900">
               <a 
-                href="https://instagram.comhttps://instagram.com/quattroconstrutoraoficial" 
+                href="https://instagram.com/quattroconstrutoraoficial" 
                 target="_blank" 
                 rel="noreferrer" 
                 aria-label="Instagram"
