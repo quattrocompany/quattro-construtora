@@ -15,10 +15,85 @@ import {
   Pill,
   Home as HomeIcon,
   CheckCircle2,
+  Medal,
   LineChart,
   ShieldAlert,
   Leaf
 } from 'lucide-react';
+
+interface LogoData {
+  name: string;
+  src: string;
+  href?: string;
+}
+
+const LogoItem: React.FC<{ logo: LogoData }> = ({ logo }) => {
+  // 0 = caminho original, 1 = caminho alternativo (/img <-> /logos), 2 = ambos falharam
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    setAttempt(0);
+  }, [logo.src]);
+
+  const getAltPath = (path: string) => {
+    if (path.startsWith('/img/')) return path.replace('/img/', '/logos/');
+    if (path.startsWith('/logos/')) return path.replace('/logos/', '/img/');
+    return path;
+  };
+
+  const hasError = attempt >= 2;
+  const src = attempt === 0 ? logo.src : getAltPath(logo.src);
+
+  const handleError = () => {
+    setAttempt((prev) => prev + 1);
+  };
+
+  if (hasError) {
+    const fallback = (
+      <span className="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-center leading-tight">
+        {logo.name}
+      </span>
+    );
+    return logo.href ? (
+      <a
+        href={logo.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-full h-full flex items-center justify-center"
+      >
+        {fallback}
+      </a>
+    ) : (
+      <div className="w-full h-full flex items-center justify-center">{fallback}</div>
+    );
+  }
+
+  // Preenche a célula do grid (o tamanho vem do container pai, não daqui):
+  // garante que cada logo respeite exatamente a mesma largura/altura,
+  // sem nunca ultrapassar a célula, seja qual for a proporção do arquivo.
+  const image = (
+    <img
+      src={src}
+      alt={logo.name}
+      className="max-h-full max-w-full object-contain block grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+      onError={handleError}
+    />
+  );
+
+  return logo.href ? (
+    <a
+      href={logo.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="w-full h-full flex items-center justify-center"
+      aria-label={logo.name}
+    >
+      {image}
+    </a>
+  ) : (
+    <div className="w-full h-full flex items-center justify-center">{image}</div>
+  );
+};
 
 const PILARES_PADRAO = [
   {
@@ -49,7 +124,7 @@ const PILARES_PADRAO = [
   {
     icon: Leaf,
     title: 'Sustentabilidade Aplicada',
-    desc: 'Canteiros limpos, gestão eficiente de resíduos e aplicação de tecnologias construtivas que reduzem o impacto ambiental.'
+    desc: 'Canteiros limpos, gestão eficiente de resíduos e aplicação de technologies construtivas que reduzem o impacto ambiental.'
   }
 ];
 
@@ -59,13 +134,13 @@ const PROVA_SOCIAL_OBRAS = [
     title: 'Industrial & Logística',
     desc: 'Projetos de alta tonelagem e megaobras de centros de distribuição para gigantes do e-commerce e transporte, superando desafios de cronograma e especificações técnicas.',
     images: [
-      { src: '/img/placeholder.jpg' },
-      { src: '/img/placeholder.jpg' },
-      { src: '/img/placeholder.jpg' }
+      { src: '/img/Amazon_Img1.jpg' },
+      { src: '/img/CisTambore_Img1.jpg' },
+      { src: '/img/Sequoia_Img1.jpg' }
     ],
     logos: [
-      { name: 'Amazon', src: '/logos/amazon.svg' },
-      { name: 'Sequoia', src: '/logos/sequoia.svg' }
+      { name: 'Amazon', src: '/img/amazon.svg', href: '' },
+      { name: 'Sequoia', src: '/img/sequoia.svg', href: '' }
     ]
   },
   {
@@ -73,13 +148,13 @@ const PROVA_SOCIAL_OBRAS = [
     title: 'Corporativo & Triple A',
     desc: 'Sedes corporativas de alto padrão tecnológico e edifícios empresariais com foco em eficiência energética, construídos para líderes do setor de telecomunicações.',
     images: [
-      { src: '/img/placeholder.jpg' },
-      { src: '/img/placeholder.jpg' },
-      { src: '/img/placeholder.jpg' }
+      { src: '/img/Amazon_Img1.jpg' },
+      { src: '/img/CisTambore_Img1.jpg' },
+      { src: '/img/Sequoia_Img1.jpg' }
     ],
     logos: [
-      { name: 'Vivo', src: '/logos/vivo.svg' },
-      { name: 'Telefônica', src: '/logos/telefonica.svg' }
+      { name: 'Vivo', src: '/img/vivo.svg', href: '' },
+      { name: 'Telefônica', src: '/img/telefonica.svg', href: '' }
     ]
   },
   {
@@ -87,14 +162,14 @@ const PROVA_SOCIAL_OBRAS = [
     title: 'Farmacêutico & Saúde',
     desc: 'Instalações de missão crítica e salas limpas para a área da saúde. Infraestrutura hospitalar complexa com rigorosos padrões sanitários para grandes players de medicina diagnóstica.',
     images: [
-      { src: '/img/placeholder.jpg' },
-      { src: '/img/placeholder.jpg' },
-      { src: '/img/placeholder.jpg' }
+      { src: '/img/Amazon_Img1.jpg' },
+      { src: '/img/CisTambore_Img1.jpg' },
+      { src: '/img/Sequoia_Img1.jpg' }
     ],
     logos: [
-      { name: 'DASA', src: '/logos/dasa.svg' },
-      { name: 'Lavoisier', src: '/logos/lavoisier.svg' },
-      { name: 'Unicid', src: '/logos/unicid.svg' }
+      { name: 'DASA', src: '/img/dasa.svg', href: '' },
+      { name: 'Lavoisier', src: '/img/lavoisier.svg', href: '' },
+      { name: 'Unicid', src: '/img/unicid.svg', href: '' }
     ]
   },
   {
@@ -102,14 +177,16 @@ const PROVA_SOCIAL_OBRAS = [
     title: 'Residencial de Escala',
     desc: 'Construção de megacomplexos imobiliários e clubes residenciais com centenas de unidades, integrando industrialização do canteiro para garantir conforto habitacional e pontualidade.',
     images: [
-      { src: '/img/placeholder.jpg' },
-      { src: '/img/placeholder.jpg' },
-      { src: '/img/placeholder.jpg' }
+      { src: '/img/Amazon_Img1.jpg' },
+      { src: '/img/CisTambore_Img1.jpg' },
+      { src: '/img/Sequoia_Img1.jpg' }
     ],
     logos: [
-      { name: 'Lumini', src: '/logos/lumini.svg' },
-      { name: 'Nova Califórnia', src: '/logos/nova-california.svg' },
-      { name: 'Ocean Park', src: '/logos/ocean-park.svg' }
+      { name: 'Lumini', src: '/img/lumini1.svg', href: '' },
+      { name: 'Lumini', src: '/img/lumini2.svg', href: '' },
+      { name: 'Lumini', src: '/img/lumini3.svg', href: '' },
+      { name: 'Nova Califórnia', src: '/img/novacalifornia.svg', href: '' },
+      { name: 'Ocean Park', src: '/img/oceanpark.svg', href: '' }
     ]
   }
 ];
@@ -138,13 +215,12 @@ const TRAJETORIA_TIMELINE = [
 ];
 
 export const QuemSomos: React.FC = () => {
-  // HOOKS NO TOPO DO COMPONENTE
   const [activeSegment, setActiveSegment] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveSegment((prev) => (prev + 1) % PROVA_SOCIAL_OBRAS.length);
-    }, 6000); // Muda a cada 6 segundos
+    }, 6000);
 
     return () => clearInterval(interval);
   }, []);
@@ -154,17 +230,32 @@ export const QuemSomos: React.FC = () => {
       
       {/* 1. HERO SECTION */}
       <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat']">
-        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+        {/* Layer 0: Fundo Preto Total */}
+        <div className="absolute inset-0 bg-black z-0" />
+
+        {/* Layer 1: Imagem de Fundo Gruas (Transparência 30%) */}
+        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden opacity-30">
           <img
-            src="/img/BG_CTA_QuattroInc_Site.jpeg"
+            src="/img/QuemSomos_3321.jpg"
             alt="Quattro Construtora - Quem Somos"
             className="w-full h-full object-cover object-center"
           />
         </div>
 
-        <div className="absolute inset-y-0 left-0 w-full lg:w-7/12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_right,black_60%,transparent_100%)] z-10 pointer-events-none" />
+        {/* Layer 2: Layer de Grafismo (Alinhada à Direita com Tamanho Reduzido) */}
+        <div className="absolute inset-0 w-full h-full z-10 pointer-events-none overflow-hidden flex items-center justify-end">
+          <img
+            src="/img/Grafismo.png"
+            alt=""
+            className="w-[80%] sm:w-[60%] lg:w-[45%] max-w-3xl h-auto object-contain object-right opacity-40 mix-blend-overlay"
+          />
+        </div>
 
-        <div className="max-w-[1440px] w-full mx-auto px-6 md:px-12 relative z-20 flex flex-col justify-center">
+        {/* Layer 3: Sombra em degradê para leitura clara da tipografia */}
+        <div className="absolute inset-y-0 left-0 w-full lg:w-7/12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_right,black_60%,transparent_100%)] z-20 pointer-events-none" />
+
+        {/* Layer 4: Conteúdo de Texto e Ações */}
+        <div className="max-w-[1440px] w-full mx-auto px-6 md:px-12 relative z-30 flex flex-col justify-center">
           <div className="max-w-2xl space-y-6">
             <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-400 font-['Montserrat']">
               <Link to="/" className="hover:text-amber-500 transition-colors">Home</Link>
@@ -172,7 +263,7 @@ export const QuemSomos: React.FC = () => {
               <span className="text-amber-500 font-bold">A Quattro</span>
             </nav>
 
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
+            <h1 className="text-[2.3rem] font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
               CONHEÇA A <br />
               <span className="bg-amber-500 text-zinc-950 px-3.5 py-1 rounded-md inline-block mt-2 font-black">
                 NOSSA EMPRESA
@@ -211,7 +302,7 @@ export const QuemSomos: React.FC = () => {
                 Quem Somos
               </span>
               
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
+              <h2 className="text-[2.3rem] font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
                 Soluções End-to-End <br className="hidden sm:block" />
                 & Rigor Técnico
               </h2>
@@ -221,7 +312,7 @@ export const QuemSomos: React.FC = () => {
                   A Quattro Construtora é especializada em soluções end-to-end de alta complexidade. Com mais de 1 milhão de metros quadrados executados, construímos nossa reputação onde o rigor técnico é inegociável: de galpões logísticos e plantas industriais a sedes corporativas, ambientes farmacêuticos controlados e complexos residenciais.
                 </p>
                 <p>
-                  Atuamos no modelo Turnkey (Design & Build), assumindo responsabilidade integral por todo o ciclo da obra — dos estudos de viabilidade e projetos executivos ao comissionamento e entrega final das chaves.
+                  Atuamos no modelo Turnkey (Design & Build), assumindo responsabilidade integral por todo o ciclo da obra — dos estudos de viabilidade e projects executivos ao comissionamento e entrega final das chaves.
                 </p>
               </div>
             </div>
@@ -239,7 +330,7 @@ export const QuemSomos: React.FC = () => {
               
               <div className="p-7 sm:p-8 flex flex-col justify-between border-b border-zinc-200/80 space-y-4">
                 <div className="h-12 flex items-baseline">
-                  <span className="text-3xl sm:text-4xl font-black text-amber-500 font-['Montserrat'] tracking-tight">+15 Anos</span>
+                  <span className="text-[2.3rem] font-black text-amber-500 font-['Montserrat'] tracking-tight">+15 Anos</span>
                 </div>
                 <div className="space-y-2 flex-1 flex flex-col justify-start">
                   <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-zinc-900 font-['Montserrat'] min-h-[2.5rem] flex items-center">Inteligência Construtiva</span>
@@ -249,7 +340,7 @@ export const QuemSomos: React.FC = () => {
 
               <div className="p-7 sm:p-8 flex flex-col justify-between border-b border-zinc-200/80 space-y-4">
                 <div className="h-12 flex items-baseline">
-                  <span className="text-3xl sm:text-4xl font-black text-amber-500 font-['Montserrat'] tracking-tight">+1M m²</span>
+                  <span className="text-[2.3rem] font-black text-amber-500 font-['Montserrat'] tracking-tight">+1M m²</span>
                 </div>
                 <div className="space-y-2 flex-1 flex flex-col justify-start">
                   <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-zinc-900 font-['Montserrat'] min-h-[2.5rem] flex items-center">Área Construída</span>
@@ -259,7 +350,7 @@ export const QuemSomos: React.FC = () => {
 
               <div className="p-7 sm:p-8 flex flex-col justify-between space-y-4">
                 <div className="h-12 flex items-baseline">
-                  <span className="text-3xl sm:text-4xl font-black text-amber-500 font-['Montserrat'] tracking-tight">100%</span>
+                  <span className="text-[2.3rem] font-black text-amber-500 font-['Montserrat'] tracking-tight">100%</span>
                 </div>
                 <div className="space-y-2 flex-1 flex flex-col justify-start">
                   <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-zinc-900 font-['Montserrat'] min-h-[2.5rem] flex items-center">Previsibilidade</span>
@@ -269,7 +360,7 @@ export const QuemSomos: React.FC = () => {
 
               <div className="p-7 sm:p-8 flex flex-col justify-between space-y-4">
                 <div className="h-12 flex items-baseline">
-                  <span className="text-3xl sm:text-4xl font-black text-amber-500 font-['Montserrat'] tracking-tight">Nível A</span>
+                  <span className="text-[2.3rem] font-black text-amber-500 font-['Montserrat'] tracking-tight">Nível A</span>
                 </div>
                 <div className="space-y-2 flex-1 flex flex-col justify-start">
                   <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-zinc-900 font-['Montserrat'] min-h-[2.5rem] flex items-center">Qualidade Máxima</span>
@@ -292,7 +383,7 @@ export const QuemSomos: React.FC = () => {
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Nosso DNA Executivo
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
+              <h2 className="text-[2.3rem] font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
                 Engenharia de Alta Performance
               </h2>
             </div>
@@ -307,8 +398,8 @@ export const QuemSomos: React.FC = () => {
             {PILARES_PADRAO.map((pilar, idx) => {
               const PilarIcon = pilar.icon;
               return (
-                <div key={idx} className="bg-[#f8f9f6] border border-zinc-200/80 p-8 rounded-3xl flex flex-col justify-start space-y-4 hover:border-amber-500/40 hover:bg-white hover:shadow-md transition-all duration-300">
-                  <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-2xl w-fit">
+                <div key={idx} className="bg-[#f8f9f6] border border-zinc-200/80 p-8 rounded-2xl flex flex-col justify-start space-y-4 hover:border-amber-500/40 hover:bg-white hover:shadow-md transition-all duration-300">
+                  <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl w-fit">
                     <PilarIcon className="w-6 h-6" />
                   </div>
                   <h3 className="text-xl font-bold text-zinc-950 font-['Montserrat']">{pilar.title}</h3>
@@ -321,17 +412,15 @@ export const QuemSomos: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. PROVA SOCIAL */}
-      {/* Background alterado para cinza 80% (bg-zinc-800) */}
+      {/* 4. PROVA SOCIAL (PAINEL BRANCO CONTINUO L-SHAPE RECONECTADO COM ARREDONDAMENTO SUAVE) */}
       <section className="py-20 sm:py-28 bg-zinc-800 font-['Montserrat']">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12">
           
-          {/* Título Mobile (Aparece apenas em telas menores) */}
           <div className="block lg:hidden space-y-4 mb-8">
             <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
               Prova Social
             </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white font-['Montserrat'] leading-[1.12] tracking-tight">
+            <h2 className="text-[2.3rem] font-extrabold text-white font-['Montserrat'] leading-[1.12] tracking-tight">
               Grandes Obras Executadas
             </h2>
             <p className="text-zinc-300 text-sm font-normal leading-relaxed font-sans">
@@ -339,12 +428,11 @@ export const QuemSomos: React.FC = () => {
             </p>
           </div>
 
-          {/* Container Principal "L-Shape" Unificado */}
           <div className="flex flex-col lg:flex-row items-stretch">
             
-            {/* Coluna 1: Slider Fotográfico (Fundo Branco, Bordas Arredondadas exceto Canto Inferior Direito) */}
-            <div className="w-full lg:w-1/2 bg-white rounded-t-[2rem] rounded-b-none lg:rounded-l-[3rem] lg:rounded-r-none lg:rounded-tr-[3rem] p-4 sm:p-6 lg:p-8 flex-shrink-0 z-10 relative">
-              <div className="relative w-full h-[400px] sm:h-[500px] lg:h-full lg:min-h-[600px] rounded-2xl overflow-hidden">
+            {/* Coluna 1: Slider Fotográfico */}
+            <div className="w-full lg:w-1/2 bg-white rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-2xl p-2 sm:p-3 flex-shrink-0 z-10 relative">
+              <div className="relative w-full h-[380px] sm:h-[480px] lg:h-full lg:min-h-[550px] rounded-xl overflow-hidden">
                 {PROVA_SOCIAL_OBRAS.map((setor, idx) => (
                   <div 
                     key={idx} 
@@ -352,26 +440,24 @@ export const QuemSomos: React.FC = () => {
                       activeSegment === idx ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
                     }`}
                   >
-                    {/* Imagem Principal */}
-                    <div className="flex-1 rounded-xl overflow-hidden relative group">
+                    <div className="flex-1 rounded-lg overflow-hidden relative group">
                       <img 
-                        src={setor.images?.[0]?.src || '/img/placeholder.jpg'} 
+                        src={setor.images?.[0]?.src || '/img/Amazon_Img1.jpg'} 
                         alt={`Obra principal ${setor.title}`}
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                       />
                     </div>
-                    {/* 2 Imagens Secundárias */}
                     <div className="h-[35%] flex gap-2 sm:gap-3">
-                      <div className="flex-1 rounded-xl overflow-hidden relative group">
+                      <div className="flex-1 rounded-lg overflow-hidden relative group">
                         <img 
-                          src={setor.images?.[1]?.src || '/img/placeholder.jpg'} 
+                          src={setor.images?.[1]?.src || '/img/CisTambore_Img1.jpg'} 
                           alt={`Detalhe 1 ${setor.title}`}
                           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                         />
                       </div>
-                      <div className="flex-1 rounded-xl overflow-hidden relative group">
+                      <div className="flex-1 rounded-lg overflow-hidden relative group">
                         <img 
-                          src={setor.images?.[2]?.src || '/img/placeholder.jpg'} 
+                          src={setor.images?.[2]?.src || '/img/Sequoia_Img1.jpg'} 
                           alt={`Detalhe 2 ${setor.title}`}
                           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                         />
@@ -385,12 +471,11 @@ export const QuemSomos: React.FC = () => {
             {/* Coluna 2: Textos e Informações */}
             <div className="w-full lg:w-1/2 flex flex-col">
               
-              {/* Cabeçalho Desktop (Transparente, acima da área de texto) */}
-              <div className="hidden lg:block p-8 lg:p-12 lg:pb-8 space-y-4">
+              <div className="hidden lg:block p-8 lg:p-10 lg:pb-6 space-y-3">
                 <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                   Prova Social
                 </span>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-['Montserrat'] leading-[1.12] tracking-tight">
+                <h2 className="text-[2.3rem] font-extrabold text-white font-['Montserrat'] leading-[1.12] tracking-tight">
                   Grandes Obras Executadas
                 </h2>
                 <p className="text-zinc-300 text-base font-normal leading-relaxed font-sans max-w-xl">
@@ -398,61 +483,75 @@ export const QuemSomos: React.FC = () => {
                 </p>
               </div>
 
-              {/* Área de Texto do Segmento (Fundo Branco, conectada na base da Coluna 1) */}
-              <div className="flex-1 bg-white rounded-b-[2rem] rounded-t-none lg:rounded-r-[3rem] lg:rounded-l-none p-6 sm:p-8 lg:p-12 flex flex-col justify-center relative z-10">
-                {PROVA_SOCIAL_OBRAS.map((setor, idx) => {
-                  if (activeSegment !== idx) return null;
-                  const SetorIcon = setor.icon;
+              {/*
+                Arredondamento no TOPO (não na base). No desktop, superior-
+                direito e inferior-direito usam border-radius normal (são
+                cantos realmente "externos"). Já o superior-esquerdo fica
+                reto (rounded-none) e é "costurado" com o recorte SVG logo
+                abaixo, que faz a curva subir para dentro do fundo escuro
+                em vez de cortar para dentro do box.
+              */}
+              <div className="flex-1 bg-white rounded-t-2xl lg:rounded-none lg:rounded-tr-2xl lg:rounded-br-2xl p-6 sm:p-8 lg:p-10 flex flex-col justify-center relative z-10">
+                {/* Curva suave "para cima" no canto superior-esquerdo.
+                    Tamanho (12px) casado com o padding do bloco de fotos
+                    ao lado (p-3 no desktop), para não invadir a imagem. */}
+                <div
+                  className="hidden lg:block absolute -top-3 -left-3 w-3 h-3 pointer-events-none z-20"
+                  aria-hidden="true"
+                >
+                  <svg viewBox="0 0 12 12" className="w-full h-full block">
+                    <path d="M12 0C5.373 0 0 5.373 0 12H12V0Z" fill="white" />
+                  </svg>
+                </div>
 
-                  return (
-                    <div 
-                      key={idx} 
-                      className="flex flex-col space-y-8 animate-[fadeIn_0.5s_ease-in-out] pb-12 lg:pb-16"
+                {PROVA_SOCIAL_OBRAS.map((setor, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`flex flex-col space-y-8 animate-[fadeIn_0.5s_ease-in-out] pb-12 lg:pb-16 ${
+                      activeSegment === idx ? 'block' : 'hidden'
+                    }`}
+                  >
+                    {/*
+                      Grid com número de colunas IGUAL à quantidade de
+                      logos de cada segmento (não fixo em 5): cada célula
+                      "veste" o logo certinho, então o espaço visível
+                      entre eles é sempre só o `gap` — o mesmo em todas as
+                      páginas do carrossel, com 2, 3 ou 5 logos.
+                    */}
+                    <div
+                      className="grid gap-2 sm:gap-3 items-center w-full"
+                      style={{
+                        gridTemplateColumns: `auto repeat(${setor.logos.slice(0, 5).length}, minmax(0, 1fr))`
+                      }}
                     >
-                      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-                        <div className="p-4 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-2xl w-fit">
-                          <SetorIcon className="w-8 h-8" />
-                        </div>
-                        
-                        <div className="flex items-center gap-5 flex-wrap">
-                          {setor.logos.map((logo, i) => (
-                            <div key={i} className="h-7 sm:h-9 flex items-center justify-center grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                              <img 
-                                src={logo.src} 
-                                alt={logo.name} 
-                                className="max-h-full max-w-[100px] object-contain"
-                                onError={(e) => {
-                                  (e.target as HTMLElement).style.display = 'none';
-                                  const span = document.createElement('span');
-                                  span.className = "text-xs font-bold text-zinc-400 uppercase tracking-widest";
-                                  span.innerText = logo.name;
-                                  (e.target as HTMLElement).parentNode?.appendChild(span);
-                                }}
-                              />
-                            </div>
-                          ))}
-                        </div>
+                      <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl w-fit shrink-0">
+                        <setor.icon className="w-7 h-7" />
                       </div>
-                      
-                      <div className="space-y-4">
-                        <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-950 font-['Montserrat'] leading-tight">
-                          {setor.title}
-                        </h3>
-                        <p className="text-base text-zinc-600 font-sans leading-relaxed">
-                          {setor.desc}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
 
-                {/* Dots de Navegação (No canto inferior direito da área de texto) */}
-                <div className="absolute bottom-6 right-6 lg:bottom-10 lg:right-12 flex gap-2 sm:gap-3 z-20">
+                      {setor.logos.slice(0, 5).map((logo, i) => (
+                        <div key={i} className="h-9 sm:h-12 min-w-0 overflow-hidden">
+                          <LogoItem logo={logo} />
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-950 font-['Montserrat'] leading-tight">
+                        {setor.title}
+                      </h3>
+                      <p className="text-base text-zinc-600 font-sans leading-relaxed">
+                        {setor.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="absolute bottom-6 right-6 lg:bottom-8 lg:right-10 flex gap-2 sm:gap-3 z-20">
                   {PROVA_SOCIAL_OBRAS.map((_, idx) => (
                     <button
                       key={idx}
                       onClick={() => setActiveSegment(idx)}
-                      className={`h-2.5 rounded-full transition-all duration-300 ${
+                      className={`h-2 rounded-full transition-all duration-300 ${
                         activeSegment === idx ? 'bg-amber-500 w-8' : 'bg-zinc-200 hover:bg-zinc-300 w-2.5'
                       }`}
                       aria-label={`Ir para ${PROVA_SOCIAL_OBRAS[idx].title}`}
@@ -473,15 +572,12 @@ export const QuemSomos: React.FC = () => {
           
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
             
-            {/* Coluna 1 (Esquerda): Títulos, Parágrafo, Manifesto e Observação */}
             <div className="flex flex-col space-y-6">
-              
-              {/* Header da Seção */}
               <div className="space-y-4">
                 <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                   Compromisso Institucional
                 </span>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
+                <h2 className="text-[2.3rem] font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
                   Política de Qualidade
                 </h2>
                 <p className="text-zinc-600 text-sm md:text-base font-normal leading-relaxed font-sans max-w-xl">
@@ -489,7 +585,6 @@ export const QuemSomos: React.FC = () => {
                 </p>
               </div>
 
-              {/* Manifesto e Observação */}
               <div className="space-y-6 pt-2">
                 <blockquote className="text-zinc-700 text-sm md:text-base leading-relaxed italic border-l-4 border-amber-500 pl-4 font-sans">
                   "A Quattro Construtora atua na construção civil e na incorporação de empreendimentos habitacionais, corporativos e industriais com foco na excelência dos produtos e serviços entregues. Assegura a satisfação dos clientes, garante o cumprimento dos requisitos legais e promove a melhoria contínua dos processos, mantendo o compromisso com práticas sustentáveis e inovadoras que respeitam o meio ambiente."
@@ -505,14 +600,12 @@ export const QuemSomos: React.FC = () => {
 
             </div>
 
-            {/* Coluna 2 (Direita): Selos com alinhamento rigoroso à esquerda e espaçamento equilibrado */}
             <div className="flex flex-col space-y-6 lg:pl-10 lg:pt-2">
               <span className="text-xs font-bold uppercase tracking-widest text-zinc-500 block font-['Montserrat']">
                 Selos e Acreditações Oficiais
               </span>
 
               <div className="flex flex-col space-y-8">
-                {/* Selo 1: PBQP-H */}
                 <div className="flex flex-col items-start space-y-2 group">
                   <div className="h-16 max-w-[200px] flex items-center justify-start">
                     <img 
@@ -531,7 +624,6 @@ export const QuemSomos: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Selo 2: ISO 9001 */}
                 <div className="flex flex-col items-start space-y-2 group">
                   <div className="h-16 max-w-[200px] flex items-center justify-start">
                     <img 
@@ -566,7 +658,7 @@ export const QuemSomos: React.FC = () => {
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Diretrizes Estratégicas
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
+              <h2 className="text-[2.3rem] font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
                 Governança Corporativa
               </h2>
             </div>
@@ -578,8 +670,8 @@ export const QuemSomos: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
-            <div className="bg-white border border-zinc-200/80 p-8 rounded-3xl shadow-xs hover:shadow-lg hover:border-amber-500/40 transition-all duration-300 space-y-4">
-              <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-2xl w-fit">
+            <div className="bg-white border border-zinc-200/80 p-8 rounded-2xl shadow-xs hover:shadow-lg hover:border-amber-500/40 transition-all duration-300 space-y-4">
+              <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl w-fit">
                 <Target className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-zinc-950 font-['Montserrat']">Missão</h3>
@@ -588,8 +680,8 @@ export const QuemSomos: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-white border border-zinc-200/80 p-8 rounded-3xl shadow-xs hover:shadow-lg hover:border-amber-500/40 transition-all duration-300 space-y-4">
-              <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-2xl w-fit">
+            <div className="bg-white border border-zinc-200/80 p-8 rounded-2xl shadow-xs hover:shadow-lg hover:border-amber-500/40 transition-all duration-300 space-y-4">
+              <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl w-fit">
                 <Eye className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-zinc-950 font-['Montserrat']">Visão</h3>
@@ -598,13 +690,13 @@ export const QuemSomos: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-white border border-zinc-200/80 p-8 rounded-3xl shadow-xs hover:shadow-lg hover:border-amber-500/40 transition-all duration-300 space-y-4">
-              <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-2xl w-fit">
+            <div className="bg-white border border-zinc-200/80 p-8 rounded-2xl shadow-xs hover:shadow-lg hover:border-amber-500/40 transition-all duration-300 space-y-4">
+              <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl w-fit">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-zinc-950 font-['Montserrat']">Valores e Ética</h3>
               <p className="text-sm text-zinc-600 font-sans leading-relaxed">
-                Atuamos com <strong className="text-zinc-950 font-['Montserrat']">Rigor Técnico</strong> inegociável, asseguramos <strong className="text-zinc-950 font-['Montserrat']">Previsibilidade</strong> total, mantemos <strong className="text-zinc-950 font-['Montserrat']">Integridade</strong> absoluta e valorizamos a <strong className="text-zinc-950 font-['Montserrat']">Segurança</strong> e a sustentabilidade <strong className="text-zinc-950 font-['Montserrat']">(ESG)</strong>.
+                Atuamos com <strong className="text-zinc-950 font-['Montserrat']">Rigor Técnico</strong> inegociável, asseguramos <strong className="text-zinc-950 font-['Montserrat'] font-semibold">Previsibilidade</strong> total, mantemos <strong className="text-zinc-950 font-['Montserrat'] font-semibold">Integridade</strong> absoluta e valorizamos a <strong className="text-zinc-950 font-['Montserrat'] font-semibold">Segurança</strong> e a sustentabilidade <strong className="text-zinc-950 font-['Montserrat'] font-semibold">(ESG)</strong>.
               </p>
             </div>
           </div>
@@ -621,7 +713,7 @@ export const QuemSomos: React.FC = () => {
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Nossa História
               </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
+              <h2 className="text-[2.3rem] font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
                 Trajetória de Crescimento
               </h2>
             </div>
@@ -636,7 +728,7 @@ export const QuemSomos: React.FC = () => {
             {TRAJETORIA_TIMELINE.map((item, idx) => (
               <div key={idx} className="relative group">
                 <div className="absolute -left-[39px] top-1.5 w-4 h-4 bg-amber-500 rounded-full border-4 border-white group-hover:scale-125 transition-transform duration-300" />
-                <div className="bg-[#f8f9f6] border border-zinc-200/80 p-6 sm:p-8 rounded-3xl flex flex-col justify-start space-y-3 shadow-xs hover:border-amber-500/40 hover:bg-white hover:shadow-md transition-all duration-300">
+                <div className="bg-[#f8f9f6] border border-zinc-200/80 p-6 sm:p-8 rounded-2xl flex flex-col justify-start space-y-3 shadow-xs hover:border-amber-500/40 hover:bg-white hover:shadow-md transition-all duration-300">
                   <span className="text-sm font-extrabold text-amber-600 block uppercase tracking-wider font-['Montserrat']">
                     {item.fase}
                   </span>
@@ -654,7 +746,7 @@ export const QuemSomos: React.FC = () => {
       {/* 8. CALL TO ACTION FINAL */}
       <section className="py-20 sm:py-28 bg-zinc-950 text-white font-['Montserrat']">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-          <div className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-8 sm:p-14 md:p-16 shadow-2xl relative overflow-hidden">
+          <div className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl p-8 sm:p-14 md:p-16 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 max-w-3xl space-y-6">
@@ -662,7 +754,7 @@ export const QuemSomos: React.FC = () => {
                 Inicie Seu Projeto
               </span>
 
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.12]">
+              <h2 className="text-[2.3rem] font-extrabold text-white leading-[1.12]">
                 Vamos transformar o seu próximo projeto em uma solução sólida?
               </h2>
 

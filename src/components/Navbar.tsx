@@ -8,18 +8,15 @@ export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
-  // Otimização: Fecha o menu mobile automaticamente ao trocar de rota
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  // Listener de Scroll otimizado para o Glassmorphism
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 40);
     };
     
-    // Adiciona o listener passivo para melhor performance (não bloqueia a thread de renderização)
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -77,15 +74,13 @@ export const Navbar: React.FC = () => {
 
           {/* ================= 3. CTAs CORPORATIVOS (B2B) ================= */}
           <div className="flex items-center gap-4 pl-8 border-l border-zinc-800">
-            <a
-              href="https://portal.quattroconstrutora.com.br/cliente"
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              to="/portal-cliente"
               className="px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-amber-500 hover:border-amber-500/40 text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 font-['Montserrat',sans-serif]"
             >
               <User className="w-3.5 h-3.5 text-amber-500" />
               <span>Portal Cliente</span>
-            </a>
+            </Link>
 
             <Link
               to="/contato"
@@ -134,15 +129,13 @@ export const Navbar: React.FC = () => {
         </div>
 
         <div className="pt-8 border-t border-zinc-900 space-y-3 pb-8">
-          <a
-            href="https://portal.quattroconstrutora.com.br/cliente"
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            to="/portal-cliente"
             className="w-full py-4 rounded-xl bg-zinc-900 border border-zinc-800 text-amber-500 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 font-['Montserrat',sans-serif]"
           >
             <User className="w-4 h-4" />
             <span>Portal do Cliente</span>
-          </a>
+          </Link>
 
           <a
             href="https://portal.quattroconstrutora.com.br/colaborador"

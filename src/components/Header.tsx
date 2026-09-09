@@ -131,15 +131,13 @@ export const Header: React.FC = () => {
             ))}
           </nav>
 
-          <a
-            href="https://portal.quattroconstrutora.com.br/cliente"
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            to="/portal-cliente"
             className="btn-header-cta"
           >
             <span>Portal Cliente</span>
             <ArrowRight className="w-4 h-4" />
-          </a>
+          </Link>
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -191,15 +189,14 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            <a
-              href="https://portal.quattroconstrutora.com.br/cliente"
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              to="/portal-cliente"
+              onClick={() => setIsMenuOpen(false)}
               className="w-full py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
               <User className="w-4 h-4" />
               <span>Portal do Cliente</span>
-            </a>
+            </Link>
 
             <div className="flex items-center justify-center gap-6 pt-3 text-zinc-900">
               <a 

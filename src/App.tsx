@@ -13,6 +13,7 @@ import { BlogPost } from './pages/Blog/BlogPost';
 import { Privacidade } from './pages/Privacidade';
 import { Termos } from './pages/Termos';
 import { Admin } from './pages/Admin';
+import { PortalCliente } from './pages/PortalCliente';
 
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -52,6 +53,7 @@ const MainLayout: React.FC = () => {
           <Route path="/blog" element={<BlogIndex />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/portal-cliente" element={<PortalCliente />} />
         </Routes>
       </main>
 
