@@ -6,8 +6,8 @@ import { LeadForm } from './LeadForm';
 export const Contact_Home: React.FC = () => {
   return (
     <section id="contato" className="contact-section">
-      <div className="contact-container !items-center">
-        <div className="contact-info-col">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-12 items-stretch w-full">
+        <div className="lg:col-span-2 flex flex-col justify-between h-full space-y-8 py-2">
           <div className="space-y-3">
             <span className="contact-badge">FALE CONOSCO</span>
             <h2 className="contact-title">
@@ -18,7 +18,7 @@ export const Contact_Home: React.FC = () => {
             </p>
           </div>
 
-          <div className="space-y-4 pt-4 border-t border-zinc-200/80">
+          <div className="space-y-4 pt-6 border-t border-zinc-200/80">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 flex items-center justify-center shrink-0">
                 <Phone className="w-4.5 h-4.5" />
@@ -62,7 +62,7 @@ export const Contact_Home: React.FC = () => {
           </div>
         </div>
 
-        <div className="contact-form-col">
+        <div className="lg:col-span-2">
           <LeadForm showSubjectSelect={false} />
         </div>
       </div>

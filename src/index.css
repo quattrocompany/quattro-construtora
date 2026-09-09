@@ -93,7 +93,7 @@ body {
 .about-mosaic-title,
 .sectors-title,
 .contact-title {
-  @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight;
+  @apply text-[2.3rem] font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight;
 }
 
 .approach-description,

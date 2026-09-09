@@ -78,7 +78,7 @@ export const Header: React.FC = () => {
             </span>
             <div className="flex items-center gap-3 text-zinc-900">
               <a 
-                href="https://instagram.com" 
+                href="https://instagram.comhttps://instagram.com/quattroconstrutoraoficial" 
                 target="_blank" 
                 rel="noreferrer" 
                 aria-label="Instagram"
@@ -87,7 +87,7 @@ export const Header: React.FC = () => {
                 <InstagramIcon className="w-4 h-4 fill-zinc-900 text-zinc-900" />
               </a>
               <a 
-                href="https://facebook.com" 
+                href="https://www.facebook.com/quattroconstrutora" 
                 target="_blank" 
                 rel="noreferrer" 
                 aria-label="Facebook"
@@ -96,7 +96,7 @@ export const Header: React.FC = () => {
                 <FacebookIcon className="w-4 h-4 fill-zinc-900 text-zinc-900" />
               </a>
               <a 
-                href="https://youtube.com" 
+                href="https://youtube.com/quattroconstrutora" 
                 target="_blank" 
                 rel="noreferrer" 
                 aria-label="YouTube"
