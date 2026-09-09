@@ -64,11 +64,11 @@ export const Header: React.FC = () => {
               <span>contato@quattroconstrutora.com.br</span>
             </a>
             <a 
-              href="tel:11900000000" 
+              href="tel:1130450826" 
               className="flex items-center gap-2 hover:opacity-80 transition-opacity text-zinc-500 font-semibold"
             >
               <Phone className="w-3.5 h-3.5 text-zinc-500" />
-              <span>(11) 90000-0000</span>
+              <span>(11) 3045-0826</span>
             </a>
           </div>
 
@@ -181,9 +181,9 @@ export const Header: React.FC = () => {
                 <Mail className="w-4 h-4 text-amber-500 shrink-0" />
                 <span>contato@quattroconstrutora.com.br</span>
               </a>
-              <a href="tel:11900000000" className="flex items-center gap-2 hover:text-amber-600 transition-colors">
+              <a href="tel:1130450826" className="flex items-center gap-2 hover:text-amber-600 transition-colors">
                 <Phone className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>(11) 90000-0000</span>
+                <span>(11) 3045-0826</span>
               </a>
             </div>
           </div>
