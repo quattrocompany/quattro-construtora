@@ -25,8 +25,8 @@ export const Contact_Home: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-zinc-400 block font-['Montserrat']">Atendimento Comercial</span>
-                <a href="tel:1140030000" className="text-sm font-bold text-zinc-950 hover:text-amber-600 transition-colors">
-                  +55 (11) 4003-0000
+                <a href="tel:1130450826" className="text-sm font-bold text-zinc-950 hover:text-amber-600 transition-colors">
+                  +55 (11) 3045-0826
                 </a>
               </div>
             </div>
