@@ -104,7 +104,7 @@ const PILARES_PADRAO = [
   {
     icon: Layers,
     title: 'Engenharia Consultiva',
-    desc: 'Inteligência aplicada para otimizar projetos. Readequações ágeis em campo que preservam a integridade e a data de entrega.'
+    desc: 'Inteligência applied para otimizar projetos. Readequações ágeis em campo que preservam a integridade e a data de entrega.'
   },
   {
     icon: FileCheck2,
@@ -269,7 +269,7 @@ export const QuemSomos: React.FC = () => {
                 to="/contato"
                 className="px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/20 inline-flex items-center justify-center gap-2 font-['Montserrat']"
               >
-                <span>Solicitar Apresentação Técnica</span>
+                <span>Entre em contato</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -309,7 +309,7 @@ export const QuemSomos: React.FC = () => {
 
             <div className="pt-4">
               <Link to="/contato" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-md font-['Montserrat']">
-                <span>Falar com Nossos Engenheiros</span>
+                <span>Falar Conosco</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -384,11 +384,18 @@ export const QuemSomos: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 divide-zinc-200/80 border-t border-b border-zinc-200/80">
             {PILARES_PADRAO.map((pilar, idx) => {
               const PilarIcon = pilar.icon;
               return (
-                <div key={idx} className="bg-[#f8f9f6] border border-zinc-200/80 p-8 rounded-2xl flex flex-col justify-start space-y-4 hover:border-amber-500/40 hover:bg-white hover:shadow-md transition-all duration-300">
+                <div 
+                  key={idx} 
+                  className={`flex flex-col space-y-4 p-8 sm:p-10 ${
+                    idx % 3 !== 0 ? 'md:border-l md:border-zinc-200/80' : ''
+                  } ${
+                    idx < 3 ? 'border-b md:border-b md:border-zinc-200/80' : ''
+                  }`}
+                >
                   <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl w-fit">
                     <PilarIcon className="w-6 h-6" />
                   </div>
@@ -679,7 +686,7 @@ export const QuemSomos: React.FC = () => {
       </section>
 
       {/* 7. TRAJETÓRIA (INFOGRÁFICO DE ESCADA RESPONSIVO COM SETAS INDIVIDUAIS) */}
-      <section className="py-20 sm:py-28 bg-white border-b border-zinc-200/80 font-['Montserrat']">
+      <section className="py-20 sm:py-28 bg-white border-b border-zinc-200/80 font-['Montserrat'] overflow-visible">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12 md:space-y-16">
           
           <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end">
@@ -815,34 +822,42 @@ export const QuemSomos: React.FC = () => {
         </div>
       </section>
 
-      {/* 8. CALL TO ACTION FINAL */}
-      <section className="py-20 sm:py-28 bg-zinc-950 text-white font-['Montserrat']">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-          <div className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl p-8 sm:p-14 md:p-16 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* 8. CALL TO ACTION FINAL COM IMAGEM REDONDA EXPANDIDA VAZANDO NO TOPO */}
+      <section className="relative pt-24 sm:pt-28 pb-20 sm:pb-28 bg-zinc-900 text-white font-['Montserrat'] border-t border-zinc-800">
+        
+        {/* Imagem Redonda Expandida Vazando para a Seção Anterior até alinhar a base com o botão */}
+        <div className="absolute -top-36 sm:-top-48 md:-top-56 lg:-top-14 right-6 sm:right-12 lg:right-20 z-30 pointer-events-none">
+          <div className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[520px] lg:h-[520px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
+            <img 
+              src="/img/Amazon_imgRodape.avif" 
+              alt="Engenharia Quattro Construtora" 
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
+        </div>
 
-            <div className="relative z-10 max-w-3xl space-y-6">
-              <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
-                Inicie Seu Projeto
-              </span>
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-10">
+          <div className="relative max-w-2xl lg:max-w-3xl space-y-6">
+            <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
+              Inicie Seu Projeto
+            </span>
 
-              <h2 className="text-[2.3rem] font-extrabold text-white leading-[1.12]">
-                Vamos transformar o seu próximo projeto em uma solução sólida?
-              </h2>
+            <h2 className="text-[2.3rem] font-extrabold text-white leading-[1.12]">
+              Vamos transformar o seu próximo projeto em uma solução sólida?
+            </h2>
 
-              <p className="text-zinc-400 text-sm md:text-base font-sans font-normal leading-relaxed">
-                Conte com a inteligência técnica, a transparência e a previsibilidade do Padrão Quattro. Fale diretamente com nossos engenheiros especialistas.
-              </p>
+            <p className="text-zinc-400 text-sm md:text-base font-sans font-normal leading-relaxed">
+              Conte com a inteligência técnica, a transparência e a previsibilidade do Padrão Quattro. Fale diretamente com nossos engenheiros especialistas.
+            </p>
 
-              <div className="pt-2">
-                <Link
-                  to="/contato"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 font-['Montserrat']"
-                >
-                  <span>Solicitar Proposta de Engenharia</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
+            <div className="pt-2">
+              <Link
+                to="/contato"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 font-['Montserrat']"
+              >
+                <span>Entre em Contato Conosco</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </div>
