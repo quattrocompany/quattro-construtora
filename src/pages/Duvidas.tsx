@@ -105,15 +105,6 @@ export const Duvidas: React.FC = () => {
               Reunimos as respostas para as perguntas mais comuns sobre atendimento, obras, fornecedores e prazos. Não encontrou o que procurava? Fale diretamente com a nossa equipe.
             </p>
 
-            <div className="pt-2">
-              <Link
-                to="/contato"
-                className="px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/20 inline-flex items-center justify-center gap-2 font-['Montserrat']"
-              >
-                <span>Falar Conosco</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
           </div>
         </div>
       </section>
@@ -143,15 +134,15 @@ export const Duvidas: React.FC = () => {
           </div>
 
           {/* ABAS DE TEMAS */}
-          <div className="flex flex-wrap justify-center gap-2.5">
+          <div className="flex flex-nowrap items-center justify-center gap-x-2.5 sm:gap-x-4 gap-y-2 overflow-x-auto scrollbar-none">
             {CATEGORIAS.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setCategoriaAtiva(cat.id)}
-                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all font-['Montserrat'] border ${
+                className={`whitespace-nowrap text-[9px] sm:text-[10px] font-bold uppercase tracking-wide transition-all font-['Montserrat'] ${
                   categoriaAtiva === cat.id
-                    ? 'bg-amber-500 border-amber-500 text-zinc-950'
-                    : 'bg-white border-zinc-200/80 text-zinc-600 hover:border-amber-500/50 hover:text-amber-600'
+                    ? 'bg-amber-500 text-zinc-950 px-3 py-1.5 rounded-full'
+                    : 'text-zinc-600 hover:text-amber-600 px-1 py-1.5'
                 }`}
               >
                 {cat.label}

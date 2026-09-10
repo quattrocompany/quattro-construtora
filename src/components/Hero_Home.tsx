@@ -75,15 +75,11 @@ export const Hero_Home: React.FC = () => {
           </p>
 
           <div className="flex flex-wrap items-center gap-6 pt-2">
-            <Link to="/servicos" className="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 px-7 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-xl group">
-              <span>Saiba Mais</span>
+            <Link to="/contato" className="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 px-7 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-xl group">
+              <span>Entre em Contato</span>
               <div className="w-6 h-6 bg-zinc-950/10 rounded-lg flex items-center justify-center">
                 <ArrowRight className="w-4 h-4 text-zinc-950 group-hover:translate-x-0.5 transition-transform" />
               </div>
-            </Link>
-
-            <Link to="/contato" className="inline-flex items-center text-zinc-200 hover:text-amber-500 text-xs font-bold uppercase tracking-wider transition-colors py-3.5">
-              <span>Fale Conosco</span>
             </Link>
           </div>
         </div>

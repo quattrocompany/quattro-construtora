@@ -88,15 +88,6 @@ export const Contato: React.FC = () => {
               Estamos prontos para atender suas demandas de novos projetos, dúvidas operacionais, parcerias comerciais ou atendimento comunitário.
             </p>
 
-            <div className="pt-2">
-              <a
-                href="#formulario"
-                className="px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/20 inline-flex items-center justify-center gap-2 font-['Montserrat']"
-              >
-                <span>Enviar Mensagem</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            </div>
           </div>
         </div>
       </section>
@@ -176,7 +167,7 @@ export const Contato: React.FC = () => {
               Esclarecimentos Rápidos
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
-              Dúvidas Frequentes sobre Atendimento
+              Tem alguma dúvida? Veja nossa página de FAQ
             </h2>
           </div>
 

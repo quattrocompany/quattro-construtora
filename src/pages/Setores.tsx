@@ -1,26 +1,18 @@
 // src/pages/Setores.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Factory, 
-  Stethoscope, 
-  Wrench, 
-  Building2, 
-  ArrowRight, 
-  MapPin, 
-  Maximize2, 
+import {
+  Factory,
+  Stethoscope,
+  Wrench,
+  Building2,
+  ArrowRight,
+  MapPin,
+  Maximize2,
   CheckCircle2,
-  Filter,
-  ChevronRight
+  ChevronRight,
+  ChevronLeft
 } from 'lucide-react';
-
-const CATEGORIAS_FILTRO = [
-  { id: 'todos', label: 'Todos os Setores' },
-  { id: 'industrial', label: 'Industrial & Logística' },
-  { id: 'hospitalar', label: 'Setor Hospitalar' },
-  { id: 'manutencao', label: 'Manutenção & Facilities' },
-  { id: 'residencial', label: 'Residencial' },
-];
 
 const SETORES_DETALHADOS = [
   {
@@ -83,7 +75,8 @@ const PORTFOLIO_OBRAS = [
     area: '45.000 m²',
     status: 'Concluído',
     imagem: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200',
-    resumo: 'Execução de pavimento de alta resistência mecânica, 48 docas niveladoras e sistema de sprinklers K25.'
+    resumo: 'Execução de pavimento de alta resistência mecânica, 48 docas niveladoras e sistema de sprinklers K25.',
+    destaque: true
   },
   {
     id: 2,
@@ -94,7 +87,8 @@ const PORTFOLIO_OBRAS = [
     area: '12.800 m²',
     status: 'Concluído',
     imagem: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1200',
-    resumo: 'Construção de 8 novas salas cirúrgicas inteligentes, 30 leitos de UTI e central de esterilização CME.'
+    resumo: 'Construção de 8 novas salas cirúrgicas inteligentes, 30 leitos de UTI e central de esterilização CME.',
+    destaque: true
   },
   {
     id: 3,
@@ -105,7 +99,8 @@ const PORTFOLIO_OBRAS = [
     area: '8.500 m²',
     status: 'Em Execução',
     imagem: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1200',
-    resumo: 'Condomínio de residências contemporâneas em Steel Frame com certificação de eficiência energética.'
+    resumo: 'Condomínio de residências contemporâneas em Steel Frame com certificação de eficiência energética.',
+    destaque: true
   },
   {
     id: 4,
@@ -142,16 +137,22 @@ const PORTFOLIO_OBRAS = [
   }
 ];
 
-export const Setores: React.FC = () => {
-  const [categoriaAtiva, setCategoriaAtiva] = useState('todos');
+const OBRAS_DESTAQUE = PORTFOLIO_OBRAS.filter((obra) => obra.destaque);
 
-  const obrasFiltradas = categoriaAtiva === 'todos'
-    ? PORTFOLIO_OBRAS
-    : PORTFOLIO_OBRAS.filter((obra) => obra.categoriaSlug === categoriaAtiva);
+export const Setores: React.FC = () => {
+  const [imgIndex, setImgIndex] = useState<Record<string, number>>({});
+
+  const proximaImagem = (slug: string, total: number) => {
+    setImgIndex((prev) => ({ ...prev, [slug]: ((prev[slug] ?? 0) + 1) % total }));
+  };
+
+  const imagemAnterior = (slug: string, total: number) => {
+    setImgIndex((prev) => ({ ...prev, [slug]: ((prev[slug] ?? 0) - 1 + total) % total }));
+  };
 
   return (
     <div className="w-full bg-[#f8f9f6] text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
-      
+
       {/* 1. HERO SECTION */}
       <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat',sans-serif]">
         {/* MÍDIA DE FUNDO FULL WIDTH */}
@@ -191,7 +192,7 @@ export const Setores: React.FC = () => {
                 to="/contato"
                 className="px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/20 inline-flex items-center justify-center gap-2 font-['Montserrat']"
               >
-                <span>Falar com Engenheiro</span>
+                <span>Entre em Contato</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -202,7 +203,7 @@ export const Setores: React.FC = () => {
       {/* 2. VISÃO GERAL DOS SETORES */}
       <section className="py-20 sm:py-28 bg-white border-b border-zinc-200/80 font-['Montserrat']">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
-          
+
           <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end">
             <div className="lg:col-span-6 space-y-3">
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
@@ -222,48 +223,91 @@ export const Setores: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {SETORES_DETALHADOS.map((setor) => {
               const SetorIcon = setor.icon;
+              const obrasSetor = PORTFOLIO_OBRAS.filter((o) => o.categoriaSlug === setor.slug);
+              const idx = imgIndex[setor.slug] ?? 0;
+              const obraAtual = obrasSetor[idx];
+
               return (
-                <div 
+                <div
                   key={setor.slug}
-                  className="bg-[#f8f9f6] border border-zinc-200/80 p-7 sm:p-8 rounded-3xl hover:border-amber-500/50 hover:bg-white hover:shadow-xl transition-all duration-300 space-y-6 flex flex-col justify-between group shadow-xs"
+                  className="flex flex-col sm:flex-row bg-white border border-zinc-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-amber-500/40 transition-all duration-300"
                 >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-2xl">
-                        <SetorIcon className="w-6 h-6" />
+                  {/* Carrossel de imagens */}
+                  <div className="relative sm:w-2/5 lg:w-[44%] shrink-0 min-h-[220px] bg-zinc-100">
+                    {obraAtual && (
+                      <img
+                        key={obraAtual.id}
+                        src={obraAtual.imagem}
+                        alt={obraAtual.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    )}
+
+                    {obrasSetor.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => imagemAnterior(setor.slug, obrasSetor.length)}
+                          aria-label="Imagem anterior"
+                          className="absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => proximaImagem(setor.slug, obrasSetor.length)}
+                          aria-label="Próxima imagem"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+                          {obrasSetor.map((obra, i) => (
+                            <button
+                              key={obra.id}
+                              type="button"
+                              onClick={() => setImgIndex((prev) => ({ ...prev, [setor.slug]: i }))}
+                              aria-label={`Ver imagem ${i + 1}`}
+                              className={`h-1.5 rounded-full transition-all ${
+                                i === idx ? 'bg-amber-500 w-5' : 'bg-white/70 hover:bg-white w-1.5'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Informações */}
+                  <div className="flex-1 p-6 sm:p-8 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl shrink-0">
+                        <SetorIcon className="w-5 h-5" />
                       </div>
-                      
-                      <div className="flex gap-2 flex-wrap justify-end">
-                        {setor.nbrs.map((nbr, idx) => (
-                          <span key={idx} className="text-[10px] font-mono font-bold bg-white border border-zinc-200/80 text-zinc-600 px-2.5 py-1 rounded-md">
-                            {nbr}
-                          </span>
-                        ))}
-                      </div>
+                      <h3 className="text-lg sm:text-xl font-extrabold text-zinc-950 font-['Montserrat'] leading-snug">
+                        {setor.title}
+                      </h3>
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-zinc-950 font-['Montserrat'] leading-snug">{setor.title}</h3>
+                    <div className="flex gap-2 flex-wrap">
+                      {setor.nbrs.map((nbr, idx2) => (
+                        <span key={idx2} className="text-[10px] font-mono font-bold bg-[#f8f9f6] border border-zinc-200/80 text-zinc-600 px-2.5 py-1 rounded-md">
+                          {nbr}
+                        </span>
+                      ))}
+                    </div>
+
                     <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-sans">{setor.desc}</p>
 
-                    <div className="pt-2 space-y-2">
-                      {setor.diferenciais.map((item, idx) => (
-                        <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-700 font-sans leading-tight">
+                    <div className="space-y-2">
+                      {setor.diferenciais.map((item, idx2) => (
+                        <div key={idx2} className="flex items-start gap-2.5 text-xs text-zinc-700 font-sans leading-tight">
                           <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                           <span>{item}</span>
                         </div>
                       ))}
                     </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-zinc-200/80">
-                    <a
-                      href="#portfolio"
-                      onClick={() => setCategoriaAtiva(setor.slug)}
-                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-600 hover:text-amber-700 transition-colors font-['Montserrat']"
-                    >
-                      <span>Ver Obras Deste Setor</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </a>
                   </div>
                 </div>
               );
@@ -273,12 +317,12 @@ export const Setores: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. GALERIA & FILTRO DE OBRAS (PORTFÓLIO) */}
+      {/* 3. OBRAS EM DESTAQUE */}
       <section id="portfolio" className="py-20 sm:py-28 bg-[#f8f9f6] border-b border-zinc-200/80 font-['Montserrat']">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
-          
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div className="space-y-3">
+
+          <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end">
+            <div className="lg:col-span-6 space-y-3">
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Acervo Executivo
               </span>
@@ -286,45 +330,28 @@ export const Setores: React.FC = () => {
                 Obras em Destaque
               </h2>
             </div>
-
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" role="tablist">
-              <Filter className="w-4 h-4 text-zinc-400 shrink-0 mr-1 hidden sm:block" />
-              {CATEGORIAS_FILTRO.map((cat) => {
-                const isActive = categoriaAtiva === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => setCategoriaAtiva(cat.id)}
-                    className={`px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-300 cursor-pointer font-['Montserrat'] ${
-                      isActive
-                        ? 'bg-amber-500 text-zinc-950 shadow-md scale-105'
-                        : 'bg-white border border-zinc-200/80 text-zinc-600 hover:border-zinc-300 hover:text-zinc-950'
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                );
-              })}
+            <div className="lg:col-span-6">
+              <p className="text-zinc-600 text-sm md:text-base font-normal leading-relaxed font-sans max-w-xl">
+                Uma seleção de projetos que representam o Padrão Quattro de Qualidade em diferentes setores de atuação.
+              </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {obrasFiltradas.map((obra) => (
-              <div 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {OBRAS_DESTAQUE.map((obra) => (
+              <div
                 key={obra.id}
                 className="bg-white border border-zinc-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-amber-500/40 transition-all duration-300 group flex flex-col justify-between"
               >
                 <div>
                   <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100">
-                    <img 
-                      src={obra.imagem} 
+                    <img
+                      src={obra.imagem}
                       alt={obra.title}
                       loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    
+
                     <div className="absolute top-4 left-4 flex gap-2">
                       <span className="text-[10px] font-bold uppercase tracking-widest bg-zinc-950/80 text-amber-500 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30 font-['Montserrat']">
                         {obra.categoriaLabel}
@@ -333,8 +360,8 @@ export const Setores: React.FC = () => {
 
                     <div className="absolute top-4 right-4">
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full backdrop-blur-md font-['Montserrat'] ${
-                        obra.status === 'Concluído' 
-                          ? 'bg-emerald-500/90 text-white' 
+                        obra.status === 'Concluído'
+                          ? 'bg-emerald-500/90 text-white'
                           : 'bg-amber-500/90 text-zinc-950'
                       }`}>
                         {obra.status}
@@ -343,10 +370,12 @@ export const Setores: React.FC = () => {
                   </div>
 
                   <div className="p-6 md:p-8 space-y-4">
-                    <h3 className="text-lg sm:text-xl font-bold text-zinc-950 font-['Montserrat'] group-hover:text-amber-600 transition-colors leading-snug">
-                      {obra.title}
-                    </h3>
-                    
+                    <Link to="/contato" className="block">
+                      <h3 className="text-lg sm:text-xl font-bold text-zinc-950 font-['Montserrat'] group-hover:text-amber-600 transition-colors leading-snug">
+                        {obra.title}
+                      </h3>
+                    </Link>
+
                     <p className="text-xs sm:text-sm text-zinc-600 font-sans leading-relaxed">
                       {obra.resumo}
                     </p>
@@ -362,16 +391,6 @@ export const Setores: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="px-6 md:px-8 pb-6">
-                  <Link
-                    to="/contato"
-                    className="w-full py-3 rounded-xl bg-[#f8f9f6] hover:bg-zinc-950 hover:text-white border border-zinc-200/80 text-zinc-900 text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 font-['Montserrat']"
-                  >
-                    <span>Solicitar Projeto Similar</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
                 </div>
               </div>
             ))}
@@ -430,5 +449,3 @@ export const Setores: React.FC = () => {
     </div>
   );
 };
-
-export default Setores;

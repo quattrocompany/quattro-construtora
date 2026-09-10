@@ -163,7 +163,7 @@ export const Servicos: React.FC = () => {
                 to="/contato"
                 className="px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/20 inline-flex items-center justify-center gap-2 font-['Montserrat']"
               >
-                <span>Solicitar Cotação</span>
+                <span>Entre em Contato</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
