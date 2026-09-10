@@ -5,11 +5,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Loader2 } from 'lucide-react';
 import type { BlogPost as BlogPostType } from '../../types';
+import { blogPosts } from '../../data/blogPosts';
 
 // TODO (Etapa 2/5 do plano): trocar por uma leitura real do Firestore
-// (coleção 'posts', filtrando por slug).
-const fetchPostBySlug = async (_slug: string): Promise<BlogPostType | null> => {
-  return null;
+// (coleção 'posts', filtrando por slug). Por enquanto os dados vêm de uma
+// lista estática migrada do blog anterior (src/data/blogPosts.ts).
+const fetchPostBySlug = async (slug: string): Promise<BlogPostType | null> => {
+  return blogPosts.find((post) => post.slug === slug && post.published) ?? null;
 };
 
 export const BlogPost: React.FC = () => {

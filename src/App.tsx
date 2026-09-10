@@ -8,6 +8,7 @@ import { QuemSomos } from './pages/QuemSomos';
 import { Setores } from './pages/Setores';
 import { Servicos } from './pages/Servicos';
 import { Contato } from './pages/Contato';
+import { Duvidas } from './pages/Duvidas';
 import { BlogIndex } from './pages/Blog/BlogIndex';
 import { BlogPost } from './pages/Blog/BlogPost';
 import { Privacidade } from './pages/Privacidade';
@@ -48,6 +49,7 @@ const MainLayout: React.FC = () => {
           <Route path="/setores-e-obras" element={<Setores />} />
           <Route path="/servicos" element={<Servicos />} />
           <Route path="/contato" element={<Contato />} />
+          <Route path="/duvidas-frequentes" element={<Duvidas />} />
           <Route path="/privacidade" element={<Privacidade />} />
           <Route path="/termos" element={<Termos />} />
           <Route path="/blog" element={<BlogIndex />} />

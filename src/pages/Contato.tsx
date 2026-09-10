@@ -8,9 +8,9 @@ const CANAIS_DIRETOS = [
   {
     icon: Phone,
     titulo: 'Telefone & WhatsApp Comercial',
-    info: '+55 (11) 4003-0000',
-    sub: 'Segunda a Sexta, das 08h às 18h',
-    href: 'https://wa.me/551140030000'
+    info: '(11) 3045-0826',
+    sub: '',
+    href: 'https://wa.me/551130450826'
   },
   {
     icon: Mail,
@@ -30,7 +30,7 @@ const CANAIS_DIRETOS = [
     icon: Clock,
     titulo: 'Horário de Atendimento',
     info: 'Seg a Qui: 08h às 18h | Sex: 08h às 17h',
-    sub: 'Plantão de emergências para obras ativas 24/7',
+    sub: '',
     href: null
   }
 ];
@@ -59,7 +59,7 @@ export const Contato: React.FC = () => {
         {/* MÍDIA DE FUNDO FULL WIDTH */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
-            src="/img/BG_CTA_QuattroInc_Site.jpeg"
+            src="/img/contato-14791.jpg"
             alt="Quattro Construtora - Atendimento"
             className="w-full h-full object-cover object-center"
           />
@@ -77,7 +77,7 @@ export const Contato: React.FC = () => {
               <span className="text-amber-500 font-bold">Contato</span>
             </nav>
 
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
+            <h1 className="text-[2.3rem] font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
               FALE COM A NOSSA <br />
               <span className="bg-amber-500 text-zinc-950 px-3.5 py-1 rounded-md inline-block mt-2 font-black">
                 EQUIPE TÉCNICA
@@ -153,9 +153,11 @@ export const Contato: React.FC = () => {
                         </p>
                       )}
 
-                      <p className="text-[11px] text-zinc-500 font-sans leading-normal">
-                        {canal.sub}
-                      </p>
+                      {canal.sub && (
+                        <p className="text-[11px] text-zinc-500 font-sans leading-normal">
+                          {canal.sub}
+                        </p>
+                      )}
                     </div>
                   </div>
                 );
@@ -189,6 +191,16 @@ export const Contato: React.FC = () => {
                 <p className="text-xs sm:text-sm text-zinc-600 font-sans leading-relaxed">{faq.resposta}</p>
               </div>
             ))}
+          </div>
+
+          <div className="flex justify-center">
+            <Link
+              to="/duvidas-frequentes"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 font-['Montserrat']"
+            >
+              <span>Saiba Mais</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>

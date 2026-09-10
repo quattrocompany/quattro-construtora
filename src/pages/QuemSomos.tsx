@@ -1,5 +1,5 @@
 // src/pages/QuemSomos.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Target, 
@@ -219,6 +219,63 @@ export const QuemSomos: React.FC = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Mede a posição real de cada bolinha (partida) e do topo de cada card
+  // (chegada) do infográfico "Trajetória de Crescimento", para desenhar as
+  // setas alinhadas com o layout de verdade, em qualquer largura de tela.
+  const trajetoriaRef = useRef<HTMLDivElement | null>(null);
+  const trajetoriaCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const trajetoriaDotRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [trajetoriaSize, setTrajetoriaSize] = useState({ width: 1000, height: 260 });
+  const [trajetoriaCardTops, setTrajetoriaCardTops] = useState<{ x: number; y: number }[]>([]);
+  const [trajetoriaDots, setTrajetoriaDots] = useState<{ x: number; y: number }[]>([]);
+
+  useEffect(() => {
+    const el = trajetoriaRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const containerRect = el.getBoundingClientRect();
+      setTrajetoriaSize({ width: el.clientWidth, height: el.clientHeight });
+
+      setTrajetoriaCardTops(
+        trajetoriaCardRefs.current.map((card) => {
+          if (!card) return { x: 0, y: 0 };
+          const r = card.getBoundingClientRect();
+          return { x: r.left - containerRect.left + r.width * 0.78, y: r.top - containerRect.top };
+        })
+      );
+
+      setTrajetoriaDots(
+        trajetoriaDotRefs.current.map((dot) => {
+          if (!dot) return { x: 0, y: 0 };
+          const r = dot.getBoundingClientRect();
+          return { x: r.left - containerRect.left + r.width / 2, y: r.top - containerRect.top + r.height / 2 };
+        })
+      );
+    };
+
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    trajetoriaCardRefs.current.forEach((card) => card && ro.observe(card));
+    return () => ro.disconnect();
+  }, []);
+
+  const trajW = trajetoriaSize.width || 1000;
+  const trajH = trajetoriaSize.height || 260;
+
+  // Curva suave, subindo da bolinha do card `from` até pousar no topo (acima
+  // da numeração) do card `from + 1`
+  const trajetoriaArrowPath = (from: number) => {
+    const a = trajetoriaDots[from];
+    const b = trajetoriaCardTops[from + 1];
+    if (!a || !b || (a.x === 0 && a.y === 0) || (b.x === 0 && b.y === 0)) return '';
+    const bowY = Math.max(4, Math.min(a.y, b.y) - 34);
+    const c1x = a.x + (b.x - a.x) * 0.35;
+    const c2x = a.x + (b.x - a.x) * 0.65;
+    return `M ${a.x} ${a.y} C ${c1x} ${bowY}, ${c2x} ${bowY}, ${b.x} ${b.y}`;
+  };
 
   return (
     <div className="w-full bg-[#f8f9f6] text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
@@ -688,8 +745,13 @@ export const QuemSomos: React.FC = () => {
       </section>
 
       {/* 7. TRAJETÓRIA (INFOGRÁFICO DE ESCADA RESPONSIVO COM SETAS INDIVIDUAIS) */}
-      <section className="py-20 sm:py-28 bg-white border-b border-zinc-200/80 font-['Montserrat'] overflow-visible">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12 md:space-y-16">
+      <section className="relative py-8 sm:py-10 bg-white border-b border-zinc-200/80 font-['Montserrat'] overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center blur-md pointer-events-none"
+          style={{ backgroundImage: "url('/img/trajetoriacrescimento_2148993907.jpg')", opacity: 0.5, transform: "scale(1.1)" }}
+        />
+        <div className="absolute inset-0 bg-white/35 pointer-events-none" />
+        <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 md:space-y-8">
           
           <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end">
             <div className="lg:col-span-6 space-y-3">
@@ -708,79 +770,57 @@ export const QuemSomos: React.FC = () => {
           </div>
 
           {/* VISUALIZAÇÃO DESKTOP: Infográfico em Escada Ascendente com Arcos/Setas Individuais */}
-          <div className="hidden lg:block relative pt-12 pb-16">
-            <div className="w-full relative px-4">
+          <div className="hidden lg:block relative pt-10 pb-2">
+            <div className="w-full relative px-4" ref={trajetoriaRef}>
               
               <svg 
-                className="absolute inset-0 w-full h-full pointer-events-none z-10" 
-                viewBox="0 0 1000 380" 
+                className="absolute inset-0 w-full h-full pointer-events-none z-30" 
+                viewBox={`0 0 ${trajW} ${trajH}`} 
                 fill="none" 
-                preserveAspectRatio="none"
               >
                 <defs>
                   <marker 
                     id="arrowhead-desktop" 
-                    markerWidth="8" 
-                    markerHeight="8" 
-                    refX="6" 
-                    refY="4" 
+                    markerUnits="userSpaceOnUse"
+                    markerWidth="7" 
+                    markerHeight="7" 
+                    refX="5" 
+                    refY="3.5" 
                     orient="auto"
                   >
-                    <path d="M 0 0 L 8 4 L 0 8 z" fill="#f59e0b" />
+                    <path d="M 0 0 L 7 3.5 L 0 7 z" fill="#f59e0b" />
                   </marker>
                 </defs>
 
-                {/* Arco 1 -> 2 com Seta */}
-                <path 
-                  d="M 100 270 C 120 180, 260 180, 280 220" 
-                  stroke="#f59e0b" 
-                  strokeWidth="2.5" 
-                  strokeDasharray="6 4" 
-                  fill="none" 
-                  markerEnd="url(#arrowhead-desktop)"
-                />
-                
-                {/* Arco 2 -> 3 com Seta */}
-                <path 
-                  d="M 300 220 C 320 130, 460 130, 480 170" 
-                  stroke="#f59e0b" 
-                  strokeWidth="2.5" 
-                  strokeDasharray="6 4" 
-                  fill="none" 
-                  markerEnd="url(#arrowhead-desktop)"
-                />
-
-                {/* Arco 3 -> 4 com Seta */}
-                <path 
-                  d="M 500 170 C 520 80, 660 80, 680 120" 
-                  stroke="#f59e0b" 
-                  strokeWidth="2.5" 
-                  strokeDasharray="6 4" 
-                  fill="none" 
-                  markerEnd="url(#arrowhead-desktop)"
-                />
-
-                {/* Arco 4 -> 5 com Seta Final */}
-                <path 
-                  d="M 700 120 C 720 30, 870 30, 890 65" 
-                  stroke="#f59e0b" 
-                  strokeWidth="3" 
-                  fill="none" 
-                  markerEnd="url(#arrowhead-desktop)"
-                />
+                {[0, 1, 2, 3].map((idx) => (
+                  <path 
+                    key={idx}
+                    d={trajetoriaArrowPath(idx)}
+                    stroke="#f59e0b" 
+                    strokeWidth="1.5" 
+                    strokeDasharray="4 4" 
+                    fill="none" 
+                    markerEnd="url(#arrowhead-desktop)"
+                  />
+                ))}
               </svg>
 
-              <div className="grid grid-cols-5 gap-6 items-end relative z-20">
+              <div className="grid grid-cols-5 gap-6 items-end relative z-10">
                 {TRAJETORIA_TIMELINE.map((item, idx) => {
-                  const offsets = ['mb-0', 'mb-12', 'mb-24', 'mb-36', 'mb-48'];
                   return (
-                    <div key={idx} className={`relative flex flex-col items-center ${offsets[idx]}`}>
-                      <div className="w-full bg-[#f8f9f6] border border-zinc-200/80 p-5 rounded-2xl flex flex-col space-y-2 shadow-sm hover:border-amber-500/60 hover:bg-white hover:shadow-lg transition-all duration-300 group">
+                    <div key={idx} className="relative flex flex-col items-center" style={{ marginBottom: idx * 18 }}>
+                      <div
+                        ref={(el) => { trajetoriaCardRefs.current[idx] = el; }}
+                        className="w-full min-h-[200px] bg-[#f8f9f6] border border-zinc-200/80 p-5 rounded-2xl flex flex-col space-y-2 shadow-sm hover:border-amber-500/60 hover:bg-white hover:shadow-lg transition-all duration-300 group"
+                      >
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-black text-amber-500 font-['Montserrat'] tracking-wider">
                             0{idx + 1}
                           </span>
-                          <div className="w-2.5 h-2.5 rounded-full bg-amber-500 group-hover:scale-125 transition-transform" />
+                          <div
+                            ref={(el) => { trajetoriaDotRefs.current[idx] = el; }}
+                            className="w-2.5 h-2.5 rounded-full bg-amber-500 group-hover:scale-125 transition-transform"
+                          />
                         </div>
                         
                         <h3 className="text-sm font-extrabold text-zinc-950 font-['Montserrat'] leading-tight">
@@ -824,43 +864,49 @@ export const QuemSomos: React.FC = () => {
         </div>
       </section>
 
-      {/* 8. CALL TO ACTION FINAL COM IMAGEM REDONDA EXPANDIDA VAZANDO NO TOPO */}
-      <section className="relative pt-24 sm:pt-28 pb-20 sm:pb-28 bg-zinc-900 text-white font-['Montserrat'] border-t border-zinc-800">
-        
-        {/* Imagem Redonda Expandida Vazando para a Seção Anterior até alinhar a base com o botão */}
-        <div className="absolute -top-36 sm:-top-48 md:-top-56 lg:-top-14 right-6 sm:right-12 lg:right-20 z-30 pointer-events-none">
-          <div className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[520px] lg:h-[520px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
-            <img 
-              src="/img/Amazon_imgRodape.avif" 
-              alt="Engenharia Quattro Construtora" 
-              className="w-full h-full object-cover object-center"
-            />
-          </div>
-        </div>
+      {/* 8. CALL TO ACTION FINAL COM IMAGEM REDONDA VAZANDO NO TOPO (some no mobile) */}
+      <section className="relative pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-20 sm:pb-28 bg-zinc-900 text-white font-['Montserrat'] border-t border-zinc-800 overflow-visible">
 
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-10">
-          <div className="relative max-w-2xl lg:max-w-3xl space-y-6">
-            <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
-              Inicie Seu Projeto
-            </span>
+          <div className="grid md:grid-cols-2 gap-10 md:gap-8 lg:gap-12 items-center">
 
-            <h2 className="text-[2.3rem] font-extrabold text-white leading-[1.12]">
-              Vamos transformar o seu próximo projeto em uma solução sólida?
-            </h2>
+            <div className="relative max-w-2xl space-y-6">
+              <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
+                Inicie Seu Projeto
+              </span>
 
-            <p className="text-zinc-400 text-sm md:text-base font-sans font-normal leading-relaxed">
-              Conte com a inteligência técnica, a transparência e a previsibilidade do Padrão Quattro. Fale diretamente com nossos engenheiros especialistas.
-            </p>
+              <h2 className="text-[2.3rem] font-extrabold text-white leading-[1.12]">
+                Vamos transformar o seu próximo projeto em uma solução sólida?
+              </h2>
 
-            <div className="pt-2">
-              <Link
-                to="/contato"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 font-['Montserrat']"
-              >
-                <span>Entre em Contato Conosco</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <p className="text-zinc-400 text-sm md:text-base font-sans font-normal leading-relaxed">
+                Conte com a inteligência técnica, a transparência e a previsibilidade do Padrão Quattro. Fale diretamente com nossos engenheiros especialistas.
+              </p>
+
+              <div className="pt-2">
+                <Link
+                  to="/contato"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 font-['Montserrat']"
+                >
+                  <span>Entre em Contato Conosco</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
+
+            {/* Imagem Redonda: escondida no mobile, aparece a partir do md e vaza para a seção anterior */}
+            <div className="hidden md:flex justify-center md:justify-end pointer-events-none">
+              <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
+                <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
+                  <img 
+                    src="/img/Amazon_imgRodape.avif" 
+                    alt="Engenharia Quattro Construtora" 
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

@@ -5,12 +5,15 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Loader2, ChevronRight } from 'lucide-react';
 import type { BlogPost } from '../../types';
+import { blogPosts } from '../../data/blogPosts';
 
 // TODO (Etapa 2/5 do plano): trocar por uma leitura real da coleção 'posts'
-// no Firestore. Por enquanto a lista fica vazia e a seção mostra um estado
-// "em breve" para não quebrar a página.
+// no Firestore. Por enquanto os dados vêm de uma lista estática migrada do
+// blog anterior (src/data/blogPosts.ts).
 const fetchPosts = async (): Promise<BlogPost[]> => {
-  return [];
+  return [...blogPosts]
+    .filter((post) => post.published)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
 export const BlogIndex: React.FC = () => {
@@ -54,7 +57,7 @@ export const BlogIndex: React.FC = () => {
               <span className="text-amber-500 font-bold">Blog</span>
             </nav>
 
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
+            <h1 className="text-[2.3rem] font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
               NOTÍCIAS E <br />
               <span className="bg-amber-500 text-zinc-950 px-3.5 py-1 rounded-md inline-block mt-2 font-black">
                 CONTEÚDOS
@@ -97,7 +100,7 @@ export const BlogIndex: React.FC = () => {
                 const postDate = new Date(post.date).toLocaleDateString('pt-BR');
 
                 return (
-                  <div key={post.id} className="bg-white border border-zinc-200/80 rounded-3xl overflow-hidden group hover:shadow-xl hover:border-amber-500/40 transition-all duration-300 flex flex-col h-full">
+                  <div key={post.slug} className="bg-white border border-zinc-200/80 rounded-3xl overflow-hidden group hover:shadow-xl hover:border-amber-500/40 transition-all duration-300 flex flex-col h-full">
                     <div className="aspect-video overflow-hidden border-b border-zinc-100">
                       <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     </div>

@@ -157,7 +157,7 @@ export const Setores: React.FC = () => {
         {/* MÍDIA DE FUNDO FULL WIDTH */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
-            src="/img/BG_CTA_QuattroInc_Site.jpeg"
+            src="/img/Amazon_Entrada.jpg"
             alt="Quattro Construtora - Setores de Atuação"
             className="w-full h-full object-cover object-center"
           />
@@ -175,7 +175,7 @@ export const Setores: React.FC = () => {
               <span className="text-amber-500 font-bold">Setores</span>
             </nav>
 
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
+            <h1 className="text-[2.3rem] font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
               SOLUÇÕES SOB MEDIDA <br />
               <span className="bg-amber-500 text-zinc-950 px-3.5 py-1 rounded-md inline-block mt-2 font-black">
                 PARA CADA SETOR
@@ -203,13 +203,20 @@ export const Setores: React.FC = () => {
       <section className="py-20 sm:py-28 bg-white border-b border-zinc-200/80 font-['Montserrat']">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
           
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
-              Especialidades
-            </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
-              Setores de Atuação
-            </h2>
+          <div className="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end">
+            <div className="lg:col-span-6 space-y-3">
+              <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
+                Especialidades
+              </span>
+              <h2 className="text-[2.3rem] font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
+                Setores de Atuação
+              </h2>
+            </div>
+            <div className="lg:col-span-6">
+              <p className="text-zinc-600 text-sm md:text-base font-normal leading-relaxed font-sans max-w-xl">
+                Engenharia especializada por segmento, com normas técnicas e soluções construtivas adequadas às exigências de cada setor.
+              </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -275,7 +282,7 @@ export const Setores: React.FC = () => {
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Acervo Executivo
               </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
+              <h2 className="text-[2.3rem] font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
                 Obras em Destaque
               </h2>
             </div>
@@ -373,42 +380,49 @@ export const Setores: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. CALL TO ACTION FINAL */}
-      <section className="py-20 sm:py-28 bg-zinc-950 text-white font-['Montserrat']">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-          <div className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800 rounded-3xl p-8 sm:p-14 md:p-16 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* 4. CALL TO ACTION FINAL COM IMAGEM REDONDA VAZANDO NO TOPO (some no mobile) */}
+      <section className="relative pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-20 sm:pb-28 bg-zinc-900 text-white font-['Montserrat'] border-t border-zinc-800 overflow-visible">
 
-            <div className="relative z-10 max-w-3xl space-y-6">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-10">
+          <div className="grid md:grid-cols-2 gap-10 md:gap-8 lg:gap-12 items-center">
+
+            <div className="relative max-w-2xl space-y-6">
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Consultoria Técnica de Engenharia
               </span>
 
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.12]">
+              <h2 className="text-[2.3rem] font-extrabold text-white leading-[1.12]">
                 Sua obra precisa de rigor técnico e previsibilidade absoluta?
               </h2>
 
-              <p className="text-zinc-400 text-xs sm:text-sm md:text-base font-sans font-normal leading-relaxed">
+              <p className="text-zinc-400 text-sm md:text-base font-sans font-normal leading-relaxed">
                 Fale diretamente com os engenheiros responsáveis da Quattro Construtora. Analisamos o escopo do seu projeto e desenvolvemos a proposta ideal para o seu setor.
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
+              <div className="pt-2">
                 <Link
                   to="/contato"
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 inline-flex items-center justify-center gap-2 font-['Montserrat']"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 font-['Montserrat']"
                 >
                   <span>Falar com um Engenheiro</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-
-                <Link
-                  to="/servicos"
-                  className="w-full sm:w-auto px-8 py-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 hover:text-white text-xs font-bold uppercase tracking-wider transition-all inline-flex items-center justify-center gap-2 font-['Montserrat']"
-                >
-                  <span>Ver Serviços & Engenharia</span>
-                </Link>
               </div>
             </div>
+
+            {/* Imagem Redonda: escondida no mobile, aparece a partir do md e vaza para a seção anterior */}
+            <div className="hidden md:flex justify-center md:justify-end pointer-events-none">
+              <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
+                <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
+                  <img
+                    src="/img/Amazon_imgRodape.avif"
+                    alt="Engenharia Quattro Construtora"
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

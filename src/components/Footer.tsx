@@ -1,11 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  MapPin, 
-  Phone, 
-  Mail, 
-  ArrowUpRight,
-  User
+  MapPin
 } from 'lucide-react';
 
 const FacebookIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
@@ -36,7 +32,7 @@ export const Footer: React.FC = () => {
       </div>
 
       <div className="footer-container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8 mb-16">
           
           {/* COLUNA 1: LOGO COMPLETO E EXPANDIDO */}
           <div className="lg:col-span-2 space-y-6">
@@ -81,7 +77,6 @@ export const Footer: React.FC = () => {
               <li><Link to="/setores" className="footer-link">Setores de Atuação</Link></li>
               <li><Link to="/servicos" className="footer-link">Engenharia & Serviços</Link></li>
               <li><Link to="/blog" className="footer-link">Notícias & Blog</Link></li>
-              <li><Link to="/contato" className="footer-link">Fale Conosco</Link></li>
             </ul>
           </div>
 
@@ -96,9 +91,31 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* COLUNA 4: ATENDIMENTO & PORTAIS */}
+          {/* COLUNA 4: ATENDIMENTO */}
           <div className="space-y-5">
             <h4 className="footer-col-title">Atendimento</h4>
+            <ul className="footer-list">
+              <li>
+                <a href="https://portal.quattroconstrutora.com.br/cliente" target="_blank" rel="noreferrer" className="footer-link">
+                  Portal do Cliente
+                </a>
+              </li>
+              <li>
+                <Link to="/duvidas-frequentes" className="footer-link">
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <Link to="/contato" className="footer-link">
+                  Fale Conosco
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* COLUNA 5: ONDE ESTAMOS */}
+          <div className="space-y-5">
+            <h4 className="footer-col-title">Onde Estamos</h4>
             <div className="footer-list">
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
@@ -111,30 +128,8 @@ export const Footer: React.FC = () => {
                   Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial, Barueri/SP - CEP: 06454-000
                 </a>
               </div>
-              <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>+55 (11) 3045-0826</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>contato@quattroconstrutora.com.br</span>
-              </div>
             </div>
 
-            <div className="pt-3">
-              <a 
-                href="https://portal.quattroconstrutora.com.br/cliente" 
-                target="_blank" 
-                rel="noreferrer"
-                className="footer-portal-link"
-              >
-                <div className="flex items-center gap-2">
-                  <User className="w-3.5 h-3.5" />
-                  <span className="text-amber-500">Portal do Cliente</span>
-                </div>
-                <ArrowUpRight className="w-3.5 h-3.5 text-amber-500" />
-              </a>
-            </div>
           </div>
 
         </div>
