@@ -145,6 +145,8 @@ export const Setores: React.FC = () => {
   const [loading, setLoading] = useState(true);
   
   const [imgIndex, setImgIndex] = useState<Record<string, number>>({});
+  
+  // Estados do Modal
   const [obraSelecionada, setObraSelecionada] = useState<any | null>(null);
   const [modalImgIndex, setModalImgIndex] = useState(0);
 
@@ -184,22 +186,34 @@ export const Setores: React.FC = () => {
   const getGaleriaCompleta = (obra: any) => {
     if (!obra) return [];
     const imagens = [];
-    if (obra.capaImage) imagens.push({ url: obra.capaImage, alt: 'Imagem Principal' });
+    
+    // Adiciona a capa primeiro
+    if (obra.capaImage) {
+      imagens.push({ url: obra.capaImage, alt: 'Imagem Principal' });
+    }
+    
+    // Adiciona a galeria interna
     if (obra.galeriaImages && Array.isArray(obra.galeriaImages)) {
       obra.galeriaImages.forEach((img: any) => {
         if (typeof img === 'string') imagens.push({ url: img, alt: '' });
         else if (img && img.url) imagens.push(img);
       });
     }
+    
     return imagens;
   };
+
+  // Limita a 6 imagens (Capa + 5 miniaturas) conforme o layout solicitado
+  const galeriaModal = getGaleriaCompleta(obraSelecionada).slice(0, 6);
 
   if (loading) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center bg-[#f8f9f6]">
         <div className="flex flex-col items-center gap-4 text-amber-500">
           <Loader2 className="w-10 h-10 animate-spin" />
-          <p className="font-['Montserrat'] font-bold tracking-widest text-sm text-zinc-900 uppercase">Carregando Acervo...</p>
+          <p className="font-['Montserrat'] font-bold tracking-widest text-sm text-zinc-900 uppercase">
+            Carregando Acervo...
+          </p>
         </div>
       </div>
     );
@@ -208,7 +222,9 @@ export const Setores: React.FC = () => {
   return (
     <div className="w-full bg-[#f8f9f6] text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
 
+      {/* ============================================================== */}
       {/* 1. HERO SECTION */}
+      {/* ============================================================== */}
       <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat',sans-serif]">
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
@@ -252,7 +268,9 @@ export const Setores: React.FC = () => {
         </div>
       </section>
 
+      {/* ============================================================== */}
       {/* 2. VISÃO GERAL DOS SETORES */}
+      {/* ============================================================== */}
       <section className="py-20 sm:py-28 bg-white border-b border-zinc-200/80 font-['Montserrat']">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
 
@@ -383,7 +401,9 @@ export const Setores: React.FC = () => {
         </div>
       </section>
 
+      {/* ============================================================== */}
       {/* 3. OBRAS EM DESTAQUE */}
+      {/* ============================================================== */}
       <section id="portfolio" className="py-20 sm:py-28 bg-[#f8f9f6] border-b border-zinc-200/80 font-['Montserrat']">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
 
@@ -467,7 +487,9 @@ export const Setores: React.FC = () => {
         </div>
       </section>
 
+      {/* ============================================================== */}
       {/* 4. CALL TO ACTION FINAL */}
+      {/* ============================================================== */}
       <section className="relative pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-20 sm:pb-28 bg-zinc-900 text-white font-['Montserrat'] border-t border-zinc-800 overflow-visible">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-10">
           <div className="grid md:grid-cols-2 gap-10 md:gap-8 lg:gap-12 items-center">
@@ -510,36 +532,51 @@ export const Setores: React.FC = () => {
         </div>
       </section>
 
+      {/* ========================================================= */}
       {/* MODAL (LAYOUT 2 COLUNAS: 70% GALERIA / 30% INFO) */}
+      {/* ========================================================= */}
       {obraSelecionada && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md transition-all">
-          <div className="relative w-full max-w-6xl max-h-[85vh] sm:max-h-[80vh] mt-8 lg:mt-12 bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col lg:flex-row">
+          <div className="relative w-full max-w-[1200px] h-[90vh] sm:h-[80vh] bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col lg:flex-row">
             
-            <button 
-              onClick={() => setObraSelecionada(null)} 
-              className="absolute top-4 right-4 z-[60] p-2.5 bg-zinc-950/80 hover:bg-zinc-800 text-zinc-300 rounded-full backdrop-blur-md transition-colors border border-zinc-800"
-              title="Fechar"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* COLUNA ESQUERDA (70%) */}
-            <div className="w-full lg:w-[70%] p-4 sm:p-6 flex flex-col gap-4 overflow-y-auto custom-scrollbar bg-zinc-950/50">
-              <div className="w-full h-[35vh] lg:h-[50vh] bg-zinc-950 rounded-2xl overflow-hidden relative flex items-center justify-center shrink-0 border border-zinc-800/50">
+            {/* COLUNA ESQUERDA (70%) - GALERIA */}
+            <div className="w-full lg:w-[70%] p-4 sm:p-6 flex flex-col justify-center gap-4 bg-zinc-950">
+              
+              {/* IMAGEM PRINCIPAL COM SETAS */}
+              <div className="w-full h-[40vh] lg:h-[55vh] rounded-2xl overflow-hidden relative flex items-center justify-center shrink-0 group">
                 <img 
-                  src={getGaleriaCompleta(obraSelecionada)[modalImgIndex]?.url} 
+                  src={galeriaModal[modalImgIndex]?.url} 
                   alt="Imagem Principal"
                   className="w-full h-full object-contain"
                 />
+                
+                {/* SETAS: Exibidas apenas se tiver mais de 1 imagem */}
+                {galeriaModal.length > 1 && (
+                  <>
+                    <button 
+                      onClick={() => setModalImgIndex(prev => (prev - 1 + galeriaModal.length) % galeriaModal.length)} 
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 bg-zinc-950/60 hover:bg-amber-500 text-white hover:text-zinc-950 rounded-full backdrop-blur transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button 
+                      onClick={() => setModalImgIndex(prev => (prev + 1) % galeriaModal.length)} 
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 bg-zinc-950/60 hover:bg-amber-500 text-white hover:text-zinc-950 rounded-full backdrop-blur transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
               </div>
               
-              {getGaleriaCompleta(obraSelecionada).length > 1 && (
-                <div className="flex gap-3 overflow-x-auto pb-2 shrink-0 custom-scrollbar-thin">
-                  {getGaleriaCompleta(obraSelecionada).map((img, idx) => (
+              {/* MINIATURAS ADAPTADAS E LIMITADAS A 6 */}
+              {galeriaModal.length > 1 && (
+                <div className="w-full grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 shrink-0">
+                  {galeriaModal.map((img, idx) => (
                     <button 
                       key={idx} 
                       onClick={() => setModalImgIndex(idx)} 
-                      className={`w-24 h-16 sm:w-28 sm:h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
+                      className={`w-full aspect-[4/3] rounded-xl overflow-hidden border-2 transition-all ${
                         modalImgIndex === idx ? 'border-amber-500 opacity-100' : 'border-transparent opacity-40 hover:opacity-100'
                       }`}
                     >
@@ -550,39 +587,51 @@ export const Setores: React.FC = () => {
               )}
             </div>
 
-            {/* COLUNA DIREITA (30%) */}
-            <div className="w-full lg:w-[30%] bg-zinc-900 border-t lg:border-t-0 lg:border-l border-zinc-800 flex flex-col p-6 sm:p-8 overflow-y-auto custom-scrollbar">
-              <div className="mb-6 pr-8">
-                <span className="inline-block bg-zinc-800 text-amber-500 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded mb-3 font-['Montserrat']">
-                  {obraSelecionada.categoriaLabel || obraSelecionada.categoriaSlug}
-                </span>
-                <h3 className="text-xl sm:text-2xl font-extrabold text-white font-['Montserrat'] leading-snug">
-                  {obraSelecionada.title}
-                </h3>
-                <div className="flex flex-col gap-1.5 mt-4 text-xs text-zinc-400 font-sans">
-                  <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-amber-500" /><span>{obraSelecionada.local}</span></div>
-                  <div className="flex items-center gap-2"><Maximize2 className="w-4 h-4 text-amber-500" /><span>{obraSelecionada.area}</span></div>
+            {/* COLUNA DIREITA (30%) - INFORMAÇÕES */}
+            <div className="w-full lg:w-[30%] bg-zinc-900 border-t lg:border-t-0 lg:border-l border-zinc-800 flex flex-col relative">
+              
+              {/* BOTÃO FECHAR ALINHADO AO TOPO DIREITO DA COLUNA DE TEXTO */}
+              <button 
+                onClick={() => setObraSelecionada(null)} 
+                className="absolute top-4 right-4 z-[60] p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-full transition-colors"
+                title="Fechar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="p-6 sm:p-8 flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+                <div className="mb-6 pr-8">
+                  <span className="inline-block text-amber-500 text-[10px] font-bold uppercase tracking-widest mb-3 border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 rounded font-['Montserrat']">
+                    {obraSelecionada.categoriaLabel || obraSelecionada.categoriaSlug}
+                  </span>
+                  <h3 className="text-2xl font-extrabold text-white font-['Montserrat'] leading-snug">
+                    {obraSelecionada.title}
+                  </h3>
+                  <div className="flex flex-col gap-2 mt-4 text-xs text-zinc-400 font-sans">
+                    <div className="flex items-center gap-2"><MapPin className="w-4 h-4 text-amber-500 shrink-0" /><span>{obraSelecionada.local}</span></div>
+                    <div className="flex items-center gap-2"><Maximize2 className="w-4 h-4 text-amber-500 shrink-0" /><span>{obraSelecionada.area}</span></div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex-1 space-y-3 mb-8">
-                <h4 className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-['Montserrat']">
-                  Detalhes do Projeto
-                </h4>
-                <p className="text-sm text-zinc-300 leading-relaxed font-sans whitespace-pre-wrap">
-                  {obraSelecionada.descricaoCompleta || obraSelecionada.resumo}
-                </p>
-              </div>
+                <div className="flex-1 space-y-3 mb-8">
+                  <h4 className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-['Montserrat']">
+                    Detalhes do Projeto
+                  </h4>
+                  <p className="text-sm text-zinc-300 leading-relaxed font-sans whitespace-pre-wrap">
+                    {obraSelecionada.descricaoCompleta || obraSelecionada.resumo}
+                  </p>
+                </div>
 
-              <div className="mt-auto shrink-0 pt-6 border-t border-zinc-800">
-                <Link 
-                  to="/contato" 
-                  onClick={() => setObraSelecionada(null)}
-                  className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all font-['Montserrat'] shadow-lg flex items-center justify-center gap-2"
-                >
-                  <span>Entre em Contato</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="mt-auto shrink-0 pt-6">
+                  <Link 
+                    to="/contato" 
+                    onClick={() => setObraSelecionada(null)}
+                    className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all font-['Montserrat'] shadow-lg flex items-center justify-center gap-2"
+                  >
+                    <span>Entre em Contato</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
             </div>
 
