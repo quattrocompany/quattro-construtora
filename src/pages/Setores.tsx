@@ -1,7 +1,7 @@
 // src/pages/Setores.tsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Factory, Stethoscope, Wrench, Building2, ArrowRight, MapPin, Maximize2, ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
+import { Factory, Stethoscope, Wrench, Building2, ArrowRight, MapPin, Maximize2, CheckCircle2, ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase'; // Verifique se o caminho do import está correto
 
@@ -95,7 +95,17 @@ export const Setores: React.FC = () => {
           </div>
         </div>
       </section>
-
+{/* Exibe os diferenciais com o ícone de CheckCircle2 */}
+{setor.diferenciais && (
+  <div className="space-y-2 mt-4">
+    {setor.diferenciais.map((item: string, idx2: number) => (
+      <div key={idx2} className="flex items-start gap-2.5 text-xs text-zinc-700 font-sans leading-tight">
+        <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+        <span>{item}</span>
+      </div>
+    ))}
+  </div>
+)}
       {/* 2. VISÃO GERAL DOS SETORES */}
       <section className="py-20 sm:py-28 bg-white border-b border-zinc-200/80 font-['Montserrat']">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-12">
