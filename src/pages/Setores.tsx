@@ -25,6 +25,11 @@ const SETORES_DETALHADOS = [
       'Pisos de alta capacidade de carga com nivelamento a laser.',
       'Sistemas estruturais em concreto pré-moldado e aço.',
       'Cobertoras metálicas com isolamento termoacústico subcoberta.'
+    ],
+    // NOVA ESTRUTURA COM URL E ALT TEXT
+    imagens: [
+      { url: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200', alt: 'Fachada Principal' },
+      { url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200', alt: 'Interior do Galpão' }
     ]
   },
   {
@@ -37,6 +42,9 @@ const SETORES_DETALHADOS = [
       'Controle rigoroso de pressão positiva/negativa de ar.',
       'Gases medicinais, redes redundantes de energia e no-breaks.',
       'Revestimentos vinílicos monolíticos bactericidas.'
+    ],
+    imagens: [
+      { url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1200', alt: 'Centro Cirúrgico' }
     ]
   },
   {
@@ -49,6 +57,9 @@ const SETORES_DETALHADOS = [
       'Equipes dedicadas presenciais ou sob demanda de campo.',
       'Diagnósticos preditivos por termografia e análise de vibração.',
       'Atendimento emergencial 24/7 para plantas críticas.'
+    ],
+    imagens: [
+      { url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200', alt: 'Subestação Elétrica' }
     ]
   },
   {
@@ -61,6 +72,10 @@ const SETORES_DETALHADOS = [
       'Uso otimizado de Light Steel Frame e estruturas mistas.',
       'Automação residencial integrada e eficiência energética.',
       'Acabamentos refinados e rigor no detalhamento executivo.'
+    ],
+    imagens: [
+      { url: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1200', alt: 'Piscina & Lazer' },
+      { url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200', alt: 'Fachada Autoral' }
     ]
   }
 ];
@@ -74,7 +89,7 @@ const PORTFOLIO_OBRAS = [
     local: 'Cajamar – SP',
     area: '45.000 m²',
     status: 'Concluído',
-    imagem: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200',
+    capaImage: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200',
     resumo: 'Execução de pavimento de alta resistência mecânica, 48 docas niveladoras e sistema de sprinklers K25.',
     destaque: true
   },
@@ -86,7 +101,7 @@ const PORTFOLIO_OBRAS = [
     local: 'São Paulo – SP',
     area: '12.800 m²',
     status: 'Concluído',
-    imagem: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1200',
+    capaImage: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1200',
     resumo: 'Construção de 8 novas salas cirúrgicas inteligentes, 30 leitos de UTI e central de esterilização CME.',
     destaque: true
   },
@@ -98,7 +113,7 @@ const PORTFOLIO_OBRAS = [
     local: 'Alphaville – Barueri/SP',
     area: '8.500 m²',
     status: 'Em Execução',
-    imagem: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1200',
+    capaImage: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1200',
     resumo: 'Condomínio de residências contemporâneas em Steel Frame com certificação de eficiência energética.',
     destaque: true
   },
@@ -110,7 +125,7 @@ const PORTFOLIO_OBRAS = [
     local: 'Indaiatuba – SP',
     area: '22.000 m²',
     status: 'Concluído',
-    imagem: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200',
+    capaImage: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200',
     resumo: 'Modernização completa da subestação elétrica, adequação NR-12 e reforma estrutural de cobertura.'
   },
   {
@@ -121,7 +136,7 @@ const PORTFOLIO_OBRAS = [
     local: 'Anápolis – GO',
     area: '32.000 m²',
     status: 'Em Execução',
-    imagem: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=1200',
+    capaImage: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=1200',
     resumo: 'Planta industrial química com salas limpas padrão ISO 7 e tubulações sanitárias em aço inox 316L.'
   },
   {
@@ -132,7 +147,7 @@ const PORTFOLIO_OBRAS = [
     local: 'Campinas – SP',
     area: '1.400 m²',
     status: 'Concluído',
-    imagem: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200',
+    capaImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200',
     resumo: 'Residência de altíssimo padrão com balanços estruturais audaciosos e fachada autoral ventilada.'
   }
 ];
@@ -155,7 +170,6 @@ export const Setores: React.FC = () => {
 
       {/* 1. HERO SECTION */}
       <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat',sans-serif]">
-        {/* MÍDIA DE FUNDO FULL WIDTH */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
             src="/img/Amazon_Entrada.jpg"
@@ -164,10 +178,8 @@ export const Setores: React.FC = () => {
           />
         </div>
 
-        {/* LAYER BLUR EM TODA A ALTURA DO HERO */}
         <div className="absolute inset-y-0 left-0 w-full lg:w-7/12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_right,black_60%,transparent_100%)] z-10 pointer-events-none" />
-Industr
-        {/* CONTEÚDO */}
+
         <div className="max-w-[1440px] w-full mx-auto px-6 md:px-12 relative z-20 flex flex-col justify-center">
           <div className="max-w-2xl space-y-6">
             <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-400 font-['Montserrat']">
@@ -223,9 +235,9 @@ Industr
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {SETORES_DETALHADOS.map((setor) => {
               const SetorIcon = setor.icon;
-              const obrasSetor = PORTFOLIO_OBRAS.filter((o) => o.categoriaSlug === setor.slug);
+              const imagensSetor = setor.imagens || [];
               const idx = imgIndex[setor.slug] ?? 0;
-              const obraAtual = obrasSetor[idx];
+              const imagemAtual = imagensSetor[idx];
 
               return (
                 <div
@@ -234,38 +246,49 @@ Industr
                 >
                   {/* Carrossel de imagens */}
                   <div className="relative sm:w-2/5 lg:w-[44%] shrink-0 min-h-[220px] bg-zinc-100">
-                    {obraAtual && (
-                      <img
-                        key={obraAtual.id}
-                        src={obraAtual.imagem}
-                        alt={obraAtual.title}
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
+                    {imagemAtual && (
+                      <>
+                        <img
+                          key={`${setor.slug}-${idx}`}
+                          src={imagemAtual.url}
+                          alt={imagemAtual.alt || setor.title}
+                          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+                        />
+                        
+                        {/* NOVO: BADGE COM O TEXTO ALT */}
+                        {imagemAtual.alt && (
+                          <div className="absolute top-3 left-3 z-10">
+                            <span className="text-[9px] font-bold uppercase tracking-widest bg-zinc-950/80 text-white backdrop-blur-md px-2.5 py-1.5 rounded-md border border-white/10 font-['Montserrat'] shadow-lg">
+                              {imagemAtual.alt}
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
 
-                    {obrasSetor.length > 1 && (
+                    {imagensSetor.length > 1 && (
                       <>
                         <button
                           type="button"
-                          onClick={() => imagemAnterior(setor.slug, obrasSetor.length)}
+                          onClick={() => imagemAnterior(setor.slug, imagensSetor.length)}
                           aria-label="Imagem anterior"
-                          className="absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all"
+                          className="absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all z-20"
                         >
                           <ChevronLeft className="w-4 h-4" />
                         </button>
                         <button
                           type="button"
-                          onClick={() => proximaImagem(setor.slug, obrasSetor.length)}
+                          onClick={() => proximaImagem(setor.slug, imagensSetor.length)}
                           aria-label="Próxima imagem"
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all z-20"
                         >
                           <ChevronRight className="w-4 h-4" />
                         </button>
 
-                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-                          {obrasSetor.map((obra, i) => (
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
+                          {imagensSetor.map((_, i) => (
                             <button
-                              key={obra.id}
+                              key={i}
                               type="button"
                               onClick={() => setImgIndex((prev) => ({ ...prev, [setor.slug]: i }))}
                               aria-label={`Ver imagem ${i + 1}`}
@@ -346,7 +369,7 @@ Industr
                 <div>
                   <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100">
                     <img
-                      src={obra.imagem}
+                      src={obra.capaImage}
                       alt={obra.title}
                       loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -399,7 +422,7 @@ Industr
         </div>
       </section>
 
-      {/* 4. CALL TO ACTION FINAL COM IMAGEM REDONDA VAZANDO NO TOPO (some no mobile) */}
+      {/* 4. CALL TO ACTION FINAL COM IMAGEM REDONDA VAZANDO NO TOPO */}
       <section className="relative pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-20 sm:pb-28 bg-zinc-900 text-white font-['Montserrat'] border-t border-zinc-800 overflow-visible">
 
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-10">
@@ -429,7 +452,6 @@ Industr
               </div>
             </div>
 
-            {/* Imagem Redonda: escondida no mobile, aparece a partir do md e vaza para a seção anterior */}
             <div className="hidden md:flex justify-center md:justify-end pointer-events-none">
               <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
                 <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
