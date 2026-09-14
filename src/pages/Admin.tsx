@@ -1,5 +1,8 @@
 // src/pages/Admin.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { db, storage } from '../firebase';
 import { 
   Home as HomeIcon, 
   Users, 
@@ -38,51 +41,102 @@ export const Admin: React.FC = () => {
   const [uploading, setUploading] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState<string | null>(null);
 
-  // Helper de Upload Único (Imagens de Capa, Selos, etc)
-  const handleFileUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>, 
-    onSuccess: (url: string) => void,
-    fieldId: string
-  ) => {
+  // UPLOAD REAL PARA O FIREBASE STORAGE (ARQUIVO ÚNICO)
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, onSuccess: (url: string) => void, fieldId: string) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploading(fieldId);
     try {
-      const uploadedUrl = URL.createObjectURL(file);
-      setTimeout(() => {
-        onSuccess(uploadedUrl);
-        setUploading(null);
-        alert(`Arquivo "${file.name}" carregado com sucesso!`);
-      }, 1000);
+      const fileRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
+      await uploadBytes(fileRef, file);
+      const url = await getDownloadURL(fileRef);
+      onSuccess(url);
+      alert(`Arquivo carregado com sucesso!`);
     } catch (error) {
       console.error("Erro no upload:", error);
-      alert("Erro ao realizar upload do arquivo.");
+      alert("Erro ao enviar arquivo para a nuvem.");
+    } finally {
       setUploading(null);
     }
   };
 
-  // Helper de Upload Múltiplo (Arraste e Solte para Galerias/Carrosseis)
-  const handleMultipleFilesUpload = async (
-    files: FileList | null, 
-    onSuccess: (urls: string[]) => void,
-    fieldId: string
-  ) => {
+  // UPLOAD REAL PARA O FIREBASE STORAGE (MÚLTIPLOS ARQUIVOS / ARRASTE E SOLTE)
+  const handleMultipleFilesUpload = async (files: FileList | null, onSuccess: (urls: string[]) => void, fieldId: string) => {
     if (!files || files.length === 0) return;
 
     setUploading(fieldId);
     try {
-      const urls = Array.from(files).map(file => URL.createObjectURL(file));
-      setTimeout(() => {
-        onSuccess(urls);
-        setUploading(null);
-      }, 1500); 
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const fileRef = ref(storage, `uploads/galerias/${Date.now()}_${file.name}`);
+        await uploadBytes(fileRef, file);
+        return await getDownloadURL(fileRef);
+      });
+
+      const urls = await Promise.all(uploadPromises);
+      onSuccess(urls);
     } catch (error) {
       console.error("Erro no upload múltiplo:", error);
-      alert("Erro ao realizar upload dos arquivos.");
+      alert("Erro ao enviar as fotos para a nuvem.");
+    } finally {
       setUploading(null);
     }
   };
+
+  // SALVAR REAL NO BANCO DE DADOS FIRESTORE PARA TODAS AS ABAS
+  const handleSave = async (sectionName: string) => {
+    try {
+      if (sectionName === 'Setores e Obras' || activeTab === 'setores') {
+        await setDoc(doc(db, 'site_data', 'portfolio'), { setores: setoresData, obras: obrasData });
+      } else if (activeTab === 'home' || sectionName.includes('Home')) {
+        await setDoc(doc(db, 'site_data', 'home'), homeData);
+      } else if (activeTab === 'quemSomos' || sectionName.includes('QuemSomos') || sectionName === 'Selos') {
+        await setDoc(doc(db, 'site_data', 'quemsomos'), quemSomosData);
+      } else if (activeTab === 'servicos' || sectionName.includes('Serviços')) {
+        await setDoc(doc(db, 'site_data', 'servicos'), servicosData);
+      } else if (activeTab === 'contato' || sectionName === 'Contato') {
+        await setDoc(doc(db, 'site_data', 'contato'), contatoData);
+      } else if (activeTab === 'blog' || sectionName === 'Blog') {
+        await setDoc(doc(db, 'site_data', 'blog'), { posts: blogData });
+      }
+      alert(`Sucesso! Os dados de "${sectionName}" foram salvos no Firestore e publicados no site.`);
+    } catch (error) {
+      console.error("Erro ao salvar no Firestore:", error);
+      alert("Erro ao salvar dados no Firestore. Verifique as permissões.");
+    }
+  };
+
+  // BUSCA OS DADOS DE TODAS AS ABAS NO BANCO QUANDO O ADMIN ABRIR
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      try {
+        const portfolioSnap = await getDoc(doc(db, 'site_data', 'portfolio'));
+        if (portfolioSnap.exists()) {
+          const data = portfolioSnap.data();
+          if (data.setores) setSetoresData(data.setores);
+          if (data.obras) setObrasData(data.obras);
+        }
+
+        const homeSnap = await getDoc(doc(db, 'site_data', 'home'));
+        if (homeSnap.exists()) setHomeData(homeSnap.data() as any);
+
+        const qsSnap = await getDoc(doc(db, 'site_data', 'quemsomos'));
+        if (qsSnap.exists()) setQuemSomosData(qsSnap.data() as any);
+
+        const servSnap = await getDoc(doc(db, 'site_data', 'servicos'));
+        if (servSnap.exists()) setServicosData(servSnap.data() as any);
+
+        const contatoSnap = await getDoc(doc(db, 'site_data', 'contato'));
+        if (contatoSnap.exists()) setContatoData(contatoSnap.data() as any);
+
+        const blogSnap = await getDoc(doc(db, 'site_data', 'blog'));
+        if (blogSnap.exists()) setBlogData(blogSnap.data().posts || []);
+      } catch (err) {
+        console.error("Erro ao carregar dados do Firestore:", err);
+      }
+    };
+    fetchAdminData();
+  }, []);
 
   // ===========================================================================
   // ESTADOS: HOME
@@ -157,7 +211,7 @@ export const Admin: React.FC = () => {
   });
 
   // ===========================================================================
-  // ESTADOS: SETORES & OBRAS (Com novo padrão {url, alt})
+  // ESTADOS: SETORES & OBRAS
   // ===========================================================================
   const [setoresData, setSetoresData] = useState([
     { 
@@ -263,10 +317,6 @@ export const Admin: React.FC = () => {
       content: '<h3>Introdução</h3><p>O cenário logístico brasileiro tem exigido pisos cada vez mais resistentes...</p>'
     }
   ]);
-
-  const handleSave = (sectionName: string) => {
-    alert(`As alterações de "${sectionName}" foram salvas com sucesso!`);
-  };
 
   // ---------------------------------------------------------------------------
   // TELA DE LOGIN
@@ -985,7 +1035,7 @@ export const Admin: React.FC = () => {
         )}
 
         {/* ==================================================================== */}
-        {/* ABA: BLOG (COM EDITOR RICH TEXT FALSO/MOCK) */}
+        {/* ABA: BLOG */}
         {/* ==================================================================== */}
         {activeTab === 'blog' && (
           <div className="space-y-10">
@@ -1056,7 +1106,7 @@ export const Admin: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* FALSO EDITOR DE TEXTO RICH (TIPO WORD) */}
+                  {/* EDITOR DE TEXTO RICH */}
                   <div className="space-y-2 pt-4">
                     <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat'] block">Corpo do Artigo (Editor de Texto)</label>
                     <div className="border border-zinc-200 rounded-xl overflow-hidden flex flex-col">
