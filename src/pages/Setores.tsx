@@ -166,7 +166,7 @@ export const Setores: React.FC = () => {
 
         {/* LAYER BLUR EM TODA A ALTURA DO HERO */}
         <div className="absolute inset-y-0 left-0 w-full lg:w-7/12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_right,black_60%,transparent_100%)] z-10 pointer-events-none" />
-
+Industr
         {/* CONTEÚDO */}
         <div className="max-w-[1440px] w-full mx-auto px-6 md:px-12 relative z-20 flex flex-col justify-center">
           <div className="max-w-2xl space-y-6">
