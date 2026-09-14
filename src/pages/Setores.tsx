@@ -1,7 +1,7 @@
 // src/pages/Setores.tsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Factory, Stethoscope, Wrench, Building2, ArrowRight, MapPin, Maximize2, CheckCircle2, ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
+import { Factory, Stethoscope, Wrench, Building2, ArrowRight, MapPin, Maximize2, ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase'; // Verifique se o caminho do import está correto
 
