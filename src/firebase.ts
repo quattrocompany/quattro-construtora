@@ -1,4 +1,5 @@
-import { initializeApp } from 'firebase/app';
+// src/firebase.ts
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
@@ -12,6 +13,8 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
+// Verifica se o Firebase já foi inicializado. Se não, inicializa. Se sim, usa o que já existe.
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
 export const db = getFirestore(app);
 export const storage = getStorage(app);
