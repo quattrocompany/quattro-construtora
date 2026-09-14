@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   ChevronRight,
   ChevronLeft,
-  Loader2
+  Loader2,
+  X // Importado ícone de fechar para o modal
 } from 'lucide-react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -97,7 +98,7 @@ const PORTFOLIO_OBRAS = [
     status: 'Concluído',
     capaImage: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200',
     resumo: 'Execução de pavimento de alta resistência mecânica, 48 docas niveladoras e sistema de sprinklers K25.',
-    destaque: true
+    galeriaImages: []
   },
   {
     id: 2,
@@ -109,7 +110,7 @@ const PORTFOLIO_OBRAS = [
     status: 'Concluído',
     capaImage: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1200',
     resumo: 'Construção de 8 novas salas cirúrgicas inteligentes, 30 leitos de UTI e central de esterilização CME.',
-    destaque: true
+    galeriaImages: []
   },
   {
     id: 3,
@@ -121,43 +122,7 @@ const PORTFOLIO_OBRAS = [
     status: 'Em Execução',
     capaImage: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1200',
     resumo: 'Condomínio de residências contemporâneas em Steel Frame com certificação de eficiência energética.',
-    destaque: true
-  },
-  {
-    id: 4,
-    title: 'Retrofit e Gestão de Facilities Fabril',
-    categoriaSlug: 'manutencao',
-    categoriaLabel: 'Facilities',
-    local: 'Indaiatuba – SP',
-    area: '22.000 m²',
-    status: 'Concluído',
-    capaImage: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200',
-    resumo: 'Modernização completa da subestação elétrica, adequação NR-12 e reforma estrutural de cobertura.',
-    destaque: false
-  },
-  {
-    id: 5,
-    title: 'Parque Industrial Farmacêutico',
-    categoriaSlug: 'industrial',
-    categoriaLabel: 'Industrial',
-    local: 'Anápolis – GO',
-    area: '32.000 m²',
-    status: 'Em Execução',
-    capaImage: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=1200',
-    resumo: 'Planta industrial química com salas limpas padrão ISO 7 e tubulações sanitárias em aço inox 316L.',
-    destaque: false
-  },
-  {
-    id: 6,
-    title: 'Residência Villa Toscana',
-    categoriaSlug: 'residencial',
-    categoriaLabel: 'Residencial',
-    local: 'Campinas – SP',
-    area: '1.400 m²',
-    status: 'Concluído',
-    capaImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200',
-    resumo: 'Residência de altíssimo padrão com balanços estruturais audaciosos e fachada autoral ventilada.',
-    destaque: false
+    galeriaImages: []
   }
 ];
 
@@ -172,7 +137,13 @@ export const Setores: React.FC = () => {
   const [setoresData, setSetoresData] = useState<any[]>(SETORES_DETALHADOS);
   const [obrasData, setObrasData] = useState<any[]>(PORTFOLIO_OBRAS);
   const [loading, setLoading] = useState(true);
+  
+  // Estado do Carrossel de Setores
   const [imgIndex, setImgIndex] = useState<Record<string, number>>({});
+  
+  // NOVO: Estados do Modal de Obras
+  const [obraSelecionada, setObraSelecionada] = useState<any | null>(null);
+  const [modalImgIndex, setModalImgIndex] = useState(0);
 
   useEffect(() => {
     const fetchPortfolioData = async () => {
@@ -182,7 +153,6 @@ export const Setores: React.FC = () => {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-          
           if (data.setores && Array.isArray(data.setores) && data.setores.length > 0) {
             setSetoresData(data.setores);
           }
@@ -200,14 +170,26 @@ export const Setores: React.FC = () => {
     fetchPortfolioData();
   }, []);
 
-  const OBRAS_DESTAQUE = obrasData.filter((obra) => obra.destaque);
-
   const proximaImagem = (slug: string, total: number) => {
     setImgIndex((prev) => ({ ...prev, [slug]: ((prev[slug] ?? 0) + 1) % total }));
   };
 
   const imagemAnterior = (slug: string, total: number) => {
     setImgIndex((prev) => ({ ...prev, [slug]: ((prev[slug] ?? 0) - 1 + total) % total }));
+  };
+
+  // Função para montar a galeria completa do modal (Capa + Galeria)
+  const getGaleriaCompleta = (obra: any) => {
+    if (!obra) return [];
+    const imagens = [];
+    if (obra.capaImage) imagens.push({ url: obra.capaImage, alt: 'Imagem Principal' });
+    if (obra.galeriaImages && Array.isArray(obra.galeriaImages)) {
+      obra.galeriaImages.forEach((img: any) => {
+        if (typeof img === 'string') imagens.push({ url: img, alt: '' });
+        else if (img && img.url) imagens.push(img);
+      });
+    }
+    return imagens;
   };
 
   if (loading) {
@@ -227,7 +209,6 @@ export const Setores: React.FC = () => {
       {/* 1. HERO SECTION */}
       <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat',sans-serif]">
         
-        {/* MÍDIA DE FUNDO FULL WIDTH */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
             src="/img/Amazon_Entrada.jpg"
@@ -236,10 +217,8 @@ export const Setores: React.FC = () => {
           />
         </div>
 
-        {/* LAYER BLUR EM TODA A ALTURA DO HERO */}
         <div className="absolute inset-y-0 left-0 w-full lg:w-7/12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_right,black_60%,transparent_100%)] z-10 pointer-events-none" />
 
-        {/* CONTEÚDO */}
         <div className="max-w-[1440px] w-full mx-auto px-6 md:px-12 relative z-20 flex flex-col justify-center">
           <div className="max-w-2xl space-y-6">
             <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-400 font-['Montserrat']">
@@ -292,25 +271,21 @@ export const Setores: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
             {setoresData.map((setor) => {
               const SetorIcon = setor.icon ? setor.icon : (iconMap[setor.id] || Building2);
               const imagensSetor = (setor.imagens || []).filter((img: any) => img && img.url && img.url.trim() !== '');
-              
               const idx = imgIndex[setor.slug] ?? 0;
               const imagemAtual = imagensSetor[idx] || imagensSetor[0];
 
               return (
                 <div
                   key={setor.slug}
-                  className="flex flex-col sm:flex-row bg-white border border-zinc-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-amber-500/40 transition-all duration-300"
+                  className="flex flex-col sm:flex-row bg-white border border-zinc-200/80 rounded-xl overflow-hidden shadow-xs hover:shadow-xl hover:border-amber-500/40 transition-all duration-300"
                 >
-                  {/* Carrossel de imagens */}
-                  <div className="relative sm:w-2/5 lg:w-[44%] shrink-0 min-h-[220px] bg-zinc-100 flex items-center justify-center">
+                  <div className="relative sm:w-2/5 lg:w-[45%] shrink-0 min-h-[260px] md:min-h-[320px] bg-zinc-100 flex items-center justify-center">
                     
-                    {!imagemAtual && (
-                      <Building2 className="w-10 h-10 text-zinc-300" />
-                    )}
+                    {!imagemAtual && <Building2 className="w-10 h-10 text-zinc-300" />}
 
                     {imagemAtual && (
                       <>
@@ -320,8 +295,6 @@ export const Setores: React.FC = () => {
                           alt={imagemAtual.alt || setor.title}
                           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
                         />
-                        
-                        {/* BADGE COM O NOME DA FOTO (ALT TEXT) */}
                         {imagemAtual.alt && (
                           <div className="absolute top-3 left-3 z-10 pointer-events-none">
                             <span className="text-[9px] font-bold uppercase tracking-widest bg-zinc-950/80 text-white backdrop-blur-md px-2.5 py-1.5 rounded-md border border-white/10 font-['Montserrat'] shadow-lg">
@@ -334,67 +307,34 @@ export const Setores: React.FC = () => {
 
                     {imagensSetor.length > 1 && (
                       <>
-                        <button
-                          type="button"
-                          onClick={() => imagemAnterior(setor.slug, imagensSetor.length)}
-                          className="absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all z-20"
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => proximaImagem(setor.slug, imagensSetor.length)}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all z-20"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-
+                        <button type="button" onClick={() => imagemAnterior(setor.slug, imagensSetor.length)} className="absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all z-20"><ChevronLeft className="w-4 h-4" /></button>
+                        <button type="button" onClick={() => proximaImagem(setor.slug, imagensSetor.length)} className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all z-20"><ChevronRight className="w-4 h-4" /></button>
                         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
                           {imagensSetor.map((_: any, i: number) => (
-                            <button
-                              key={i}
-                              type="button"
-                              onClick={() => setImgIndex((prev) => ({ ...prev, [setor.slug]: i }))}
-                              className={`h-1.5 rounded-full transition-all ${
-                                i === (imgIndex[setor.slug] ?? 0) ? 'bg-amber-500 w-5' : 'bg-white/70 hover:bg-white w-1.5'
-                              }`}
-                            />
+                            <button key={i} type="button" onClick={() => setImgIndex((prev) => ({ ...prev, [setor.slug]: i }))} className={`h-1.5 rounded-full transition-all ${i === (imgIndex[setor.slug] ?? 0) ? 'bg-amber-500 w-5' : 'bg-white/70 hover:bg-white w-1.5'}`} />
                           ))}
                         </div>
                       </>
                     )}
                   </div>
 
-                  {/* Informações */}
-                  <div className="flex-1 p-6 sm:p-8 space-y-4">
+                  <div className="flex-1 p-6 lg:p-8 flex flex-col justify-center space-y-5">
                     <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl shrink-0">
-                        <SetorIcon className="w-5 h-5" />
-                      </div>
-                      <h3 className="text-lg sm:text-xl font-extrabold text-zinc-950 font-['Montserrat'] leading-snug">
-                        {setor.title}
-                      </h3>
+                      <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-xl shrink-0"><SetorIcon className="w-5 h-5" /></div>
+                      <h3 className="text-lg sm:text-xl font-extrabold text-zinc-950 font-['Montserrat'] leading-snug">{setor.title}</h3>
                     </div>
-
                     {setor.nbrs && (
                       <div className="flex gap-2 flex-wrap">
                         {setor.nbrs.map((nbr: string, idx2: number) => (
-                          <span key={idx2} className="text-[10px] font-mono font-bold bg-[#f8f9f6] border border-zinc-200/80 text-zinc-600 px-2.5 py-1 rounded-md">
-                            {nbr}
-                          </span>
+                          <span key={idx2} className="text-[10px] font-mono font-bold bg-[#f8f9f6] border border-zinc-200/80 text-zinc-600 px-2.5 py-1 rounded-md">{nbr}</span>
                         ))}
                       </div>
                     )}
-
                     <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-sans">{setor.desc}</p>
-
                     {setor.diferenciais && (
-                      <div className="space-y-2 mt-4">
+                      <div className="space-y-2 pt-1">
                         {setor.diferenciais.map((item: string, idx2: number) => (
-                          <div key={idx2} className="flex items-start gap-2.5 text-xs text-zinc-700 font-sans leading-tight">
-                            <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                            <span>{item}</span>
-                          </div>
+                          <div key={idx2} className="flex items-start gap-2.5 text-xs text-zinc-700 font-sans leading-tight"><CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" /><span>{item}</span></div>
                         ))}
                       </div>
                     )}
@@ -422,16 +362,21 @@ export const Setores: React.FC = () => {
             </div>
             <div className="lg:col-span-6">
               <p className="text-zinc-600 text-sm md:text-base font-normal leading-relaxed font-sans max-w-xl">
-                Uma seleção de projetos que representam o Padrão Quattro de Qualidade em diferentes setores de atuação.
+                Uma seleção de projetos que representam o Padrão Quattro de Qualidade em diferentes setores de atuação. Clique nas imagens para ver a galeria.
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {OBRAS_DESTAQUE.map((obra) => (
+            {/* AGORA MAPEIA TODAS AS OBRAS DA VARIÁVEL (Removemos o filtro 'destaque') */}
+            {obrasData.map((obra) => (
               <div
                 key={obra.id}
-                className="bg-white border border-zinc-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-amber-500/40 transition-all duration-300 group flex flex-col justify-between"
+                className="bg-white border border-zinc-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-amber-500/40 transition-all duration-300 group flex flex-col justify-between cursor-pointer"
+                onClick={() => {
+                  setObraSelecionada(obra);
+                  setModalImgIndex(0);
+                }}
               >
                 <div>
                   <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100">
@@ -460,11 +405,9 @@ export const Setores: React.FC = () => {
                   </div>
 
                   <div className="p-6 md:p-8 space-y-4">
-                    <Link to="/contato" className="block">
-                      <h3 className="text-lg sm:text-xl font-bold text-zinc-950 font-['Montserrat'] group-hover:text-amber-600 transition-colors leading-snug">
-                        {obra.title}
-                      </h3>
-                    </Link>
+                    <h3 className="text-lg sm:text-xl font-bold text-zinc-950 font-['Montserrat'] group-hover:text-amber-600 transition-colors leading-snug">
+                      {obra.title}
+                    </h3>
 
                     <p className="text-xs sm:text-sm text-zinc-600 font-sans leading-relaxed">
                       {obra.resumo}
@@ -489,51 +432,111 @@ export const Setores: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. CALL TO ACTION FINAL COM IMAGEM REDONDA VAZANDO NO TOPO */}
+      {/* 4. CALL TO ACTION FINAL */}
       <section className="relative pt-16 sm:pt-20 md:pt-24 lg:pt-28 pb-20 sm:pb-28 bg-zinc-900 text-white font-['Montserrat'] border-t border-zinc-800 overflow-visible">
-
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-10">
           <div className="grid md:grid-cols-2 gap-10 md:gap-8 lg:gap-12 items-center">
-
             <div className="relative max-w-2xl space-y-6">
-              <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
-                Consultoria Técnica de Engenharia
-              </span>
-
-              <h2 className="text-[2.3rem] font-extrabold text-white leading-[1.12]">
-                Sua obra precisa de rigor técnico e previsibilidade absoluta?
-              </h2>
-
-              <p className="text-zinc-400 text-sm md:text-base font-sans font-normal leading-relaxed">
-                Fale diretamente com os engenheiros responsáveis da Quattro Construtora. Analisamos o escopo do seu projeto e desenvolvemos a proposta ideal para o seu setor.
-              </p>
-
+              <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">Consultoria Técnica de Engenharia</span>
+              <h2 className="text-[2.3rem] font-extrabold text-white leading-[1.12]">Sua obra precisa de rigor técnico e previsibilidade absoluta?</h2>
+              <p className="text-zinc-400 text-sm md:text-base font-sans font-normal leading-relaxed">Fale diretamente com os engenheiros responsáveis da Quattro Construtora. Analisamos o escopo do seu projeto e desenvolvemos a proposta ideal para o seu setor.</p>
               <div className="pt-2">
-                <Link
-                  to="/contato"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 font-['Montserrat']"
-                >
-                  <span>Falar com um Engenheiro</span>
-                  <ArrowRight className="w-4 h-4" />
+                <Link to="/contato" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 font-['Montserrat']">
+                  <span>Falar com um Engenheiro</span><ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
-
             <div className="hidden md:flex justify-center md:justify-end pointer-events-none">
               <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
                 <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
-                  <img
-                    src="/img/Amazon_imgRodape.avif"
-                    alt="Engenharia Quattro Construtora"
-                    className="w-full h-full object-cover object-center"
-                  />
+                  <img src="/img/Amazon_imgRodape.avif" alt="Engenharia Quattro Construtora" className="w-full h-full object-cover object-center" />
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </section>
+
+      {/* ========================================================= */}
+      {/* MODAL COM FUNDO ESCURO / GLASS PARA VISUALIZAR A OBRA */}
+      {/* ========================================================= */}
+      {obraSelecionada && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-zinc-950/80 backdrop-blur-xl transition-all">
+          <div className="relative w-full max-w-5xl max-h-[95vh] bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300">
+            
+            {/* Header Modal */}
+            <div className="flex items-center justify-between p-5 border-b border-zinc-800 shrink-0">
+              <div>
+                <h3 className="text-xl md:text-2xl font-extrabold text-white font-['Montserrat']">
+                  {obraSelecionada.title}
+                </h3>
+                <p className="text-sm text-zinc-400 font-sans mt-1">
+                  {obraSelecionada.local} • {obraSelecionada.area}
+                </p>
+              </div>
+              <button 
+                onClick={() => setObraSelecionada(null)} 
+                className="p-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-full transition-colors"
+                title="Fechar"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Body Modal (Gallery) */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-6 flex flex-col custom-scrollbar">
+              
+              {/* Main Image View */}
+              <div className="w-full h-[45vh] sm:h-[55vh] bg-zinc-950 rounded-2xl overflow-hidden relative flex items-center justify-center">
+                <img 
+                  src={getGaleriaCompleta(obraSelecionada)[modalImgIndex]?.url} 
+                  alt="Imagem Principal da Obra"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              
+              {/* Thumbnails Row */}
+              {getGaleriaCompleta(obraSelecionada).length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-2 shrink-0 custom-scrollbar-thin">
+                  {getGaleriaCompleta(obraSelecionada).map((img, idx) => (
+                    <button 
+                      key={idx} 
+                      onClick={() => setModalImgIndex(idx)} 
+                      className={`w-24 h-16 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
+                        modalImgIndex === idx ? 'border-amber-500 opacity-100' : 'border-transparent opacity-50 hover:opacity-100'
+                      }`}
+                    >
+                      <img src={img.url} alt="Miniatura" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Description */}
+              <div className="space-y-3 pb-4">
+                <h4 className="text-sm font-bold text-amber-500 uppercase tracking-wider font-['Montserrat']">
+                  Detalhes do Projeto
+                </h4>
+                <p className="text-sm md:text-base text-zinc-300 leading-relaxed font-sans">
+                  {obraSelecionada.descricaoCompleta || obraSelecionada.resumo}
+                </p>
+              </div>
+            </div>
+
+            {/* Footer Modal */}
+            <div className="p-5 border-t border-zinc-800 shrink-0 flex justify-end">
+              <Link 
+                to="/contato" 
+                onClick={() => setObraSelecionada(null)}
+                className="px-8 py-3.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all font-['Montserrat'] shadow-lg shadow-amber-500/20 flex items-center gap-2"
+              >
+                <span>Entre em Contato</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
