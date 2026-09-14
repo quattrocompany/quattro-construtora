@@ -26,10 +26,10 @@ const SETORES_DETALHADOS = [
       'Sistemas estruturais em concreto pré-moldado e aço.',
       'Cobertoras metálicas com isolamento termoacústico subcoberta.'
     ],
-    // NOVA ESTRUTURA COM URL E ALT TEXT
+    // ESTRUTURA ATUALIZADA COM URL E ALT TEXT PARA O BADGE
     imagens: [
       { url: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200', alt: 'Fachada Principal' },
-      { url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200', alt: 'Interior do Galpão' }
+      { url: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=1200', alt: 'Interior do Galpão' }
     ]
   },
   {
@@ -89,6 +89,7 @@ const PORTFOLIO_OBRAS = [
     local: 'Cajamar – SP',
     area: '45.000 m²',
     status: 'Concluído',
+    // Usando capaImage (nome do atributo que definimos no CMS)
     capaImage: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200',
     resumo: 'Execução de pavimento de alta resistência mecânica, 48 docas niveladoras e sistema de sprinklers K25.',
     destaque: true
@@ -126,7 +127,8 @@ const PORTFOLIO_OBRAS = [
     area: '22.000 m²',
     status: 'Concluído',
     capaImage: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200',
-    resumo: 'Modernização completa da subestação elétrica, adequação NR-12 e reforma estrutural de cobertura.'
+    resumo: 'Modernização completa da subestação elétrica, adequação NR-12 e reforma estrutural de cobertura.',
+    destaque: false
   },
   {
     id: 5,
@@ -137,7 +139,8 @@ const PORTFOLIO_OBRAS = [
     area: '32.000 m²',
     status: 'Em Execução',
     capaImage: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=1200',
-    resumo: 'Planta industrial química com salas limpas padrão ISO 7 e tubulações sanitárias em aço inox 316L.'
+    resumo: 'Planta industrial química com salas limpas padrão ISO 7 e tubulações sanitárias em aço inox 316L.',
+    destaque: false
   },
   {
     id: 6,
@@ -148,7 +151,8 @@ const PORTFOLIO_OBRAS = [
     area: '1.400 m²',
     status: 'Concluído',
     capaImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1200',
-    resumo: 'Residência de altíssimo padrão com balanços estruturais audaciosos e fachada autoral ventilada.'
+    resumo: 'Residência de altíssimo padrão com balanços estruturais audaciosos e fachada autoral ventilada.',
+    destaque: false
   }
 ];
 
@@ -170,6 +174,8 @@ export const Setores: React.FC = () => {
 
       {/* 1. HERO SECTION */}
       <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat',sans-serif]">
+        
+        {/* MÍDIA DE FUNDO FULL WIDTH */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
             src="/img/Amazon_Entrada.jpg"
@@ -178,8 +184,10 @@ export const Setores: React.FC = () => {
           />
         </div>
 
+        {/* LAYER BLUR EM TODA A ALTURA DO HERO */}
         <div className="absolute inset-y-0 left-0 w-full lg:w-7/12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_right,black_60%,transparent_100%)] z-10 pointer-events-none" />
 
+        {/* CONTEÚDO */}
         <div className="max-w-[1440px] w-full mx-auto px-6 md:px-12 relative z-20 flex flex-col justify-center">
           <div className="max-w-2xl space-y-6">
             <nav className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-zinc-400 font-['Montserrat']">
@@ -255,9 +263,9 @@ export const Setores: React.FC = () => {
                           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
                         />
                         
-                        {/* NOVO: BADGE COM O TEXTO ALT */}
+                        {/* BADGE COM O NOME DA FOTO (ALT TEXT) */}
                         {imagemAtual.alt && (
-                          <div className="absolute top-3 left-3 z-10">
+                          <div className="absolute top-3 left-3 z-10 pointer-events-none">
                             <span className="text-[9px] font-bold uppercase tracking-widest bg-zinc-950/80 text-white backdrop-blur-md px-2.5 py-1.5 rounded-md border border-white/10 font-['Montserrat'] shadow-lg">
                               {imagemAtual.alt}
                             </span>
@@ -452,6 +460,7 @@ export const Setores: React.FC = () => {
               </div>
             </div>
 
+            {/* Imagem Redonda: escondida no mobile, aparece a partir do md e vaza para a seção anterior */}
             <div className="hidden md:flex justify-center md:justify-end pointer-events-none">
               <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
                 <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">

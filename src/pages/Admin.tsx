@@ -15,7 +15,6 @@ import {
   Wrench,
   Award,
   Building2,
-  Calendar,
   HelpCircle,
   FileText,
   LayoutGrid,
