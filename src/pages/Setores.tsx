@@ -1,5 +1,5 @@
 // src/pages/Setores.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Factory,
@@ -11,12 +11,16 @@ import {
   Maximize2,
   CheckCircle2,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  Loader2
 } from 'lucide-react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const SETORES_DETALHADOS = [
   {
     slug: 'industrial',
+    id: 'industrial',
     title: 'Industrial & Logística',
     icon: Factory,
     desc: 'Engenharia para galpões logísticos de alta tonelagem, parques fabris, centros de distribuição automatizados e estruturas de grande vão livre.',
@@ -26,7 +30,6 @@ const SETORES_DETALHADOS = [
       'Sistemas estruturais em concreto pré-moldado e aço.',
       'Cobertoras metálicas com isolamento termoacústico subcoberta.'
     ],
-    // ESTRUTURA ATUALIZADA COM URL E ALT TEXT PARA O BADGE
     imagens: [
       { url: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200', alt: 'Fachada Principal' },
       { url: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=1200', alt: 'Interior do Galpão' }
@@ -34,6 +37,7 @@ const SETORES_DETALHADOS = [
   },
   {
     slug: 'hospitalar',
+    id: 'hospitalar',
     title: 'Setor Hospitalar & Saúde',
     icon: Stethoscope,
     desc: 'Projetos e execuções de alta complexidade para centros cirúrgicos, UTIs, laboratórios de análise clínica e salas limpas com contaminação controlada.',
@@ -49,6 +53,7 @@ const SETORES_DETALHADOS = [
   },
   {
     slug: 'manutencao',
+    id: 'manutencao',
     title: 'Manutenção & Facilities',
     icon: Wrench,
     desc: 'Gestão preventiva, corretiva e retrofit de ativos prediais corporativos e industriais, garantindo a continuidade operacional e valorização patrimonial.',
@@ -64,6 +69,7 @@ const SETORES_DETALHADOS = [
   },
   {
     slug: 'residencial',
+    id: 'residencial',
     title: 'Residencial',
     icon: Building2,
     desc: 'Construção e incorporação de residências de alto padrão, vilas corporativas e edifícios de arquitetura autoral com métodos construtivos inovadores.',
@@ -155,10 +161,46 @@ const PORTFOLIO_OBRAS = [
   }
 ];
 
-const OBRAS_DESTAQUE = PORTFOLIO_OBRAS.filter((obra) => obra.destaque);
+const iconMap: Record<string, any> = {
+  'industrial': Factory,
+  'hospitalar': Stethoscope,
+  'manutencao': Wrench,
+  'residencial': Building2
+};
 
 export const Setores: React.FC = () => {
+  const [setoresData, setSetoresData] = useState<any[]>(SETORES_DETALHADOS);
+  const [obrasData, setObrasData] = useState<any[]>(PORTFOLIO_OBRAS);
+  const [loading, setLoading] = useState(true);
   const [imgIndex, setImgIndex] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const fetchPortfolioData = async () => {
+      try {
+        const docRef = doc(db, 'site_data', 'portfolio');
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          
+          if (data.setores && Array.isArray(data.setores) && data.setores.length > 0) {
+            setSetoresData(data.setores);
+          }
+          if (data.obras && Array.isArray(data.obras) && data.obras.length > 0) {
+             setObrasData(data.obras);
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados do Firebase:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPortfolioData();
+  }, []);
+
+  const OBRAS_DESTAQUE = obrasData.filter((obra) => obra.destaque);
 
   const proximaImagem = (slug: string, total: number) => {
     setImgIndex((prev) => ({ ...prev, [slug]: ((prev[slug] ?? 0) + 1) % total }));
@@ -167,6 +209,17 @@ export const Setores: React.FC = () => {
   const imagemAnterior = (slug: string, total: number) => {
     setImgIndex((prev) => ({ ...prev, [slug]: ((prev[slug] ?? 0) - 1 + total) % total }));
   };
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-[#f8f9f6]">
+        <div className="flex flex-col items-center gap-4 text-amber-500">
+          <Loader2 className="w-10 h-10 animate-spin" />
+          <p className="font-['Montserrat'] font-bold tracking-widest text-sm text-zinc-900 uppercase">Carregando Acervo...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-[#f8f9f6] text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
@@ -240,11 +293,12 @@ export const Setores: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {SETORES_DETALHADOS.map((setor) => {
-              const SetorIcon = setor.icon;
-              const imagensSetor = setor.imagens || [];
+            {setoresData.map((setor) => {
+              const SetorIcon = setor.icon ? setor.icon : (iconMap[setor.id] || Building2);
+              const imagensSetor = (setor.imagens || []).filter((img: any) => img && img.url && img.url.trim() !== '');
+              
               const idx = imgIndex[setor.slug] ?? 0;
-              const imagemAtual = imagensSetor[idx];
+              const imagemAtual = imagensSetor[idx] || imagensSetor[0];
 
               return (
                 <div
@@ -252,7 +306,12 @@ export const Setores: React.FC = () => {
                   className="flex flex-col sm:flex-row bg-white border border-zinc-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:border-amber-500/40 transition-all duration-300"
                 >
                   {/* Carrossel de imagens */}
-                  <div className="relative sm:w-2/5 lg:w-[44%] shrink-0 min-h-[220px] bg-zinc-100">
+                  <div className="relative sm:w-2/5 lg:w-[44%] shrink-0 min-h-[220px] bg-zinc-100 flex items-center justify-center">
+                    
+                    {!imagemAtual && (
+                      <Building2 className="w-10 h-10 text-zinc-300" />
+                    )}
+
                     {imagemAtual && (
                       <>
                         <img
@@ -278,7 +337,6 @@ export const Setores: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => imagemAnterior(setor.slug, imagensSetor.length)}
-                          aria-label="Imagem anterior"
                           className="absolute left-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all z-20"
                         >
                           <ChevronLeft className="w-4 h-4" />
@@ -286,21 +344,19 @@ export const Setores: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => proximaImagem(setor.slug, imagensSetor.length)}
-                          aria-label="Próxima imagem"
                           className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/90 hover:bg-white text-zinc-950 shadow-md transition-all z-20"
                         >
                           <ChevronRight className="w-4 h-4" />
                         </button>
 
                         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
-                          {imagensSetor.map((_, i) => (
+                          {imagensSetor.map((_: any, i: number) => (
                             <button
                               key={i}
                               type="button"
                               onClick={() => setImgIndex((prev) => ({ ...prev, [setor.slug]: i }))}
-                              aria-label={`Ver imagem ${i + 1}`}
                               className={`h-1.5 rounded-full transition-all ${
-                                i === idx ? 'bg-amber-500 w-5' : 'bg-white/70 hover:bg-white w-1.5'
+                                i === (imgIndex[setor.slug] ?? 0) ? 'bg-amber-500 w-5' : 'bg-white/70 hover:bg-white w-1.5'
                               }`}
                             />
                           ))}
@@ -320,24 +376,28 @@ export const Setores: React.FC = () => {
                       </h3>
                     </div>
 
-                    <div className="flex gap-2 flex-wrap">
-                      {setor.nbrs.map((nbr, idx2) => (
-                        <span key={idx2} className="text-[10px] font-mono font-bold bg-[#f8f9f6] border border-zinc-200/80 text-zinc-600 px-2.5 py-1 rounded-md">
-                          {nbr}
-                        </span>
-                      ))}
-                    </div>
+                    {setor.nbrs && (
+                      <div className="flex gap-2 flex-wrap">
+                        {setor.nbrs.map((nbr: string, idx2: number) => (
+                          <span key={idx2} className="text-[10px] font-mono font-bold bg-[#f8f9f6] border border-zinc-200/80 text-zinc-600 px-2.5 py-1 rounded-md">
+                            {nbr}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                     <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-sans">{setor.desc}</p>
 
-                    <div className="space-y-2">
-                      {setor.diferenciais.map((item, idx2) => (
-                        <div key={idx2} className="flex items-start gap-2.5 text-xs text-zinc-700 font-sans leading-tight">
-                          <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
+                    {setor.diferenciais && (
+                      <div className="space-y-2 mt-4">
+                        {setor.diferenciais.map((item: string, idx2: number) => (
+                          <div key={idx2} className="flex items-start gap-2.5 text-xs text-zinc-700 font-sans leading-tight">
+                            <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                            <span>{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -384,7 +444,7 @@ export const Setores: React.FC = () => {
 
                     <div className="absolute top-4 left-4 flex gap-2">
                       <span className="text-[10px] font-bold uppercase tracking-widest bg-zinc-950/80 text-amber-500 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30 font-['Montserrat']">
-                        {obra.categoriaLabel}
+                        {obra.categoriaLabel || obra.categoriaSlug}
                       </span>
                     </div>
 
@@ -459,7 +519,6 @@ export const Setores: React.FC = () => {
               </div>
             </div>
 
-            {/* Imagem Redonda: escondida no mobile, aparece a partir do md e vaza para a seção anterior */}
             <div className="hidden md:flex justify-center md:justify-end pointer-events-none">
               <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
                 <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
