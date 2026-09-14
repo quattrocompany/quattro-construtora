@@ -96,7 +96,7 @@ export const Footer: React.FC = () => {
             <h4 className="footer-col-title">Atendimento</h4>
             <ul className="footer-list">
               <li>
-                <a href="https://portal.quattroconstrutora.com.br/cliente" target="_blank" rel="noreferrer" className="footer-link">
+                <a href="https://quattro-construtora-git-main-quattrocompanys-projects.vercel.app/portal-cliente" target="_blank" rel="noreferrer" className="footer-link">
                   Portal do Cliente
                 </a>
               </li>

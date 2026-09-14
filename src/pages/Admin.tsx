@@ -4,35 +4,10 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase';
 import { 
-  Home as HomeIcon, 
-  Users, 
-  Phone, 
-  Save, 
-  Plus, 
-  Trash2, 
-  Lock, 
-  LogOut,
-  Layers,
-  Video,
-  Image as ImageIcon,
-  Wrench,
-  Award,
-  Building2,
-  HelpCircle,
-  FileText,
-  LayoutGrid,
-  Upload,
-  Loader2,
-  ShieldCheck,
-  Target,
-  BookOpen,
-  Bold,
-  Italic,
-  Underline,
-  List,
-  Link2,
-  AlignLeft,
-  ImagePlus
+  Home as HomeIcon, Users, Phone, Save, Plus, Trash2, Lock, LogOut, Layers, Video, 
+  Image as ImageIcon, Wrench, Award, Building2, HelpCircle, FileText, LayoutGrid, 
+  Upload, Loader2, ShieldCheck, Target, BookOpen, Bold, Italic, Underline, List, 
+  Link2, AlignLeft, ImagePlus, Clock, Settings
 } from 'lucide-react';
 
 export const Admin: React.FC = () => {
@@ -61,7 +36,7 @@ export const Admin: React.FC = () => {
     }
   };
 
-  // UPLOAD REAL PARA O FIREBASE STORAGE (MÚLTIPLOS ARQUIVOS / ARRASTE E SOLTE)
+  // UPLOAD REAL PARA O FIREBASE STORAGE (MÚLTIPLOS ARQUIVOS)
   const handleMultipleFilesUpload = async (files: FileList | null, onSuccess: (urls: string[]) => void, fieldId: string) => {
     if (!files || files.length === 0) return;
 
@@ -83,7 +58,7 @@ export const Admin: React.FC = () => {
     }
   };
 
-  // SALVAR REAL NO BANCO DE DADOS FIRESTORE PARA TODAS AS ABAS
+  // SALVAR REAL NO BANCO DE DADOS FIRESTORE
   const handleSave = async (sectionName: string) => {
     try {
       if (sectionName === 'Setores e Obras' || activeTab === 'setores') {
@@ -138,9 +113,7 @@ export const Admin: React.FC = () => {
     fetchAdminData();
   }, []);
 
-  // ===========================================================================
   // ESTADOS: HOME
-  // ===========================================================================
   const [homeData, setHomeData] = useState({
     hero: {
       mode: 'carousel' as 'single' | 'carousel' | 'video',
@@ -148,28 +121,22 @@ export const Admin: React.FC = () => {
         { 
           id: 1, type: 'image' as 'image' | 'video', desktopUrl: '/img/bg_hero1.avif', mobileUrl: '/img/bg_hero1_mobile.avif',
           line1BeforeHighlight: 'CIVIL DE', highlightPart1: 'ALTA', highlightPart2: 'PERFORMANCE', line3AfterHighlight: 'E PRECISÃO',
-          slideDesc: 'Executamos projetos industriais, corporativos, farmacêuticos e residenciais com rigor técnico NBR.',
+          slideDesc: 'Executamos projetos industriais, corporativos e residenciais com rigor técnico.',
           ctaText: 'Saiba Mais', ctaLink: '/servicos'
-        },
-        { 
-          id: 2, type: 'image' as 'image' | 'video', desktopUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000', mobileUrl: '',
-          line1BeforeHighlight: 'PREVISIBILIDADE E', highlightPart1: 'RIGOR', highlightPart2: 'ORÇAMENTÁRIO', line3AfterHighlight: 'EM TODAS AS ETAPAS',
-          slideDesc: 'Gestão Turnkey de ponta a ponta sem surpresas no orçamento final.',
-          ctaText: 'Solicitar Cotação', ctaLink: '/contato'
         }
       ]
     },
     approach: {
       badge: 'NOSSA ABORDAGEM',
-      title: 'Engenharia versátil e soluções completas para sua obra',
-      description: 'Atuamos em empreendimentos residenciais, habitação social (Minha Casa Minha Vida), obras corporativas, retrofits e adequações técnicas.',
-      card1: { title: 'Obras Corporativas & Habitação', text: 'Execução de edificações industriais, prédios comerciais e projetos habitacionais integrados.' },
-      card2: { title: 'Gestão Turnkey & Regularização', text: 'Gerenciamento completo do projeto à entrega final, assegurando conformidade com normas NBR.' },
-      card3: { title: 'Retrofit, Reformas & Manutenção', text: 'Modernização de edificações, renovação de fachadas, reformas estruturais e adequações técnicas.' }
+      title: 'Engenharia versátil e soluções completas',
+      description: 'Atuamos em empreendimentos de alta complexidade em todo território nacional.',
+      card1: { title: 'Obras Corporativas', text: 'Execução de edificações industriais e centros logísticos.' },
+      card2: { title: 'Gestão Turnkey', text: 'Gerenciamento completo do projeto à entrega final.' },
+      card3: { title: 'Retrofit & Manutenção', text: 'Modernização de edificações operacionais e reforços estruturais.' }
     },
     aboutMosaic: {
       title: 'Solução completa para a excelência da sua construção',
-      description: 'A Quattro Construtora conduz todas as etapas da sua obra com máxima transparência, segurança técnica e rigor orçamentário em todo o Brasil.',
+      description: 'Conduzimos todas as etapas da obra com máxima transparência e segurança técnica.',
       statNumber: '100%',
       statLabel: 'Conformidade Técnica',
       img1: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1000',
@@ -178,57 +145,40 @@ export const Admin: React.FC = () => {
     }
   });
 
-  // ===========================================================================
-  // ESTADOS: A QUATTRO (QUEM SOMOS)
-  // ===========================================================================
+  // ESTADOS: QUEM SOMOS
   const [quemSomosData, setQuemSomosData] = useState({
     hero: {
       titleLine1: 'CONHEÇA A',
       titleHighlight: 'NOSSA EMPRESA',
-      description: 'Da infraestrutura logística e sedes corporativas à escala de grandes complexos residenciais. Transformamos desafios executivos complexos em soluções sólidas e previsíveis.',
+      description: 'Da infraestrutura logística e sedes corporativas à escala de grandes complexos.',
       bgImage: '/img/BG_CTA_QuattroInc_Site.jpeg'
     },
     manifesto: {
-      title: 'Soluções End-to-End & Rigor Técnico em Todo o Brasil',
-      p1: 'A Quattro Construtora é especializada em soluções end-to-end de alta complexidade. Com um acervo consolidado e equipe técnica altamente capacitada, gerenciamos e executamos canteiros com transparência e precisão orçamentária.',
-      p2: 'Atuamos no modelo Turnkey (Design & Build), assumindo a responsabilidade integral por todo o ciclo da obra.'
+      title: 'Soluções End-to-End & Rigor Técnico',
+      p1: 'A Quattro Construtora é especializada em soluções end-to-end de alta complexidade.',
+      p2: 'Atuamos no modelo Turnkey, assumindo a responsabilidade integral pelo ciclo da obra.'
     },
     qualidade: {
-      quote: '"A Quattro Construtora atua na construção civil e na incorporação de empreendimentos habitacionais, corporativos e industriais com foco na excelência..."',
+      quote: '"A Quattro Construtora atua com excelência construtiva focada na conformidade normativa."',
       seloPbqph: '/selos/SELO_pbqph.png',
       seloIso: '/selos/SELO_ISO9001.png'
     },
     governanca: {
-      missao: 'Entregar engenharia de alta performance com compromisso intransigente em qualidade, segurança do trabalho e previsibilidade orçamentária.',
-      visao: 'Ser a parceira estratégica referência no mercado nacional em obras complexas e edificações de grande porte.',
-      valores: 'Rigor Técnico inegociável, Previsibilidade orçamentária total, Transparência executiva e Integridade absoluta.'
+      missao: 'Entregar engenharia de alta performance com compromisso intransigente.',
+      visao: 'Ser a parceira estratégica referência no mercado nacional.',
+      valores: 'Rigor Técnico inegociável, Previsibilidade total e Transparência executiva.'
     },
     timeline: [
-      { id: 1, fase: 'Fundação', desc: 'Início focado em engenharia consultiva e obras técnicas de alta complexidade.' },
-      { id: 2, fase: 'Expansão & Incorporação', desc: 'Cobertura logística em todo o Brasil e consolidação do braço imobiliário (Quattro Inc).' },
-      { id: 3, fase: 'Acreditação Máxima', desc: 'Conquista das certificações PBQP-H Nível A e NBR ISO 9001:2015.' }
+      { id: 1, fase: 'Fundação', desc: 'Início focado em engenharia consultiva e pequenas reformas.' },
+      { id: 2, fase: 'Expansão & Incorporação', desc: 'Cobertura logística em todo o Brasil e consolidação imobiliária.' }
     ]
   });
 
-  // ===========================================================================
   // ESTADOS: SETORES & OBRAS
-  // ===========================================================================
   const [setoresData, setSetoresData] = useState([
     { 
-      id: 'industrial', slug: 'industrial-e-logistica', title: 'Industrial & Logística', category: 'Logística & Infraestrutura', desc: 'Galpões logísticos, parques fabris e instalações industriais complexas executadas com alto rigor técnico.', 
+      id: 'industrial', slug: 'industrial-e-logistica', title: 'Industrial & Logística', category: 'Logística', desc: 'Galpões logísticos e instalações complexas.', 
       imagens: [{ url: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200', alt: 'Fachada Principal' }] 
-    },
-    { 
-      id: 'hospitalar', slug: 'hospitalar-e-saude', title: 'Setor Hospitalar & Saúde', category: 'Salas Limpas & Anvisa', desc: 'Centros cirúrgicos, UTIs, laboratórios de análise clínica e salas limpas com contaminação controlada.', 
-      imagens: [{ url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1200', alt: 'Centro Cirúrgico' }] 
-    },
-    { 
-      id: 'manutencao', slug: 'manutencao-e-facilities', title: 'Manutenção & Facilities', category: 'Retrofit & Manutenção', desc: 'Gestão preventiva, corretiva e retrofit de ativos prediais corporativos e industriais.', 
-      imagens: [{ url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200', alt: 'Subestação Elétrica' }] 
-    },
-    { 
-      id: 'residencial', slug: 'residencial', title: 'Residencial', category: 'Habitação & MCMV', desc: 'Construção de residências de alto padrão, vilas corporativas e edifícios de arquitetura autoral.', 
-      imagens: [{ url: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1200', alt: 'Piscina & Lazer' }] 
     }
   ]);
 
@@ -245,106 +195,78 @@ export const Admin: React.FC = () => {
       year: '2023',
       capaImage: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200',
       galeriaImages: [
-        { url: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200', alt: 'Área Externa' },
-        { url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200', alt: 'Docas de Carga' }
+        { url: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200', alt: 'Área Externa' }
       ],
       especificacoes: [{ label: 'Área Construída', value: '152.500 m²' }],
       resumo: 'Execução de pavimento de alta resistência mecânica.',
-      descricaoCompleta: 'Execução completa em modelo Turnkey.'
+      descricaoCompleta: 'Execução completa em modelo Turnkey detalhada no modal do projeto.'
     }
   ]);
 
-  // ===========================================================================
   // ESTADOS: SERVIÇOS
-  // ===========================================================================
   const [servicosData, setServicosData] = useState({
     hero: {
       badge: 'SOLUÇÕES INTEGRADAS',
       title: 'Engenharia Civil de Alta Performance',
-      description: 'Do planejamento inicial à entrega final das chaves, oferecemos gestão rigorosa, inovação tecnológica e conformidade normativa.'
+      description: 'Do planejamento inicial à entrega final das chaves, oferecemos gestão rigorosa.'
     },
     lista: [
       {
         id: 'turnkey',
         title: 'Engenharia Turnkey & EPC',
-        desc: 'Solução completa do conceito à entrega das chaves. Assumimos a responsabilidade integral pelo projeto, compras, construção e comissionamento.',
-        entregaveis: ['Gestão unificada de fornecedores e contratos', 'Preço fechado com previsibilidade orçamentária', 'Prazo de entrega garantido em contrato']
-      },
-      {
-        id: 'gerenciamento',
-        title: 'Gerenciamento & Fiscalização',
-        desc: 'Supervisão técnica rigorosa do canteiro de obras, garantindo o cumprimento de especificações e controle físico-financeiro.',
-        entregaveis: ['Relatórios gerenciais semanais com medições', 'Controle rigoroso de cronograma (Linha de Balanço)']
-      },
-      {
-        id: 'retrofit',
-        title: 'Retrofit & Reformas Corporativas',
-        desc: 'Modernização de edifícios, plantas fabris e escritórios sem interrupção das atividades operacionais do cliente.',
-        entregaveis: ['Atualização de instalações elétricas e hidráulicas', 'Reforço estrutural e adequação de fachadas']
+        desc: 'Solução completa do conceito à entrega das chaves.',
+        entregaveis: ['Gestão unificada de contratos', 'Preço fechado']
       }
     ],
     fluxo: [
-      { passo: '01', titulo: 'Diagnóstico & Viabilidade', desc: 'Análise detalhada do local e estudo de viabilidade.' },
-      { passo: '02', titulo: 'Planejamento & BIM', desc: 'Compatibilização de projetos e cronograma físico-financeiro.' },
-      { passo: '03', titulo: 'Execução & Controle', desc: 'Mobilização de canteiro e fiscalização contínua.' },
-      { passo: '04', titulo: 'Comissionamento & As-Built', desc: 'Testes finais, documentação legal e entrega das chaves.' }
+      { passo: '01', titulo: 'Diagnóstico & Viabilidade', desc: 'Análise detalhada do local.' },
+      { passo: '02', titulo: 'Planejamento & BIM', desc: 'Compatibilização de projetos e cronograma.' },
+      { passo: '03', titulo: 'Execução & Controle', desc: 'Mobilização de canteiro e fiscalização.' },
+      { passo: '04', titulo: 'Comissionamento', desc: 'Testes finais e entrega das chaves.' }
     ]
   });
 
-  // ===========================================================================
-  // ESTADOS: CONTATO
-  // ===========================================================================
+  // ESTADOS: CONTATO & BLOG
   const [contatoData, setContatoData] = useState({
     comercialPhone: '+55 (11) 4003-0000',
     comercialEmail: 'contato@quattroconstrutora.com.br',
-    endereco: 'Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial, Barueri/SP - CEP 06454-000',
+    endereco: 'Al. Rio Negro, 503 - Barueri/SP',
     faqs: [
-      { id: 1, pergunta: 'Sou vizinho de uma obra em andamento. Como relatar um imprevisto?', resposta: 'Selecione a opção "Sou Vizinho de Obra" no formulário de contato.' },
-      { id: 2, pergunta: 'Qual o prazo médio de retorno para solicitações de cotação?', resposta: 'Propostas preliminares são enviadas em até 48 horas úteis.' }
+      { id: 1, pergunta: 'Qual o prazo médio de retorno?', resposta: 'Propostas enviadas em até 48 horas.' }
     ]
   });
 
-  // ===========================================================================
-  // ESTADOS: BLOG
-  // ===========================================================================
   const [blogData, setBlogData] = useState([
     {
       id: 1,
-      title: 'Novas normas técnicas para galpões logísticos em 2024',
-      author: 'Eng. Carlos Almeida',
-      date: '2024-05-12',
+      title: 'Novas normas técnicas em 2026',
+      author: 'Eng. Carlos',
+      date: '2026-05-12',
       capaImage: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200',
-      content: '<h3>Introdução</h3><p>O cenário logístico brasileiro tem exigido pisos cada vez mais resistentes...</p>'
+      content: '<p>O cenário exige inovações...</p>'
     }
   ]);
 
-  // ---------------------------------------------------------------------------
   // TELA DE LOGIN
-  // ---------------------------------------------------------------------------
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-6 font-['Montserrat'] z-[200] relative">
-        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 sm:p-10 space-y-8 shadow-2xl relative overflow-hidden">
-          <div className="space-y-3 text-center relative z-10">
-            <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md">
-              Painel CMS
-            </span>
+        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 sm:p-10 space-y-8 shadow-2xl">
+          <div className="space-y-3 text-center">
+            <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-bold uppercase px-3 py-1 rounded-md">Painel CMS</span>
             <h1 className="text-2xl font-black text-white tracking-tight">QUATTRO CONSTRUTORA</h1>
-            <p className="text-zinc-400 text-xs font-sans">Gestão Completa do Site</p>
           </div>
-
-          <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }} className="space-y-5 relative z-10 font-sans">
+          <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }} className="space-y-5 font-sans">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-['Montserrat']">E-mail Corporativo</label>
-              <input type="email" defaultValue="diretoria@quattroconstrutora.com.br" className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 outline-none transition-colors" />
+              <label className="text-xs font-bold text-zinc-300 uppercase font-['Montserrat']">E-mail</label>
+              <input type="email" defaultValue="diretoria@quattroconstrutora.com.br" className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-['Montserrat']">Senha de Acesso</label>
-              <input type="password" defaultValue="••••••••" className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 outline-none transition-colors" />
+              <label className="text-xs font-bold text-zinc-300 uppercase font-['Montserrat']">Senha</label>
+              <input type="password" defaultValue="••••••••" className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white" />
             </div>
-            <button type="submit" className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all font-['Montserrat'] flex items-center justify-center gap-2 cursor-pointer">
-              <Lock className="w-4 h-4" />
-              <span>Acessar Painel</span>
+            <button type="submit" className="w-full py-4 bg-amber-500 text-zinc-950 font-bold uppercase rounded-xl flex items-center justify-center gap-2">
+              <Lock className="w-4 h-4" /> <span>Acessar Painel</span>
             </button>
           </form>
         </div>
@@ -352,9 +274,6 @@ export const Admin: React.FC = () => {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // DASHBOARD PRINCIPAL
-  // ---------------------------------------------------------------------------
   return (
     <div className="min-h-screen bg-[#f8f9f6] text-zinc-900 font-sans flex flex-col md:flex-row relative z-[200]">
       
@@ -366,20 +285,20 @@ export const Admin: React.FC = () => {
             <h2 className="text-lg font-black text-white tracking-tight">QUATTRO</h2>
           </div>
           <nav className="space-y-1.5 text-xs font-semibold uppercase tracking-wider">
-            <button onClick={() => setActiveTab('home')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'home' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><HomeIcon className="w-4 h-4" /><span>Home</span></button>
-            <button onClick={() => setActiveTab('quemSomos')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'quemSomos' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Users className="w-4 h-4" /><span>A Quattro</span></button>
-            <button onClick={() => setActiveTab('setores')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'setores' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Layers className="w-4 h-4" /><span>Setores & Obras</span></button>
-            <button onClick={() => setActiveTab('servicos')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'servicos' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Wrench className="w-4 h-4" /><span>Serviços</span></button>
-            <button onClick={() => setActiveTab('contato')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'contato' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Phone className="w-4 h-4" /><span>Contato & Sede</span></button>
-            <button onClick={() => setActiveTab('blog')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'blog' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><BookOpen className="w-4 h-4" /><span>Blog & Notícias</span></button>
+            <button onClick={() => setActiveTab('home')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'home' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><HomeIcon className="w-4 h-4" /><span>Home</span></button>
+            <button onClick={() => setActiveTab('quemSomos')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'quemSomos' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Users className="w-4 h-4" /><span>A Quattro</span></button>
+            <button onClick={() => setActiveTab('setores')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'setores' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Layers className="w-4 h-4" /><span>Setores & Obras</span></button>
+            <button onClick={() => setActiveTab('servicos')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'servicos' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Wrench className="w-4 h-4" /><span>Serviços</span></button>
+            <button onClick={() => setActiveTab('contato')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'contato' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Phone className="w-4 h-4" /><span>Contato & Sede</span></button>
+            <button onClick={() => setActiveTab('blog')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'blog' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><BookOpen className="w-4 h-4" /><span>Blog & Notícias</span></button>
           </nav>
         </div>
         <div className="pt-6 border-t border-zinc-800">
-          <button onClick={() => setIsLoggedIn(false)} className="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-rose-400 transition-colors uppercase tracking-wider cursor-pointer"><LogOut className="w-4 h-4" /><span>Sair do Painel</span></button>
+          <button onClick={() => setIsLoggedIn(false)} className="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-rose-400 uppercase"><LogOut className="w-4 h-4" /><span>Sair</span></button>
         </div>
       </aside>
 
-      {/* CONTEÚDO PRINCIPAL */}
+      {/* CONTEÚDO PRINCIPAL (DASHBOARD) */}
       <main className="flex-1 p-6 md:p-12 overflow-y-auto max-w-6xl">
         
         {/* ==================================================================== */}
@@ -394,51 +313,42 @@ export const Admin: React.FC = () => {
               </div>
             </div>
 
-            {/* 1. HERO HOME */}
+            {/* HERO HOME */}
             <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
                 <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2">
                   <Video className="w-5 h-5 text-amber-500" />
                   <span>1. Mídias e Textos do Hero</span>
                 </h2>
-                <button onClick={() => handleSave('Hero_Home')} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all font-['Montserrat'] cursor-pointer">
-                  <Save className="w-4 h-4 inline-block mr-1" />
-                  <span>Salvar Hero</span>
+                <button onClick={() => handleSave('Hero_Home')} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs rounded-xl flex items-center">
+                  <Save className="w-4 h-4 mr-1" /> Salvar Hero
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 font-['Montserrat']">Modo da Mídia</label>
-                  <select 
-                    value={homeData.hero.mode} 
-                    onChange={(e) => setHomeData({...homeData, hero: {...homeData.hero, mode: e.target.value as any}})}
-                    className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm text-zinc-900 outline-none"
-                  >
-                    <option value="carousel">Carrossel de Imagens/Vídeos</option>
-                    <option value="single">Imagem Única</option>
-                    <option value="video">Vídeo em Destaque</option>
-                  </select>
-                </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase text-zinc-700 font-['Montserrat']">Modo da Mídia</label>
+                <select 
+                  value={homeData.hero.mode} 
+                  onChange={(e) => setHomeData({...homeData, hero: {...homeData.hero, mode: e.target.value as any}})}
+                  className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm text-zinc-900 outline-none"
+                >
+                  <option value="carousel">Carrossel de Imagens/Vídeos</option>
+                  <option value="single">Imagem Única</option>
+                  <option value="video">Vídeo em Destaque</option>
+                </select>
               </div>
 
-              {/* SLIDES DO HERO */}
               <div className="space-y-4 pt-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Slides Cadastrados</span>
+                  <span className="text-xs font-bold uppercase text-zinc-500 font-['Montserrat']">Slides Cadastrados</span>
                   <button 
                     onClick={() => {
-                      const newMedia = {
-                        id: Date.now(), type: 'image' as 'image' | 'video', desktopUrl: '/img/placeholder.jpg', mobileUrl: '',
-                        line1BeforeHighlight: 'CIVIL DE', highlightPart1: 'ALTA', highlightPart2: 'PERFORMANCE', line3AfterHighlight: 'E PRECISÃO',
-                        slideDesc: 'Descrição detalhada do slide.', ctaText: 'Saiba Mais', ctaLink: '/servicos'
-                      };
+                      const newMedia = { id: Date.now(), type: 'image' as 'image' | 'video', desktopUrl: '/img/placeholder.jpg', mobileUrl: '', line1BeforeHighlight: 'CIVIL DE', highlightPart1: 'ALTA', highlightPart2: 'PERFORMANCE', line3AfterHighlight: 'E PRECISÃO', slideDesc: 'Descrição...', ctaText: 'Saiba Mais', ctaLink: '/servicos' };
                       setHomeData({...homeData, hero: {...homeData.hero, mediaList: [...homeData.hero.mediaList, newMedia]}});
                     }}
-                    className="px-3 py-1.5 bg-zinc-900 text-white rounded-lg text-xs font-bold font-['Montserrat'] cursor-pointer inline-flex items-center gap-1"
+                    className="px-3 py-1.5 bg-zinc-900 text-white rounded-lg text-xs font-bold font-['Montserrat'] flex items-center gap-1"
                   >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Adicionar Slide</span>
+                    <Plus className="w-3.5 h-3.5" /> Adicionar Slide
                   </button>
                 </div>
 
@@ -447,79 +357,54 @@ export const Admin: React.FC = () => {
                     <div key={media.id} className="p-5 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-4">
                       <div className="flex items-center justify-between border-b border-zinc-200/80 pb-3">
                         <span className="text-xs font-bold text-amber-600 font-['Montserrat'] uppercase">Slide #{idx + 1}</span>
-                        <button 
-                          onClick={() => {
-                            const updated = homeData.hero.mediaList.filter(m => m.id !== media.id);
-                            setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                          }}
-                          className="p-1 text-rose-500 hover:bg-rose-50 rounded transition-colors cursor-pointer"
-                        >
+                        <button onClick={() => { const upd = homeData.hero.mediaList.filter(m => m.id !== media.id); setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}})}} className="p-1 text-rose-500 hover:bg-rose-50 rounded">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className="space-y-1">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Tipo Mídia</label>
-                          <select 
-                            value={media.type} 
-                            onChange={(e) => {
-                              const updated = [...homeData.hero.mediaList];
-                              updated[idx].type = e.target.value as any;
-                              setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                            }}
-                            className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-900"
-                          >
+                          <label className="text-[10px] font-bold uppercase text-zinc-500 font-['Montserrat']">Tipo Mídia</label>
+                          <select value={media.type} onChange={(e) => { const upd = [...homeData.hero.mediaList]; upd[idx].type = e.target.value as any; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-900">
                             <option value="image">Imagem</option>
                             <option value="video">Vídeo (.mp4)</option>
                           </select>
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Desktop URL</label>
+                            <label className="text-[10px] font-bold uppercase text-zinc-500 font-['Montserrat']">Desktop URL</label>
                             <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5">
                               {uploading === `desktop-${idx}` ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
                               <span>Upload</span>
-                              <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                                const updated = [...homeData.hero.mediaList]; updated[idx].desktopUrl = url; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                              }, `desktop-${idx}`)} />
+                              <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => { const upd = [...homeData.hero.mediaList]; upd[idx].desktopUrl = url; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}}); }, `desktop-${idx}`)} />
                             </label>
                           </div>
-                          <input type="text" value={media.desktopUrl} onChange={(e) => {
-                              const updated = [...homeData.hero.mediaList]; updated[idx].desktopUrl = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                            }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700"
-                          />
+                          <input type="text" value={media.desktopUrl} onChange={(e) => { const upd = [...homeData.hero.mediaList]; upd[idx].desktopUrl = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700" />
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Mobile URL</label>
+                            <label className="text-[10px] font-bold uppercase text-zinc-500 font-['Montserrat']">Mobile URL</label>
                             <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5">
                               {uploading === `mobile-${idx}` ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
                               <span>Upload</span>
-                              <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                                const updated = [...homeData.hero.mediaList]; updated[idx].mobileUrl = url; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                              }, `mobile-${idx}`)} />
+                              <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => { const upd = [...homeData.hero.mediaList]; upd[idx].mobileUrl = url; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}}); }, `mobile-${idx}`)} />
                             </label>
                           </div>
-                          <input type="text" value={media.mobileUrl} onChange={(e) => {
-                              const updated = [...homeData.hero.mediaList]; updated[idx].mobileUrl = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                            }} placeholder="Opcional" className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700"
-                          />
+                          <input type="text" value={media.mobileUrl} onChange={(e) => { const upd = [...homeData.hero.mediaList]; upd[idx].mobileUrl = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700" />
                         </div>
                       </div>
 
-                      {/* CTAs */}
                       <div className="pt-3 border-t border-zinc-200/80 space-y-3">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 block font-['Montserrat']">Textos e Botões (CTAs)</span>
+                        <span className="text-[10px] font-bold uppercase text-amber-600 block font-['Montserrat']">Textos e Botões (CTAs)</span>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                          <div className="space-y-1"><label className="text-[10px] font-bold text-zinc-500">Linha 1 Normal</label><input type="text" value={media.line1BeforeHighlight} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].line1BeforeHighlight = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
-                          <div className="space-y-1"><label className="text-[10px] font-bold text-amber-600">Amarelo 1</label><input type="text" value={media.highlightPart1} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].highlightPart1 = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs font-black" /></div>
-                          <div className="space-y-1"><label className="text-[10px] font-bold text-amber-600">Amarelo 2</label><input type="text" value={media.highlightPart2} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].highlightPart2 = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs font-black" /></div>
-                          <div className="space-y-1"><label className="text-[10px] font-bold text-zinc-500">Linha 3 Final</label><input type="text" value={media.line3AfterHighlight} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].line3AfterHighlight = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
+                          <div className="space-y-1"><label className="text-[10px] font-bold text-zinc-500">Linha 1 Normal</label><input type="text" value={media.line1BeforeHighlight} onChange={(e) => { const upd = [...homeData.hero.mediaList]; upd[idx].line1BeforeHighlight = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
+                          <div className="space-y-1"><label className="text-[10px] font-bold text-amber-600">Amarelo 1</label><input type="text" value={media.highlightPart1} onChange={(e) => { const upd = [...homeData.hero.mediaList]; upd[idx].highlightPart1 = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}})}} className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs font-black" /></div>
+                          <div className="space-y-1"><label className="text-[10px] font-bold text-amber-600">Amarelo 2</label><input type="text" value={media.highlightPart2} onChange={(e) => { const upd = [...homeData.hero.mediaList]; upd[idx].highlightPart2 = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}})}} className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs font-black" /></div>
+                          <div className="space-y-1"><label className="text-[10px] font-bold text-zinc-500">Linha 3 Final</label><input type="text" value={media.line3AfterHighlight} onChange={(e) => { const upd = [...homeData.hero.mediaList]; upd[idx].line3AfterHighlight = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          <div className="space-y-1 sm:col-span-1"><label className="text-[10px] font-bold text-zinc-500">Texto Botão</label><input type="text" value={media.ctaText} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].ctaText = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
-                          <div className="space-y-1 sm:col-span-2"><label className="text-[10px] font-bold text-zinc-500">Link Destino</label><input type="text" value={media.ctaLink} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].ctaLink = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono" /></div>
+                          <div className="space-y-1"><label className="text-[10px] font-bold text-zinc-500">Texto Botão</label><input type="text" value={media.ctaText} onChange={(e) => { const upd = [...homeData.hero.mediaList]; upd[idx].ctaText = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
+                          <div className="space-y-1 sm:col-span-2"><label className="text-[10px] font-bold text-zinc-500">Link Destino</label><input type="text" value={media.ctaLink} onChange={(e) => { const upd = [...homeData.hero.mediaList]; upd[idx].ctaLink = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: upd}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono" /></div>
                         </div>
                       </div>
                     </div>
@@ -528,7 +413,7 @@ export const Admin: React.FC = () => {
               </div>
             </div>
 
-            {/* 2. NOSSA ABORDAGEM */}
+            {/* NOSSA ABORDAGEM */}
             <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
                 <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><LayoutGrid className="w-5 h-5 text-amber-500" /><span>2. Nossa Abordagem (3 Cards)</span></h2>
@@ -538,22 +423,13 @@ export const Admin: React.FC = () => {
                 <div className="space-y-1"><label className="text-xs font-bold text-zinc-700">Descrição Geral</label><textarea rows={2} value={homeData.approach.description} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, description: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl p-3 text-xs" /></div>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4 border-t border-zinc-100">
-                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3"><span className="text-xs font-bold text-amber-600 block">Card 1</span>
-                  <input type="text" value={homeData.approach.card1.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card1: {...homeData.approach.card1, title: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold" />
-                  <textarea rows={3} value={homeData.approach.card1.text} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card1: {...homeData.approach.card1, text: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs" />
-                </div>
-                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3"><span className="text-xs font-bold text-amber-600 block">Card 2</span>
-                  <input type="text" value={homeData.approach.card2.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card2: {...homeData.approach.card2, title: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold" />
-                  <textarea rows={3} value={homeData.approach.card2.text} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card2: {...homeData.approach.card2, text: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs" />
-                </div>
-                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3"><span className="text-xs font-bold text-amber-600 block">Card 3</span>
-                  <input type="text" value={homeData.approach.card3.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card3: {...homeData.approach.card3, title: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold" />
-                  <textarea rows={3} value={homeData.approach.card3.text} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card3: {...homeData.approach.card3, text: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs" />
-                </div>
+                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3"><span className="text-xs font-bold text-amber-600 block">Card 1</span><input type="text" value={homeData.approach.card1.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card1: {...homeData.approach.card1, title: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold" /><textarea rows={3} value={homeData.approach.card1.text} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card1: {...homeData.approach.card1, text: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs" /></div>
+                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3"><span className="text-xs font-bold text-amber-600 block">Card 2</span><input type="text" value={homeData.approach.card2.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card2: {...homeData.approach.card2, title: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold" /><textarea rows={3} value={homeData.approach.card2.text} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card2: {...homeData.approach.card2, text: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs" /></div>
+                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3"><span className="text-xs font-bold text-amber-600 block">Card 3</span><input type="text" value={homeData.approach.card3.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card3: {...homeData.approach.card3, title: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold" /><textarea rows={3} value={homeData.approach.card3.text} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card3: {...homeData.approach.card3, text: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs" /></div>
               </div>
             </div>
 
-            {/* 3. MOSAICO HOME */}
+            {/* MOSAICO HOME */}
             <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
                 <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><ImageIcon className="w-5 h-5 text-amber-500" /><span>3. Mosaico "Quem Somos"</span></h2>
@@ -650,10 +526,34 @@ export const Admin: React.FC = () => {
               </div>
             </div>
 
+            {/* RESTAURAÇÃO: 4. LINHA DO TEMPO (TIMELINE) */}
+            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
+                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Clock className="w-5 h-5 text-amber-500" /><span>4. Linha do Tempo (História)</span></h2>
+                <button onClick={() => setQuemSomosData({...quemSomosData, timeline: [...quemSomosData.timeline, { id: Date.now(), fase: 'Nova Fase', desc: 'Descrição da fase' }]})} className="px-3 py-1.5 bg-zinc-900 text-white rounded-lg text-xs font-bold cursor-pointer inline-flex items-center gap-1">
+                  <Plus className="w-3.5 h-3.5" /><span>Adicionar Marco</span>
+                </button>
+              </div>
+              <div className="space-y-4">
+                {quemSomosData.timeline.map((item, idx) => (
+                  <div key={item.id} className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-amber-600">Marco #{idx + 1}</span>
+                      <button onClick={() => setQuemSomosData({...quemSomosData, timeline: quemSomosData.timeline.filter((_, i) => i !== idx)})} className="p-1 text-rose-500 hover:bg-rose-50 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Ano / Fase</label><input type="text" value={item.fase} onChange={(e) => { const upd = [...quemSomosData.timeline]; upd[idx].fase = e.target.value; setQuemSomosData({...quemSomosData, timeline: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
+                      <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Descrição</label><input type="text" value={item.desc} onChange={(e) => { const upd = [...quemSomosData.timeline]; upd[idx].desc = e.target.value; setQuemSomosData({...quemSomosData, timeline: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs" /></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* SELOS */}
             <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Award className="w-5 h-5 text-amber-500" /><span>4. Certificações e Selos Oficiais</span></h2>
+                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Award className="w-5 h-5 text-amber-500" /><span>5. Certificações e Selos Oficiais</span></h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1">
@@ -680,9 +580,8 @@ export const Admin: React.FC = () => {
             </div>
           </div>
         )}
-
         {/* ==================================================================== */}
-        {/* ABA: SETORES & OBRAS (DRAG&DROP COM ALT TEXT) */}
+        {/* ABA: SETORES & OBRAS (DRAG&DROP COM TODOS OS CAMPOS) */}
         {/* ==================================================================== */}
         {activeTab === 'setores' && (
           <div className="space-y-10">
@@ -737,12 +636,11 @@ export const Admin: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* GALERIA DO SETOR (DRAG AND DROP COM ALT) */}
+                    {/* GALERIA DO SETOR */}
                     <div className="space-y-3 pt-2 border-t border-zinc-200/80">
                       <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat'] block">
                         Imagens do Carrossel (Arraste e Solte Várias Imagens)
                       </label>
-                      
                       <div 
                         onDragOver={(e) => { e.preventDefault(); setDragActive(`setor-${idx}`); }}
                         onDragLeave={(e) => { e.preventDefault(); setDragActive(null); }}
@@ -753,7 +651,7 @@ export const Admin: React.FC = () => {
                             handleMultipleFilesUpload(e.dataTransfer.files, (newUrls) => {
                               const upd = [...setoresData];
                               const newImagesObjects = newUrls.map(url => ({ url, alt: '' }));
-                              upd[idx].imagens = [...upd[idx].imagens, ...newImagesObjects];
+                              upd[idx].imagens = [...(upd[idx].imagens || []), ...newImagesObjects];
                               setSetoresData(upd);
                             }, `setor-upload-${idx}`);
                           }
@@ -776,7 +674,7 @@ export const Admin: React.FC = () => {
                                     handleMultipleFilesUpload(e.target.files, (newUrls) => {
                                       const upd = [...setoresData];
                                       const newImagesObjects = newUrls.map(url => ({ url, alt: '' }));
-                                      upd[idx].imagens = [...upd[idx].imagens, ...newImagesObjects];
+                                      upd[idx].imagens = [...(upd[idx].imagens || []), ...newImagesObjects];
                                       setSetoresData(upd);
                                     }, `setor-upload-${idx}`);
                                   }
@@ -787,13 +685,13 @@ export const Admin: React.FC = () => {
                         )}
                       </div>
 
-                      {setor.imagens.length > 0 && (
+                      {setor.imagens && setor.imagens.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                          {setor.imagens.map((imgObj, imgIdx) => (
+                          {setor.imagens.map((imgObj: any, imgIdx: number) => (
                             <div key={imgIdx} className="bg-white border border-zinc-200 rounded-xl overflow-hidden flex flex-col shadow-sm group">
                               <div className="aspect-video bg-zinc-100 relative">
                                 <img src={imgObj.url} alt={`Preview ${imgIdx}`} className="w-full h-full object-cover" />
-                                <button onClick={() => { const upd = [...setoresData]; upd[idx].imagens = upd[idx].imagens.filter((_, i) => i !== imgIdx); setSetoresData(upd); }} className="absolute top-2 right-2 bg-white/95 hover:bg-rose-50 text-rose-500 p-1.5 rounded-lg shadow transition-opacity opacity-0 group-hover:opacity-100 cursor-pointer" title="Remover Imagem">
+                                <button onClick={() => { const upd = [...setoresData]; upd[idx].imagens = upd[idx].imagens.filter((_:any, i:number) => i !== imgIdx); setSetoresData(upd); }} className="absolute top-2 right-2 bg-white/95 hover:bg-rose-50 text-rose-500 p-1.5 rounded-lg shadow transition-opacity opacity-0 group-hover:opacity-100 cursor-pointer" title="Remover Imagem">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -854,9 +752,51 @@ export const Admin: React.FC = () => {
                         <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Nome da Obra</label>
                         <input type="text" value={obra.title} onChange={(e) => { const upd = [...obrasData]; upd[idx].title = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-950" />
                       </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Status</label>
+                        <input type="text" value={obra.status} onChange={(e) => { const upd = [...obrasData]; upd[idx].status = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-950" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Local (UF)</label>
+                        <input type="text" value={obra.local} onChange={(e) => { const upd = [...obrasData]; upd[idx].local = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-950" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Área (m²)</label>
+                        <input type="text" value={obra.area} onChange={(e) => { const upd = [...obrasData]; upd[idx].area = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-950" />
+                      </div>
                       
-                      {/* CAPA DA OBRA UPLOAD ÚNICO */}
                       <div className="space-y-1 lg:col-span-2">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Resumo Curto (Aparece no Card)</label>
+                        <textarea rows={3} value={obra.resumo} onChange={(e) => { const upd = [...obrasData]; upd[idx].resumo = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg p-3 text-xs text-zinc-600 resize-none" />
+                      </div>
+                      <div className="space-y-1 lg:col-span-2">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Detalhes do Projeto (Aparece no Modal)</label>
+                        <textarea rows={3} value={obra.descricaoCompleta} onChange={(e) => { const upd = [...obrasData]; upd[idx].descricaoCompleta = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg p-3 text-xs text-zinc-600 resize-none" />
+                      </div>
+
+                      {/* RESTAURAÇÃO: ESPECIFICAÇÕES DA OBRA (TABELA) */}
+                      <div className="space-y-1 lg:col-span-4 border-t border-zinc-200 pt-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Especificações Técnicas (Tabela Opcional)</label>
+                          <button onClick={() => { const upd = [...obrasData]; upd[idx].especificacoes = [...(upd[idx].especificacoes || []), { label: 'Título', value: 'Valor' }]; setObrasData(upd); }} className="px-2 py-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 rounded text-[10px] font-bold transition-colors">
+                            Adicionar Linha
+                          </button>
+                        </div>
+                        {obra.especificacoes && obra.especificacoes.length > 0 && (
+                          <div className="space-y-2">
+                            {obra.especificacoes.map((spec: any, sIdx: number) => (
+                              <div key={sIdx} className="flex items-center gap-2">
+                                <input type="text" value={spec.label} onChange={(e) => { const upd = [...obrasData]; upd[idx].especificacoes[sIdx].label = e.target.value; setObrasData(upd); }} className="w-1/3 bg-white border border-zinc-200 rounded-lg p-2 text-xs font-bold" placeholder="Ex: Cliente" />
+                                <input type="text" value={spec.value} onChange={(e) => { const upd = [...obrasData]; upd[idx].especificacoes[sIdx].value = e.target.value; setObrasData(upd); }} className="flex-1 bg-white border border-zinc-200 rounded-lg p-2 text-xs" placeholder="Ex: Amazon" />
+                                <button onClick={() => { const upd = [...obrasData]; upd[idx].especificacoes = upd[idx].especificacoes.filter((_:any, i:number) => i !== sIdx); setObrasData(upd); }} className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* CAPA DA OBRA UPLOAD ÚNICO */}
+                      <div className="space-y-1 lg:col-span-4 border-t border-zinc-200 pt-3">
                         <div className="flex items-center justify-between">
                           <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Imagem de Capa da Obra</label>
                           <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5 font-['Montserrat']">
@@ -870,12 +810,11 @@ export const Admin: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* GALERIA INTERNA DA OBRA (DRAG AND DROP COM ALT) */}
+                    {/* GALERIA INTERNA DA OBRA */}
                     <div className="space-y-3 pt-2 border-t border-zinc-200/80">
                       <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat'] block">
                         Galeria Interna da Obra (Arraste e Solte Várias Imagens)
                       </label>
-                      
                       <div 
                         onDragOver={(e) => { e.preventDefault(); setDragActive(`obra-${idx}`); }}
                         onDragLeave={(e) => { e.preventDefault(); setDragActive(null); }}
@@ -886,7 +825,7 @@ export const Admin: React.FC = () => {
                             handleMultipleFilesUpload(e.dataTransfer.files, (newUrls) => {
                               const upd = [...obrasData];
                               const newImagesObjects = newUrls.map(url => ({ url, alt: '' }));
-                              upd[idx].galeriaImages = [...upd[idx].galeriaImages, ...newImagesObjects];
+                              upd[idx].galeriaImages = [...(upd[idx].galeriaImages || []), ...newImagesObjects];
                               setObrasData(upd);
                             }, `obra-upload-${idx}`);
                           }
@@ -909,7 +848,7 @@ export const Admin: React.FC = () => {
                                     handleMultipleFilesUpload(e.target.files, (newUrls) => {
                                       const upd = [...obrasData];
                                       const newImagesObjects = newUrls.map(url => ({ url, alt: '' }));
-                                      upd[idx].galeriaImages = [...upd[idx].galeriaImages, ...newImagesObjects];
+                                      upd[idx].galeriaImages = [...(upd[idx].galeriaImages || []), ...newImagesObjects];
                                       setObrasData(upd);
                                     }, `obra-upload-${idx}`);
                                   }
@@ -920,13 +859,13 @@ export const Admin: React.FC = () => {
                         )}
                       </div>
 
-                      {obra.galeriaImages.length > 0 && (
+                      {obra.galeriaImages && obra.galeriaImages.length > 0 && (
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                          {obra.galeriaImages.map((imgObj, imgIdx) => (
+                          {obra.galeriaImages.map((imgObj: any, imgIdx: number) => (
                             <div key={imgIdx} className="bg-white border border-zinc-200 rounded-xl overflow-hidden flex flex-col shadow-sm group">
                               <div className="aspect-video bg-zinc-100 relative">
                                 <img src={imgObj.url} alt={`Preview ${imgIdx}`} className="w-full h-full object-cover" />
-                                <button onClick={() => { const upd = [...obrasData]; upd[idx].galeriaImages = upd[idx].galeriaImages.filter((_, i) => i !== imgIdx); setObrasData(upd); }} className="absolute top-2 right-2 bg-white/95 hover:bg-rose-50 text-rose-500 p-1.5 rounded-lg shadow transition-opacity opacity-0 group-hover:opacity-100 cursor-pointer" title="Remover Imagem">
+                                <button onClick={() => { const upd = [...obrasData]; upd[idx].galeriaImages = upd[idx].galeriaImages.filter((_:any, i:number) => i !== imgIdx); setObrasData(upd); }} className="absolute top-2 right-2 bg-white/95 hover:bg-rose-50 text-rose-500 p-1.5 rounded-lg shadow transition-opacity opacity-0 group-hover:opacity-100 cursor-pointer" title="Remover Imagem">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -976,16 +915,58 @@ export const Admin: React.FC = () => {
               </div>
             </div>
 
+            {/* RESTAURAÇÃO: FLUXO DE TRABALHO (SERVIÇOS) */}
             <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Layers className="w-5 h-5 text-amber-500" /><span>2. Serviços Prestados</span></h2>
-                <button onClick={() => handleSave('Serviços')} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all cursor-pointer"><Save className="w-4 h-4 inline-block mr-1" /><span>Salvar</span></button>
+                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Settings className="w-5 h-5 text-amber-500" /><span>2. Fluxo de Trabalho (Passo a Passo)</span></h2>
+                <button onClick={() => setServicosData({...servicosData, fluxo: [...servicosData.fluxo, { passo: `0${servicosData.fluxo.length + 1}`, titulo: 'Novo Passo', desc: 'Descrição' }]})} className="px-3 py-1.5 bg-zinc-900 text-white rounded-lg text-xs font-bold cursor-pointer inline-flex items-center gap-1"><Plus className="w-3.5 h-3.5" /><span>Adicionar Passo</span></button>
+              </div>
+              <div className="space-y-4">
+                {servicosData.fluxo.map((item, idx) => (
+                  <div key={idx} className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-amber-600">Passo {item.passo}</span>
+                      <button onClick={() => setServicosData({...servicosData, fluxo: servicosData.fluxo.filter((_, i) => i !== idx)})} className="p-1 text-rose-500 hover:bg-rose-50 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Número</label><input type="text" value={item.passo} onChange={(e) => { const upd = [...servicosData.fluxo]; upd[idx].passo = e.target.value; setServicosData({...servicosData, fluxo: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
+                      <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Título</label><input type="text" value={item.titulo} onChange={(e) => { const upd = [...servicosData.fluxo]; upd[idx].titulo = e.target.value; setServicosData({...servicosData, fluxo: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
+                      <div className="space-y-1 sm:col-span-2"><label className="text-[10px] font-bold uppercase text-zinc-500">Descrição</label><textarea rows={2} value={item.desc} onChange={(e) => { const upd = [...servicosData.fluxo]; upd[idx].desc = e.target.value; setServicosData({...servicosData, fluxo: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs resize-none" /></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
+                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Layers className="w-5 h-5 text-amber-500" /><span>3. Serviços Prestados</span></h2>
+                <button onClick={() => handleSave('Serviços')} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all cursor-pointer"><Save className="w-4 h-4 inline-block mr-1" /><span>Salvar Tudo</span></button>
               </div>
               <div className="space-y-6">
                 {servicosData.lista.map((servico, idx) => (
-                  <div key={servico.id} className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3">
-                    <input type="text" value={servico.title} onChange={(e) => { const updated = [...servicosData.lista]; updated[idx].title = e.target.value; setServicosData({...servicosData, lista: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm font-bold text-zinc-950" />
-                    <textarea rows={2} value={servico.desc} onChange={(e) => { const updated = [...servicosData.lista]; updated[idx].desc = e.target.value; setServicosData({...servicosData, lista: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg p-2.5 text-xs text-zinc-600 resize-none" />
+                  <div key={servico.id} className="p-5 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold uppercase text-zinc-500">Título do Serviço</label>
+                      <input type="text" value={servico.title} onChange={(e) => { const updated = [...servicosData.lista]; updated[idx].title = e.target.value; setServicosData({...servicosData, lista: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm font-bold text-zinc-950" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold uppercase text-zinc-500">Descrição do Serviço</label>
+                      <textarea rows={2} value={servico.desc} onChange={(e) => { const updated = [...servicosData.lista]; updated[idx].desc = e.target.value; setServicosData({...servicosData, lista: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg p-2.5 text-xs text-zinc-600 resize-none" />
+                    </div>
+                    {/* RESTAURAÇÃO: ENTREGÁVEIS DOS SERVIÇOS */}
+                    <div className="space-y-2 pt-3 border-t border-zinc-200">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold uppercase text-amber-600 block">Itens Inclusos (Entregáveis)</label>
+                        <button onClick={() => { const upd = [...servicosData.lista]; upd[idx].entregaveis = [...(upd[idx].entregaveis || []), 'Novo Item']; setServicosData({...servicosData, lista: upd}); }} className="px-2 py-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 rounded text-[10px] font-bold transition-colors">Adicionar Item</button>
+                      </div>
+                      {servico.entregaveis && servico.entregaveis.map((item: string, iItem: number) => (
+                        <div key={iItem} className="flex items-center gap-2">
+                          <input type="text" value={item} onChange={(e) => { const upd = [...servicosData.lista]; upd[idx].entregaveis[iItem] = e.target.value; setServicosData({...servicosData, lista: upd}); }} className="flex-1 bg-white border border-zinc-200 rounded p-1.5 text-xs" />
+                          <button onClick={() => { const upd = [...servicosData.lista]; upd[idx].entregaveis = upd[idx].entregaveis.filter((_:any, i:number) => i !== iItem); setServicosData({...servicosData, lista: upd}); }} className="p-1.5 text-rose-500 hover:bg-rose-50 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1024,7 +1005,7 @@ export const Admin: React.FC = () => {
               <div className="space-y-4">
                 {contatoData.faqs.map((faq, idx) => (
                   <div key={faq.id} className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl flex flex-col gap-3">
-                    <div className="flex items-center justify-between"><span className="text-xs font-bold text-amber-600">Pergunta #{idx + 1}</span><button onClick={() => setContatoData({...contatoData, faqs: contatoData.faqs.filter((_, i) => i !== idx)})} className="p-1 text-rose-500 hover:bg-rose-50 rounded transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button></div>
+                    <div className="flex items-center justify-between"><span className="text-xs font-bold text-amber-600">Pergunta #{idx + 1}</span><button onClick={() => setContatoData({...contatoData, faqs: contatoData.faqs.filter((_, i) => i !== idx)})} className="p-1 text-rose-500 hover:bg-rose-50 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button></div>
                     <input type="text" value={faq.pergunta} onChange={(e) => { const updated = [...contatoData.faqs]; updated[idx].pergunta = e.target.value; setContatoData({...contatoData, faqs: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold text-zinc-950" />
                     <textarea rows={2} value={faq.resposta} onChange={(e) => { const updated = [...contatoData.faqs]; updated[idx].resposta = e.target.value; setContatoData({...contatoData, faqs: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs text-zinc-600 resize-none" />
                   </div>
