@@ -7,7 +7,7 @@ import {
   Home as HomeIcon, Users, Phone, Save, Plus, Trash2, Lock, LogOut, Layers, Video, 
   Image as ImageIcon, Wrench, Award, Building2, HelpCircle, FileText, LayoutGrid, 
   Upload, Loader2, ShieldCheck, Target, BookOpen, Bold, Italic, Underline, List, 
-  Link2, AlignLeft, ImagePlus, ChevronLeft, ChevronRight
+  Link2, AlignLeft, ImagePlus, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Clock
 } from 'lucide-react';
 
 export const Admin: React.FC = () => {
@@ -113,17 +113,39 @@ export const Admin: React.FC = () => {
     fetchAdminData();
   }, []);
 
-  // FUNÇÃO DE ORDENAR IMAGENS NO PORTFÓLIO
-  const moverImagemGaleriaObra = (obraIdx: number, imgIdx: number, direcao: 'esq' | 'dir') => {
-    const upd = [...obrasData];
-    const imagens = [...(upd[obraIdx].galeriaImages || [])];
-    
+  // FUNÇÕES DE ORDENAÇÃO (CARROSSÉIS E SLIDERS)
+  const moverSlideHome = (slideIdx: number, direcao: 'cima' | 'baixo') => {
+    const upd = { ...homeData };
+    const slides = [...upd.hero.mediaList];
+    if (direcao === 'cima' && slideIdx > 0) {
+      [slides[slideIdx - 1], slides[slideIdx]] = [slides[slideIdx], slides[slideIdx - 1]];
+    } else if (direcao === 'baixo' && slideIdx < slides.length - 1) {
+      [slides[slideIdx], slides[slideIdx + 1]] = [slides[slideIdx + 1], slides[slideIdx]];
+    }
+    upd.hero.mediaList = slides;
+    setHomeData(upd);
+  };
+
+  const moverImagemSetor = (setorIdx: number, imgIdx: number, direcao: 'esq' | 'dir') => {
+    const upd = [...setoresData];
+    const imagens = [...(upd[setorIdx].imagens || [])];
     if (direcao === 'esq' && imgIdx > 0) {
       [imagens[imgIdx - 1], imagens[imgIdx]] = [imagens[imgIdx], imagens[imgIdx - 1]];
     } else if (direcao === 'dir' && imgIdx < imagens.length - 1) {
       [imagens[imgIdx], imagens[imgIdx + 1]] = [imagens[imgIdx + 1], imagens[imgIdx]];
     }
-    
+    upd[setorIdx].imagens = imagens;
+    setSetoresData(upd);
+  };
+
+  const moverImagemGaleriaObra = (obraIdx: number, imgIdx: number, direcao: 'esq' | 'dir') => {
+    const upd = [...obrasData];
+    const imagens = [...(upd[obraIdx].galeriaImages || [])];
+    if (direcao === 'esq' && imgIdx > 0) {
+      [imagens[imgIdx - 1], imagens[imgIdx]] = [imagens[imgIdx], imagens[imgIdx - 1]];
+    } else if (direcao === 'dir' && imgIdx < imagens.length - 1) {
+      [imagens[imgIdx], imagens[imgIdx + 1]] = [imagens[imgIdx + 1], imagens[imgIdx]];
+    }
     upd[obraIdx].galeriaImages = imagens;
     setObrasData(upd);
   };
@@ -437,15 +459,28 @@ export const Admin: React.FC = () => {
                     <div key={media.id} className="p-5 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-4">
                       <div className="flex items-center justify-between border-b border-zinc-200/80 pb-3">
                         <span className="text-xs font-bold text-amber-600 font-['Montserrat'] uppercase">Slide #{idx + 1}</span>
-                        <button 
-                          onClick={() => {
-                            const updated = homeData.hero.mediaList.filter(m => m.id !== media.id);
-                            setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                          }}
-                          className="p-1 text-rose-500 hover:bg-rose-50 rounded transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex gap-2">
+                          {idx > 0 && (
+                            <button onClick={() => moverSlideHome(idx, 'cima')} className="p-1 text-zinc-500 hover:bg-zinc-200 rounded transition-colors cursor-pointer" title="Mover para cima">
+                              <ChevronUp className="w-4 h-4" />
+                            </button>
+                          )}
+                          {idx < homeData.hero.mediaList.length - 1 && (
+                            <button onClick={() => moverSlideHome(idx, 'baixo')} className="p-1 text-zinc-500 hover:bg-zinc-200 rounded transition-colors cursor-pointer" title="Mover para baixo">
+                              <ChevronDown className="w-4 h-4" />
+                            </button>
+                          )}
+                          <button 
+                            onClick={() => {
+                              const updated = homeData.hero.mediaList.filter(m => m.id !== media.id);
+                              setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
+                            }}
+                            className="p-1 text-rose-500 hover:bg-rose-50 rounded transition-colors cursor-pointer"
+                            title="Excluir Slide"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -640,10 +675,10 @@ export const Admin: React.FC = () => {
               </div>
             </div>
 
-            {/* 4. LINHA DO TEMPO (TIMELINE) */}
+            {/* 4. LINHA DO TEMPO */}
             <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Lock className="w-5 h-5 text-amber-500" /><span>4. Linha do Tempo (História)</span></h2>
+                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Clock className="w-5 h-5 text-amber-500" /><span>4. Linha do Tempo (História)</span></h2>
                 <button onClick={() => setQuemSomosData({...quemSomosData, timeline: [...quemSomosData.timeline, { id: Date.now(), fase: 'Nova Fase', desc: 'Descrição da fase' }]})} className="px-3 py-1.5 bg-zinc-900 text-white rounded-lg text-xs font-bold cursor-pointer inline-flex items-center gap-1">
                   <Plus className="w-3.5 h-3.5" /><span>Adicionar Marco</span>
                 </button>
@@ -695,7 +730,7 @@ export const Admin: React.FC = () => {
           </div>
         )}
         {/* ==================================================================== */}
-        {/* ABA: SETORES & OBRAS (DRAG&DROP, ALT TEXT, LIMITE E ORDENAÇÃO) */}
+        {/* ABA: SETORES & OBRAS (COM LIMITES E ORDENAÇÃO DE IMAGENS) */}
         {/* ==================================================================== */}
         {activeTab === 'setores' && (
           <div className="space-y-10">
@@ -750,11 +785,14 @@ export const Admin: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* GALERIA DO SETOR */}
+                    {/* GALERIA DO SETOR COM ORDENAÇÃO */}
                     <div className="space-y-3 pt-2 border-t border-zinc-200/80">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat'] block">
-                        Imagens do Carrossel (Arraste e Solte Várias Imagens)
-                      </label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat'] block">
+                          Imagens do Carrossel (Arraste e Solte Várias Imagens)
+                        </label>
+                      </div>
+                      
                       <div 
                         onDragOver={(e) => { e.preventDefault(); setDragActive(`setor-${idx}`); }}
                         onDragLeave={(e) => { e.preventDefault(); setDragActive(null); }}
@@ -805,13 +843,30 @@ export const Admin: React.FC = () => {
                             <div key={imgIdx} className="bg-white border border-zinc-200 rounded-xl overflow-hidden flex flex-col shadow-sm group">
                               <div className="aspect-video bg-zinc-100 relative">
                                 <img src={imgObj.url} alt={`Preview ${imgIdx}`} className="w-full h-full object-cover" />
-                                <button onClick={() => { const upd = [...setoresData]; upd[idx].imagens = upd[idx].imagens.filter((_:any, i:number) => i !== imgIdx); setSetoresData(upd); }} className="absolute top-2 right-2 bg-white/95 hover:bg-rose-50 text-rose-500 p-1.5 rounded-lg shadow transition-opacity opacity-0 group-hover:opacity-100 cursor-pointer" title="Remover Imagem">
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                
+                                {/* Botões de Reordenação e Exclusão */}
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-start justify-between p-2">
+                                  <div className="flex gap-1">
+                                    {imgIdx > 0 && (
+                                      <button onClick={() => moverImagemSetor(idx, imgIdx, 'esq')} className="bg-white hover:bg-zinc-100 text-zinc-800 p-1.5 rounded-lg shadow cursor-pointer transition-colors" title="Mover para esquerda">
+                                        <ChevronLeft className="w-4 h-4" />
+                                      </button>
+                                    )}
+                                    {imgIdx < setor.imagens.length - 1 && (
+                                      <button onClick={() => moverImagemSetor(idx, imgIdx, 'dir')} className="bg-white hover:bg-zinc-100 text-zinc-800 p-1.5 rounded-lg shadow cursor-pointer transition-colors" title="Mover para direita">
+                                        <ChevronRight className="w-4 h-4" />
+                                      </button>
+                                    )}
+                                  </div>
+                                  <button onClick={() => { const upd = [...setoresData]; upd[idx].imagens = upd[idx].imagens.filter((_:any, i:number) => i !== imgIdx); setSetoresData(upd); }} className="bg-white hover:bg-rose-50 text-rose-500 p-1.5 rounded-lg shadow cursor-pointer transition-colors" title="Remover Imagem">
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+
                               </div>
                               <div className="p-2 border-t border-zinc-100 bg-[#f8f9f6] space-y-2">
                                 <div>
-                                  <label className="text-[9px] font-bold uppercase text-amber-600 block mb-0.5 font-['Montserrat']">Nome da Badge (Alt)</label>
+                                  <label className="text-[9px] font-bold uppercase text-amber-600 block mb-0.5 font-['Montserrat']">Ordem: {imgIdx + 1} | Badge (Alt)</label>
                                   <input type="text" value={imgObj.alt} onChange={(e) => { const upd = [...setoresData]; upd[idx].imagens[imgIdx].alt = e.target.value; setSetoresData(upd); }} className="w-full text-xs font-bold text-zinc-900 bg-white border border-zinc-200 rounded px-2 py-1 outline-none focus:border-amber-500" placeholder="Ex: Fachada Sul" />
                                 </div>
                                 <div>
@@ -888,7 +943,7 @@ export const Admin: React.FC = () => {
                         <textarea rows={3} value={obra.descricaoCompleta} onChange={(e) => { const upd = [...obrasData]; upd[idx].descricaoCompleta = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg p-3 text-xs text-zinc-600 resize-none" />
                       </div>
 
-                      {/* ESPECIFICAÇÕES DA OBRA (TABELA OPCIONAL) */}
+                      {/* ESPECIFICAÇÕES DA OBRA (TABELA) */}
                       <div className="space-y-1 lg:col-span-4 border-t border-zinc-200 pt-3">
                         <div className="flex items-center justify-between mb-2">
                           <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Especificações Técnicas (Tabela Opcional)</label>
