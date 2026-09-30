@@ -658,10 +658,10 @@ export const QuemSomos: React.FC = () => {
                 </div>
 
                 <div className="bg-white border border-zinc-200/80 p-6 sm:p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6">
-                  <div className="h-16 flex items-center justify-center sm:justify-start">
+                  <div className="h-24 flex items-center justify-center sm:justify-start">
                     <img 
-                      src="/selos/SELO_ISO9001.png" 
-                      alt="Selo ISO 9001:2015" 
+                      src="/selos/Logo_ISO9001_2026.png" 
+                      alt="Selo ISO 9001 - certificação CBG Certificadora Brasileira de Gestão" 
                       className="max-h-full max-w-full object-contain"
                     />
                   </div>
@@ -670,7 +670,7 @@ export const QuemSomos: React.FC = () => {
                       ISO 9001:2015
                     </h3>
                     <p className="text-xs sm:text-sm text-zinc-600 font-sans leading-relaxed">
-                      Padrão internacional para Sistemas de Gestão da Qualidade. Homologação oficial que atesta eficiência contínua, governança corporativa transparente e foco absoluto no cumprimento de prazos e excelência operacional.
+                      O Sistema de Gestão da Qualidade da Quattro Construtora é certificado pela <strong>CBG Certificadora Brasileira de Gestão</strong> conforme a norma <strong>ABNT NBR ISO 9001:2015</strong>. Isso se reflete no controle de processos e materiais, na qualificação contínua de colaboradores e na satisfação dos nossos clientes.
                     </p>
                   </div>
                 </div>

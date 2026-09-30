@@ -208,7 +208,7 @@ export const Admin: React.FC = () => {
     qualidade: {
       quote: '"A Quattro Construtora atua na construção civil e na incorporação de empreendimentos habitacionais, corporativos e industriais com foco na excelência..."',
       seloPbqph: '/selos/SELO_pbqph.png',
-      seloIso: '/selos/SELO_ISO9001.png'
+      seloIso: '/selos/Logo_ISO9001_2026.png'
     },
     governanca: {
       missao: 'Entregar engenharia de alta performance com compromisso intransigente em qualidade, segurança do trabalho e previsibilidade orçamentária.',
