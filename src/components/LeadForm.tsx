@@ -35,6 +35,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
   const [loading, setLoading] = useState(false);
   const [sucesso, setSucesso] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [honeypot, setHoneypot] = useState(''); // campo invisível: só robôs preenchem
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -63,6 +64,45 @@ export const LeadForm: React.FC<LeadFormProps> = ({
       return;
     }
 
+    // Robôs: o campo escondido vem preenchido. Finge sucesso e não grava nada.
+    if (honeypot) {
+      setSucesso(true);
+      setLoading(false);
+      return;
+    }
+
+    if (formData.nome.trim().length < 2) {
+      setError('Informe seu nome completo.');
+      setLoading(false);
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      setError('Informe um e-mail válido.');
+      setLoading(false);
+      return;
+    }
+    const digitos = formData.telefone.replace(/\D/g, '');
+    if (digitos.length < 8 || digitos.length > 15) {
+      setError('Informe um telefone válido com DDD.');
+      setLoading(false);
+      return;
+    }
+    if (formData.mensagem.length > 2000) {
+      setError('A mensagem pode ter no máximo 2000 caracteres.');
+      setLoading(false);
+      return;
+    }
+
+    // Intervalo mínimo entre envios (reduz spam/abuso do formulário)
+    try {
+      const ultimo = Number(localStorage.getItem('quattro_lead_ts') || 0);
+      if (Date.now() - ultimo < 60_000) {
+        setError('Aguarde um minuto antes de enviar outra mensagem.');
+        setLoading(false);
+        return;
+      }
+    } catch { /* navegador sem localStorage: segue */ }
+
     try {
       const payload = {
         ...formData,
@@ -70,6 +110,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
       };
       const ok = await saveLead(payload);
       if (ok) {
+        try { localStorage.setItem('quattro_lead_ts', String(Date.now())); } catch { /* ignora */ }
         setSucesso(true);
         setFormData({
           nome: '',
@@ -125,6 +166,16 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-3.5">
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+          />
           <div>
             <label htmlFor="nome" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
               Nome Completo *

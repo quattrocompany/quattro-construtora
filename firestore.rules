@@ -1,0 +1,48 @@
+rules_version = '2';
+
+// Regras do Firestore — Quattro Construtora
+// Como aplicar: Console do Firebase > Firestore Database > Regras > colar > Publicar.
+// Antes de publicar, troque COLE_AQUI_O_UID_DO_ADMIN pelo UID do usuário criado em
+// Authentication (veja SEGURANCA.md). Vários administradores: separe os UIDs por vírgula.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid in ['COLE_AQUI_O_UID_DO_ADMIN'];
+    }
+
+    function leadValido(d) {
+      return d.keys().hasOnly(['nome','email','telefone','empresa','assunto','mensagem','termoAceito','origem','obraId','createdAt'])
+        && d.keys().hasAll(['nome','email','telefone','termoAceito','createdAt'])
+        && d.nome is string && d.nome.size() >= 2 && d.nome.size() <= 120
+        && d.email is string && d.email.size() >= 5 && d.email.size() <= 160 && d.email.matches('^[^@ ]+@[^@ ]+[.][^@ ]+$')
+        && d.telefone is string && d.telefone.size() >= 8 && d.telefone.size() <= 30
+        && (!('empresa' in d) || (d.empresa is string && d.empresa.size() <= 120))
+        && (!('assunto' in d) || (d.assunto is string && d.assunto.size() <= 60))
+        && (!('mensagem' in d) || (d.mensagem is string && d.mensagem.size() <= 2000))
+        && (!('origem' in d) || (d.origem is string && d.origem.size() <= 60))
+        && (!('obraId' in d) || (d.obraId is string && d.obraId.size() <= 80))
+        && d.termoAceito == true
+        && d.createdAt == request.time;
+    }
+
+    // Conteúdo do site (editado pelo /admin): todos leem, só o admin escreve.
+    match /site_data/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Leads do formulário: qualquer visitante PODE CRIAR (com campos validados),
+    // mas só o admin consegue ler, alterar ou apagar.
+    match /leads/{leadId} {
+      allow create: if leadValido(request.resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Todo o resto fica fechado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

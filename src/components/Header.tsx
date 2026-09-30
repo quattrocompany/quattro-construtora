@@ -80,7 +80,7 @@ export const Header: React.FC = () => {
               <a 
                 href="https://instagram.com/quattroconstrutoraoficial" 
                 target="_blank" 
-                rel="noreferrer" 
+                rel="noopener noreferrer" 
                 aria-label="Instagram"
                 className="hover:scale-110 transition-transform text-zinc-900"
               >
@@ -89,7 +89,7 @@ export const Header: React.FC = () => {
               <a 
                 href="https://www.facebook.com/quattroconstrutora" 
                 target="_blank" 
-                rel="noreferrer" 
+                rel="noopener noreferrer" 
                 aria-label="Facebook"
                 className="hover:scale-110 transition-transform text-zinc-900"
               >
@@ -98,7 +98,7 @@ export const Header: React.FC = () => {
               <a 
                 href="https://youtube.com/quattroconstrutora" 
                 target="_blank" 
-                rel="noreferrer" 
+                rel="noopener noreferrer" 
                 aria-label="YouTube"
                 className="hover:scale-110 transition-transform text-zinc-900"
               >
@@ -200,27 +200,27 @@ export const Header: React.FC = () => {
 
             <div className="flex items-center justify-center gap-6 pt-3 text-zinc-900">
               <a 
-                href="https://instagram.com" 
+                href="https://instagram.com/quattroconstrutoraoficial" 
                 target="_blank" 
-                rel="noreferrer" 
+                rel="noopener noreferrer" 
                 aria-label="Instagram"
                 className="hover:scale-110 transition-transform p-1 text-zinc-900"
               >
                 <InstagramIcon className="w-5 h-5 fill-zinc-900" />
               </a>
               <a 
-                href="https://facebook.com" 
+                href="https://www.facebook.com/quattroconstrutora" 
                 target="_blank" 
-                rel="noreferrer" 
+                rel="noopener noreferrer" 
                 aria-label="Facebook"
                 className="hover:scale-110 transition-transform p-1 text-zinc-900"
               >
                 <FacebookIcon className="w-5 h-5 fill-zinc-900" />
               </a>
               <a 
-                href="https://youtube.com" 
+                href="https://youtube.com/quattroconstrutora" 
                 target="_blank" 
-                rel="noreferrer" 
+                rel="noopener noreferrer" 
                 aria-label="YouTube"
                 className="hover:scale-110 transition-transform p-1 text-zinc-900"
               >

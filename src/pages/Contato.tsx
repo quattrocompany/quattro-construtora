@@ -133,7 +133,7 @@ export const Contato: React.FC = () => {
                         <a 
                           href={canal.href} 
                           target="_blank" 
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className="text-xs sm:text-sm font-bold text-zinc-950 hover:text-amber-600 transition-colors block font-['Montserrat'] leading-snug"
                         >
                           {canal.info}

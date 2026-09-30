@@ -1,1342 +1,1281 @@
 // src/pages/Admin.tsx
-import React, { useState, useEffect } from 'react';
+// Painel de conteúdo da Quattro Construtora.
+// Acesso por Firebase Authentication (e-mail + senha). A proteção real dos dados
+// está em firestore.rules e storage.rules (veja SEGURANCA.md) — a tela de login
+// sozinha não protege nada, por isso nenhuma senha existe neste arquivo.
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged, type User } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { db, storage } from '../firebase';
-import { 
-  Home as HomeIcon, Users, Phone, Save, Plus, Trash2, Lock, LogOut, Layers, Video, 
-  Image as ImageIcon, Wrench, Award, Building2, HelpCircle, FileText, LayoutGrid, 
-  Upload, Loader2, ShieldCheck, Target, BookOpen, Bold, Italic, Underline, List, 
-  Link2, AlignLeft, ImagePlus, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Clock
+import {
+  Home as HomeIcon, Users, Layers, Wrench, Phone, BookOpen, LogOut, Loader2, X, Plus,
+  ChevronUp, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Bold, Italic, Underline,
+  List, ListOrdered, Link2, ImagePlus, Heading2, Heading3, AlignLeft, AlignCenter, Code2, Eraser,
 } from 'lucide-react';
+import { auth, db, storage } from '../firebase';
+import { sanitizeHtml, isSafeUrl } from '../utils/sanitizeHtml';
+import { SETORES_PADRAO, OBRAS_PADRAO } from '../data/portfolioDefaults';
 
-export const Admin: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [activeTab, setActiveTab] = useState<'home' | 'quemSomos' | 'setores' | 'servicos' | 'contato' | 'blog'>('home');
-  const [uploading, setUploading] = useState<string | null>(null);
-  const [dragActive, setDragActive] = useState<string | null>(null);
+// Se o usuário digitar só "marketing", completa com este domínio.
+const LOGIN_DOMAIN = 'quattroconstrutora.com.br';
+const LOGO_SRC = '/logo/Logo_Quattro Construtora_cut.svg';
 
-  // UPLOAD REAL PARA O FIREBASE STORAGE (ARQUIVO ÚNICO)
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, onSuccess: (url: string) => void, fieldId: string) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+// ============================================================
+//  ESTILOS
+// ============================================================
+const ADMIN_CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    setUploading(fieldId);
-    try {
-      const fileRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
-      await uploadBytes(fileRef, file);
-      const url = await getDownloadURL(fileRef);
-      onSuccess(url);
-      alert(`Arquivo carregado com sucesso!`);
-    } catch (error) {
-      console.error("Erro no upload:", error);
-      alert("Erro ao enviar arquivo para a nuvem.");
-    } finally {
-      setUploading(null);
-    }
-  };
+.adm {
+  --bg: #f4f4f1; --surface: #ffffff; --surface-2: #faf9f7;
+  --line: #e6e5e0; --line-strong: #d3d2cb;
+  --ink: #171717; --ink-2: #3f3f3b; --muted: #6f6e68; --faint: #9c9b94;
+  --brand: #f59e0b; --brand-soft: #fff4dc;
+  --danger: #b42318; --danger-soft: #fdecea;
+  --side: #141414; --side-line: #262626; --side-ink: #e9e9e6; --side-muted: #8c8c86;
+  display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100vh;
+  background: var(--bg); color: var(--ink); font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; text-align: left;
+  position: relative; z-index: 200;
+}
+.adm *, .adm *::before, .adm *::after { box-sizing: border-box; }
+.adm h1, .adm h2, .adm h3, .adm h4, .adm p { margin: 0; }
+.adm button, .adm input, .adm select, .adm textarea { font-family: inherit; }
 
-  // UPLOAD REAL PARA O FIREBASE STORAGE (MÚLTIPLOS ARQUIVOS)
-  const handleMultipleFilesUpload = async (files: FileList | null, onSuccess: (urls: string[]) => void, fieldId: string) => {
-    if (!files || files.length === 0) return;
+/* ---------- Barra lateral ---------- */
+.adm-side { background: var(--side); color: var(--side-ink); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; padding: 22px 14px 16px; }
+.adm-brand { padding: 2px 10px 22px; }
+.adm-brand img { display: block; width: 118px; height: auto; }
+.adm-brand span { display: block; margin-top: 11px; font-size: 12px; color: var(--side-muted); }
+.adm-nav { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; min-height: 0; }
+.adm-sub { display: flex; flex-direction: column; margin: 2px 0 8px 18px; padding-left: 10px; border-left: 1px solid var(--side-line); }
+.adm-nav .adm-sub button { padding: 5px 10px; font-size: 12.5px; color: #8f8f89; border-radius: 6px; }
+.adm-nav .adm-sub button.on { background: transparent; color: #fff; font-weight: 600; }
+.adm-nav .adm-sub button.on::before { left: -11px; top: 7px; bottom: 7px; width: 2px; border-radius: 2px; }
+@media (min-width: 861px) { .adm-jump { display: none; } }
+.adm-nav button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; border-radius: 7px; background: transparent; color: #b9b9b3; font-size: 13.5px; font-weight: 500; text-align: left; cursor: pointer; position: relative; }
+.adm-nav button:hover { background: #1e1e1e; color: #fff; }
+.adm-nav button.on { background: #202020; color: #fff; }
+.adm-nav button.on::before { content: ''; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--brand); }
+.adm-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); margin-left: auto; flex: none; }
+.adm-side-foot { margin-top: auto; border-top: 1px solid var(--side-line); padding: 14px 10px 0; display: flex; flex-direction: column; gap: 10px; }
+.adm-side-foot small { font-size: 12px; color: var(--side-muted); word-break: break-all; }
+.adm-logout { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; color: #c9c9c3; font-size: 13px; cursor: pointer; padding: 0; }
+.adm-logout:hover { color: #fff; }
 
-    setUploading(fieldId);
-    try {
-      const uploadPromises = Array.from(files).map(async (file) => {
-        const fileRef = ref(storage, `uploads/galerias/${Date.now()}_${file.name}`);
-        await uploadBytes(fileRef, file);
-        return await getDownloadURL(fileRef);
-      });
+/* ---------- Conteúdo ---------- */
+.adm-main { padding: 34px 44px 40px; max-width: 1080px; width: 100%; }
+.adm-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+.adm-head h1 { font-size: 22px; font-weight: 650; letter-spacing: -.01em; }
+.adm-head p { color: var(--muted); margin-top: 3px; font-size: 13.5px; }
+.adm-picker { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.adm-picker > label { font-size: 12.5px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+.adm-picker .inp { flex: 1; min-width: 220px; max-width: 520px; }
+.adm-jump { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.adm-jump button { border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 4px 12px; font-size: 12.5px; cursor: pointer; }
+.adm-jump button:hover { border-color: var(--ink); color: var(--ink); }
 
-      const urls = await Promise.all(uploadPromises);
-      onSuccess(urls);
-    } catch (error) {
-      console.error("Erro no upload múltiplo:", error);
-      alert("Erro ao enviar as fotos para a nuvem.");
-    } finally {
-      setUploading(null);
-    }
-  };
+/* ---------- Cartões ---------- */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 16px; scroll-margin-top: 16px; }
+.card-h { padding: 16px 20px 0; }
+.card-h h2 { font-size: 15px; font-weight: 650; }
+.card-h p { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.card-b { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 16px; }
+.g2, .g3, .g4 { display: grid; gap: 14px 16px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); }
+.g3 { grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); }
+.g4 { grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.grow { flex: 1; min-width: 0; }
 
-  // SALVAR REAL NO BANCO DE DADOS FIRESTORE PARA TODAS AS ABAS
-  const handleSave = async (sectionName: string) => {
-    try {
-      if (sectionName === 'Setores e Obras' || activeTab === 'setores') {
-        await setDoc(doc(db, 'site_data', 'portfolio'), { setores: setoresData, obras: obrasData });
-      } else if (activeTab === 'home' || sectionName.includes('Home')) {
-        await setDoc(doc(db, 'site_data', 'home'), homeData);
-      } else if (activeTab === 'quemSomos' || sectionName.includes('QuemSomos') || sectionName === 'Selos') {
-        await setDoc(doc(db, 'site_data', 'quemsomos'), quemSomosData);
-      } else if (activeTab === 'servicos' || sectionName.includes('Serviços')) {
-        await setDoc(doc(db, 'site_data', 'servicos'), servicosData);
-      } else if (activeTab === 'contato' || sectionName === 'Contato') {
-        await setDoc(doc(db, 'site_data', 'contato'), contatoData);
-      } else if (activeTab === 'blog' || sectionName === 'Blog') {
-        await setDoc(doc(db, 'site_data', 'blog'), { posts: blogData });
-      }
-      alert(`Sucesso! Os dados de "${sectionName}" foram salvos no Firestore e publicados no site.`);
-    } catch (error) {
-      console.error("Erro ao salvar no Firestore:", error);
-      alert("Erro ao salvar dados no Firestore. Verifique as permissões.");
-    }
-  };
+/* ---------- Campos ---------- */
+.fld { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.fld-l { font-size: 12.5px; font-weight: 550; color: var(--ink-2); }
+.fld-h { font-size: 12px; color: var(--faint); }
+.inp { width: 100%; height: 36px; padding: 0 10px; background: #fff; border: 1px solid var(--line-strong); border-radius: 7px; color: var(--ink); font: inherit; font-size: 13.5px; outline: none; transition: border-color .12s, box-shadow .12s; }
+textarea.inp { height: auto; min-height: 84px; padding: 8px 10px; resize: vertical; line-height: 1.5; }
+select.inp { padding-right: 28px; }
+.inp::placeholder { color: #b0afa8; }
+.inp:hover { border-color: #b9b8b0; }
+.inp:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(245,158,11,.28); }
+.inp.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+.inp.sm { height: 32px; font-size: 13px; }
+.inp.err { border-color: var(--danger); }
+.chk { display: inline-flex; align-items: center; gap: 9px; cursor: pointer; font-size: 13.5px; font-weight: 500; }
+.chk input { width: 16px; height: 16px; accent-color: var(--ink); cursor: pointer; }
 
-  // BUSCA OS DADOS DE TODAS AS ABAS NO BANCO QUANDO O ADMIN ABRIR
-  useEffect(() => {
-    const fetchAdminData = async () => {
-      try {
-        const portfolioSnap = await getDoc(doc(db, 'site_data', 'portfolio'));
-        if (portfolioSnap.exists()) {
-          const data = portfolioSnap.data();
-          if (data.setores) setSetoresData(data.setores);
-          if (data.obras) setObrasData(data.obras);
-        }
+/* ---------- Botões ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 36px; padding: 0 14px; border-radius: 7px; border: 1px solid var(--line-strong); background: #fff; color: var(--ink); font-size: 13.5px; font-weight: 550; cursor: pointer; white-space: nowrap; transition: background .12s, border-color .12s; text-decoration: none; }
+.btn:hover:not(:disabled) { background: #f3f2ee; border-color: #b9b8b0; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn.sm { height: 30px; padding: 0 10px; font-size: 12.5px; }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover:not(:disabled) { background: #2b2b2b; border-color: #2b2b2b; }
+.btn.danger { color: var(--danger); border-color: #e5b9b4; background: #fff; }
+.btn.danger:hover:not(:disabled) { background: var(--danger-soft); border-color: var(--danger); }
+.btn.danger.solid { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.danger.solid:hover:not(:disabled) { background: #8f1c12; }
+.btn.add { width: 100%; border-style: dashed; color: var(--ink-2); background: transparent; }
+.btn.add:hover:not(:disabled) { background: #fff; border-color: var(--ink); }
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; flex: none; }
+.icon-btn:hover:not(:disabled) { background: #efeee9; color: var(--ink); }
+.icon-btn.del:hover:not(:disabled) { background: var(--danger-soft); color: var(--danger); }
+.icon-btn:disabled { opacity: .35; cursor: default; }
+.spin { animation: adm-spin .9s linear infinite; }
+@keyframes adm-spin { to { transform: rotate(360deg); } }
 
-        const homeSnap = await getDoc(doc(db, 'site_data', 'home'));
-        if (homeSnap.exists()) setHomeData(homeSnap.data() as any);
+/* ---------- Itens repetíveis ---------- */
+.item { border: 1px solid var(--line); border-radius: 9px; background: var(--surface-2); }
+.item-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 8px 8px 14px; border-bottom: 1px solid var(--line); }
+.item-h b { font-size: 13px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-h .acts { display: flex; align-items: center; gap: 2px; flex: none; }
+.item-b { padding: 14px; display: flex; flex-direction: column; gap: 14px; }
+.sub { font-size: 12.5px; font-weight: 600; color: var(--ink-2); padding-top: 4px; }
+.note { font-size: 12.5px; color: var(--muted); }
+.note code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-2); background: #efeee9; padding: 1px 6px; border-radius: 4px; }
+.list-line { display: flex; gap: 8px; align-items: center; }
 
-        const qsSnap = await getDoc(doc(db, 'site_data', 'quemsomos'));
-        if (qsSnap.exists()) setQuemSomosData(qsSnap.data() as any);
+/* ---------- Campo de imagem ---------- */
+.img-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: 12px; }
+.img-field { display: flex; gap: 14px; padding: 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 9px; min-width: 0; }
+.checker { background: repeating-conic-gradient(#dcdbd6 0% 25%, #cbcac4 0% 50%) 50% / 14px 14px; }
+.img-thumb { flex: 0 0 84px; height: 84px; border-radius: 7px; border: 1px solid var(--line-strong); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.img-thumb img, .img-thumb video { max-width: 100%; max-height: 100%; object-fit: contain; }
+.img-thumb span { font-size: 11px; color: #77766f; background: rgba(255,255,255,.75); padding: 1px 6px; border-radius: 4px; }
+.img-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.img-label { font-size: 13px; font-weight: 600; }
+.img-hint { font-size: 12px; color: var(--faint); margin-top: -4px; }
+.img-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.img-name { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 
-        const servSnap = await getDoc(doc(db, 'site_data', 'servicos'));
-        if (servSnap.exists()) setServicosData(servSnap.data() as any);
+/* ---------- Galeria ---------- */
+.gal { display: flex; flex-direction: column; gap: 10px; }
+.gal-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.gal-head b { font-size: 13px; font-weight: 600; margin-right: auto; }
+.gal-drop { border: 1.5px dashed var(--line-strong); border-radius: 9px; padding: 16px; text-align: center; color: var(--muted); font-size: 13px; background: var(--surface); transition: border-color .12s, background .12s; }
+.gal-drop.over { border-color: var(--brand); background: var(--brand-soft); }
+.gal-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.gal-it { border: 1px solid var(--line); border-radius: 9px; background: var(--surface); overflow: hidden; display: flex; flex-direction: column; }
+.gal-it .ph { aspect-ratio: 4/3; }
+.gal-it .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gal-it .ft { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.gal-it .acts { display: flex; align-items: center; justify-content: space-between; }
 
-        const contatoSnap = await getDoc(doc(db, 'site_data', 'contato'));
-        if (contatoSnap.exists()) setContatoData(contatoSnap.data() as any);
+/* ---------- Barra de salvar ---------- */
+.savebar { position: sticky; bottom: 0; z-index: 20; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 8px -44px -40px; padding: 12px 44px; background: rgba(255,255,255,.94); backdrop-filter: blur(8px); border-top: 1px solid var(--line-strong); }
+.savebar .where { margin-right: auto; font-size: 13px; color: var(--muted); min-width: 0; }
+.savebar .where b { color: var(--ink); font-weight: 600; }
+.savebar .where .dirty { color: #9a5b00; font-weight: 600; }
 
-        const blogSnap = await getDoc(doc(db, 'site_data', 'blog'));
-        if (blogSnap.exists()) setBlogData(blogSnap.data().posts || []);
-      } catch (err) {
-        console.error("Erro ao carregar dados do Firestore:", err);
-      }
-    };
-    fetchAdminData();
+/* ---------- Toast e modal ---------- */
+.toast { position: fixed; top: 18px; right: 18px; z-index: 3000; max-width: 380px; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 9px; font-size: 13.5px; background: #171717; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.25); animation: adm-in .18s ease-out; }
+.toast.err { background: var(--danger); }
+.toast.ok::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #4ade80; margin-top: 7px; flex: none; }
+.toast button { background: none; border: 0; color: inherit; opacity: .7; cursor: pointer; padding: 0; margin-left: 4px; }
+@keyframes adm-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.overlay { position: fixed; inset: 0; background: rgba(15,15,15,.55); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 16px; }
+.modal { background: #fff; border-radius: 12px; width: 100%; max-width: 440px; padding: 22px; box-shadow: 0 20px 60px rgba(0,0,0,.3); display: flex; flex-direction: column; gap: 14px; max-height: 90vh; overflow: auto; }
+.modal h3 { font-size: 16px; font-weight: 650; }
+.modal p { color: var(--ink-2); font-size: 13.5px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ---------- Login ---------- */
+.login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); padding: 20px; }
+.login-card { width: 100%; max-width: 380px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 30px; display: flex; flex-direction: column; gap: 16px; }
+.login-card img { width: 130px; height: auto; display: block; }
+.login-card p.sub2 { color: var(--muted); margin-top: -4px; font-size: 13px; }
+.login-err { color: var(--danger); font-size: 13px; background: var(--danger-soft); padding: 8px 10px; border-radius: 7px; }
+.adm-loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f4f4f1; color: #6f6e68; font-family: 'Inter', system-ui, sans-serif; gap: 10px; position: relative; z-index: 200; }
+.adm-fail { max-width: 460px; margin: 18vh auto 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 26px; display: flex; flex-direction: column; gap: 12px; }
+
+/* ---------- Editor do blog ---------- */
+.rte { border: 1px solid var(--line-strong); border-radius: 8px; overflow: hidden; background: #fff; }
+.rte-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 6px; background: #f4f4f1; border-bottom: 1px solid var(--line-strong); }
+.rte-bar .sep { width: 1px; height: 20px; background: var(--line-strong); margin: 0 4px; }
+.rte-bar button, .rte-bar label.tb { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0 6px; border: 0; border-radius: 6px; background: transparent; color: var(--ink-2); cursor: pointer; font-size: 12px; font-weight: 600; gap: 4px; }
+.rte-bar button:hover, .rte-bar label.tb:hover { background: #e4e3de; }
+.rte-bar button.on { background: var(--ink); color: #fff; }
+.rte-link { display: flex; gap: 8px; padding: 8px; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+.rte-area { min-height: 380px; max-height: 620px; overflow: auto; padding: 18px 20px; outline: none; font-size: 15px; line-height: 1.7; color: #222; }
+.rte-area h2 { font-size: 22px; font-weight: 700; margin: 18px 0 8px; }
+.rte-area h3 { font-size: 18px; font-weight: 700; margin: 16px 0 6px; }
+.rte-area p { margin: 0 0 12px; }
+.rte-area ul, .rte-area ol { margin: 0 0 12px; padding-left: 24px; }
+.rte-area ul { list-style: disc; } .rte-area ol { list-style: decimal; }
+.rte-area blockquote { border-left: 3px solid var(--brand); margin: 0 0 12px; padding: 2px 0 2px 14px; color: #555; }
+.rte-area a { color: #b45309; text-decoration: underline; }
+.rte-area img { max-width: 100%; height: auto; border-radius: 8px; margin: 8px 0; }
+.rte-src { width: 100%; min-height: 380px; border: 0; outline: none; padding: 14px 16px; font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; display: block; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 860px) {
+  .adm { grid-template-columns: minmax(0, 1fr); }
+  .adm-main { min-width: 0; overflow-x: hidden; }
+  .adm-side { position: static; height: auto; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px 14px; padding: 12px 14px; }
+  .adm-brand { padding: 0; }
+  .adm-brand span { display: none; }
+  .adm-brand img { width: 84px; }
+  .adm-sub { display: none; }
+  .adm-nav { flex-direction: row; order: 3; width: 100%; overflow-x: auto; }
+  .adm-nav button { width: auto; white-space: nowrap; }
+  .adm-nav button.on::before { display: none; }
+  .adm-side-foot { margin: 0 0 0 auto; border: 0; padding: 0; flex-direction: row; align-items: center; }
+  .adm-side-foot small { display: none; }
+  .adm-main { padding: 20px 14px 32px; }
+  .savebar { margin: 8px -14px -32px; padding: 10px 14px; }
+  .img-grid { grid-template-columns: 1fr; }
+  .img-field { flex-direction: column; }
+  .img-thumb { flex-basis: auto; width: 100%; height: 110px; }
+}
+`;
+
+// ============================================================
+//  TIPOS, PADRÕES E HELPERS
+// ============================================================
+type Img = { url: string; alt: string };
+type Slide = {
+  id: number; type: 'image' | 'video'; desktopUrl: string; mobileUrl: string;
+  line1BeforeHighlight: string; highlightPart1: string; highlightPart2: string; line3AfterHighlight: string;
+  slideDesc: string; ctaText: string; ctaLink: string;
+};
+type Setor = { id: string; slug: string; title: string; desc: string; nbrs: string[]; diferenciais: string[]; imagens: Img[]; [k: string]: any };
+type Obra = {
+  id: number; slug: string; title: string; categoriaSlug: string; categoriaLabel: string; local: string; area: string; status: string;
+  client: string; year: string; destaque: boolean; capaImage: string; galeriaImages: Img[]; especificacoes: { label: string; value: string }[];
+  resumo: string; descricaoCompleta: string; [k: string]: any;
+};
+type Post = { id: number; title: string; author: string; date: string; capaImage: string; content: string; [k: string]: any };
+type TabId = 'home' | 'quemSomos' | 'setores' | 'servicos' | 'contato' | 'blog';
+
+const DEFAULT_HOME = {
+  hero: {
+    mode: 'carousel' as 'single' | 'carousel' | 'video',
+    mediaList: [
+      { id: 1, type: 'image', desktopUrl: '/img/bg_hero1.avif', mobileUrl: '/img/bg_hero1_mobile.avif', line1BeforeHighlight: 'CIVIL DE', highlightPart1: 'ALTA', highlightPart2: 'PERFORMANCE', line3AfterHighlight: 'E PRECISÃO', slideDesc: 'Executamos projetos industriais, corporativos, farmacêuticos e residenciais com rigor técnico NBR.', ctaText: 'Saiba Mais', ctaLink: '/servicos' },
+      { id: 2, type: 'image', desktopUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000', mobileUrl: '', line1BeforeHighlight: 'PREVISIBILIDADE E', highlightPart1: 'RIGOR', highlightPart2: 'ORÇAMENTÁRIO', line3AfterHighlight: 'EM TODAS AS ETAPAS', slideDesc: 'Gestão Turnkey de ponta a ponta sem surpresas no orçamento final.', ctaText: 'Solicitar Cotação', ctaLink: '/contato' },
+    ] as Slide[],
+  },
+  approach: {
+    badge: 'NOSSA ABORDAGEM',
+    title: 'Engenharia versátil e soluções completas para sua obra',
+    description: 'Atuamos em empreendimentos residenciais, habitação social (Minha Casa Minha Vida), obras corporativas, retrofits e adequações técnicas.',
+    card1: { title: 'Obras Corporativas & Habitação', text: 'Execução de edificações industriais, prédios comerciais e projetos habitacionais integrados.' },
+    card2: { title: 'Gestão Turnkey & Regularização', text: 'Gerenciamento completo do projeto à entrega final, assegurando conformidade com normas NBR.' },
+    card3: { title: 'Retrofit, Reformas & Manutenção', text: 'Modernização de edificações, renovação de fachadas, reformas estruturais e adequações técnicas.' },
+  },
+  aboutMosaic: {
+    title: 'Solução completa para a excelência da sua construção',
+    description: 'A Quattro Construtora conduz todas as etapas da sua obra com máxima transparência, segurança técnica e rigor orçamentário em todo o Brasil.',
+    statNumber: '100%', statLabel: 'Conformidade Técnica',
+    img1: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1000',
+    img2: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800',
+    img3: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=800',
+  },
+};
+
+const DEFAULT_QUEM = {
+  hero: {
+    titleLine1: 'CONHEÇA A', titleHighlight: 'NOSSA EMPRESA',
+    description: 'Da infraestrutura logística e sedes corporativas à escala de grandes complexos residenciais. Transformamos desafios executivos complexos em soluções sólidas e previsíveis.',
+    bgImage: '/img/BG_CTA_QuattroInc_Site.jpeg',
+  },
+  manifesto: {
+    title: 'Soluções End-to-End & Rigor Técnico em Todo o Brasil',
+    p1: 'A Quattro Construtora é especializada em soluções end-to-end de alta complexidade. Com um acervo consolidado e equipe técnica altamente capacitada, gerenciamos e executamos canteiros com transparência e precisão orçamentária.',
+    p2: 'Atuamos no modelo Turnkey (Design & Build), assumindo a responsabilidade integral por todo o ciclo da obra.',
+  },
+  qualidade: {
+    quote: '"A Quattro Construtora atua na construção civil e na incorporação de empreendimentos habitacionais, corporativos e industriais com foco na excelência..."',
+    seloPbqph: '/selos/SELO_pbqph.png',
+    seloIso: '/selos/Logo_ISO9001_2026.png',
+  },
+  governanca: {
+    missao: 'Entregar engenharia de alta performance com compromisso intransigente em qualidade, segurança do trabalho e previsibilidade orçamentária.',
+    visao: 'Ser a parceira estratégica referência no mercado nacional em obras complexas e edificações de grande porte.',
+    valores: 'Rigor Técnico inegociável, Previsibilidade orçamentária total, Transparência executiva e Integridade absoluta.',
+  },
+  timeline: [
+    { id: 1, fase: 'Fundação', desc: 'Início focado em engenharia consultiva e obras técnicas de alta complexidade.' },
+    { id: 2, fase: 'Expansão & Incorporação', desc: 'Cobertura logística em todo o Brasil e consolidação do braço imobiliário (Quattro Inc).' },
+    { id: 3, fase: 'Acreditação Máxima', desc: 'Conquista das certificações PBQP-H Nível A e NBR ISO 9001:2015.' },
+  ] as { id: number; fase: string; desc: string }[],
+};
+
+const DEFAULT_SERVICOS = {
+  hero: { badge: 'SOLUÇÕES INTEGRADAS', title: 'Engenharia Civil de Alta Performance', description: 'Do planejamento inicial à entrega final das chaves, oferecemos gestão rigorosa, inovação tecnológica e conformidade normativa.' },
+  lista: [
+    { id: 'turnkey', title: 'Engenharia Turnkey & EPC', desc: 'Solução completa do conceito à entrega das chaves. Assumimos a responsabilidade integral pelo projeto, compras, construção e comissionamento.', entregaveis: ['Gestão unificada de fornecedores e contratos', 'Preço fechado com previsibilidade orçamentária', 'Prazo de entrega garantido em contrato'] },
+    { id: 'gerenciamento', title: 'Gerenciamento & Fiscalização', desc: 'Supervisão técnica rigorosa do canteiro de obras, garantindo o cumprimento de especificações e controle físico-financeiro.', entregaveis: ['Relatórios gerenciais semanais com medições', 'Controle rigoroso de cronograma (Linha de Balanço)'] },
+    { id: 'retrofit', title: 'Retrofit & Reformas Corporativas', desc: 'Modernização de edifícios, plantas fabris e escritórios sem interrupção das atividades operacionais do cliente.', entregaveis: ['Atualização de instalações elétricas e hidráulicas', 'Reforço estrutural e adequação de fachadas'] },
+  ] as { id: string; title: string; desc: string; entregaveis: string[] }[],
+  fluxo: [
+    { passo: '01', titulo: 'Diagnóstico & Viabilidade', desc: 'Análise detalhada do local e estudo de viabilidade.' },
+    { passo: '02', titulo: 'Planejamento & BIM', desc: 'Compatibilização de projetos e cronograma físico-financeiro.' },
+    { passo: '03', titulo: 'Execução & Controle', desc: 'Mobilização de canteiro e fiscalização contínua.' },
+    { passo: '04', titulo: 'Comissionamento & As-Built', desc: 'Testes finais, documentação legal e entrega das chaves.' },
+  ] as { passo: string; titulo: string; desc: string }[],
+};
+
+const DEFAULT_CONTATO = {
+  comercialPhone: '+55 (11) 4003-0000',
+  comercialEmail: 'contato@quattroconstrutora.com.br',
+  endereco: 'Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial, Barueri/SP - CEP 06454-000',
+  faqs: [
+    { id: 1, pergunta: 'Sou vizinho de uma obra em andamento. Como relatar um imprevisto?', resposta: 'Selecione a opção "Sou Vizinho de Obra" no formulário de contato.' },
+    { id: 2, pergunta: 'Qual o prazo médio de retorno para solicitações de cotação?', resposta: 'Propostas preliminares são enviadas em até 48 horas úteis.' },
+  ] as { id: number; pergunta: string; resposta: string }[],
+};
+
+const newId = () => Date.now() + Math.floor(Math.random() * 1000);
+const errMsg = (err: any) => (err && (err.message || String(err))) || 'erro desconhecido';
+const isObj = (v: any) => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+const slugify = (s: string) =>
+  s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+/** Mescla o que veio do Firestore sobre o padrão: campos que faltam ganham o valor padrão (nunca quebra a tela). */
+function mergeDeep<T>(base: T, extra: any): T {
+  if (!isObj(base) || !isObj(extra)) return (extra === undefined || extra === null ? base : extra) as T;
+  const out: any = { ...extra };
+  for (const k of Object.keys(base as any)) {
+    const b = (base as any)[k]; const e = extra[k];
+    if (isObj(b)) out[k] = mergeDeep(b, e);
+    else if (Array.isArray(b)) out[k] = Array.isArray(e) ? e : b;
+    else out[k] = e === undefined || e === null || typeof e !== typeof b ? b : e;
+  }
+  return out;
+}
+
+const normImgs = (list: any): Img[] =>
+  (Array.isArray(list) ? list : []).map((x) => (typeof x === 'string' ? { url: x, alt: '' } : { url: String(x?.url || ''), alt: String(x?.alt || '') })).filter((x) => x.url);
+const strList = (l: any): string[] => (Array.isArray(l) ? l.map((x) => String(x)) : []);
+
+const normSetor = (s: any): Setor => ({ ...s, id: String(s?.id ?? ''), slug: String(s?.slug ?? ''), title: String(s?.title ?? ''), desc: String(s?.desc ?? ''), nbrs: strList(s?.nbrs), diferenciais: strList(s?.diferenciais), imagens: normImgs(s?.imagens) });
+const normObra = (o: any): Obra => ({
+  ...o, id: Number(o?.id) || newId(), slug: String(o?.slug ?? ''), title: String(o?.title ?? ''), categoriaSlug: String(o?.categoriaSlug ?? ''),
+  categoriaLabel: String(o?.categoriaLabel ?? ''), local: String(o?.local ?? ''), area: String(o?.area ?? ''), status: String(o?.status ?? 'Concluído'),
+  client: String(o?.client ?? ''), year: String(o?.year ?? ''), destaque: !!o?.destaque, capaImage: String(o?.capaImage ?? ''),
+  galeriaImages: normImgs(o?.galeriaImages),
+  especificacoes: (Array.isArray(o?.especificacoes) ? o.especificacoes : []).map((e: any) => ({ label: String(e?.label ?? ''), value: String(e?.value ?? '') })),
+  resumo: String(o?.resumo ?? ''), descricaoCompleta: String(o?.descricaoCompleta ?? ''),
+});
+const normPost = (p: any): Post => ({ ...p, id: Number(p?.id) || newId(), title: String(p?.title ?? ''), author: String(p?.author ?? ''), date: String(p?.date ?? ''), capaImage: String(p?.capaImage ?? ''), content: String(p?.content ?? '') });
+
+const moveItem = <T,>(arr: T[], i: number, d: -1 | 1): T[] => {
+  const j = i + d; if (j < 0 || j >= arr.length) return arr;
+  const out = [...arr]; [out[i], out[j]] = [out[j], out[i]]; return out;
+};
+const setAt = <T,>(arr: T[], i: number, patch: Partial<T>): T[] => arr.map((x, k) => (k === i ? { ...x, ...patch } : x));
+const removeAt = <T,>(arr: T[], i: number): T[] => arr.filter((_, k) => k !== i);
+const strAt = (arr: string[], i: number, v: string): string[] => arr.map((x, k) => (k === i ? v : x));
+
+// Mesmo saneamento que o site aplica às imagens (só para miniaturas)
+const previewSrc = (url: string): string => {
+  const u = (url || '').trim();
+  if (!u) return '';
+  if (u.startsWith('http://')) return u.replace('http://', 'https://');
+  if (u.startsWith('http') || u.startsWith('/') || u.startsWith('blob:') || u.startsWith('data:image/')) return u;
+  return '/' + u;
+};
+const isVideoUrl = (u: string) => /\.(mp4|webm)(\?|#|$)/i.test(u || '');
+
+// Links do CMS só podem ser caminhos do site ou http(s) — nunca "javascript:" etc.
+const linkOk = (v: string) => { const t = (v || '').trim(); return t === '' || /^\/(?!\/)/.test(t) || /^https?:\/\//i.test(t); };
+
+// ---- Upload (validação no navegador; as regras do Storage repetem os mesmos limites) ----
+const IMG_TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/avif': 'avif', 'image/gif': 'gif' };
+const VID_TYPES: Record<string, string> = { 'video/mp4': 'mp4', 'video/webm': 'webm' };
+const MAX_IMG = 10 * 1024 * 1024;
+const MAX_VID = 60 * 1024 * 1024;
+
+async function uploadFile(file: File, folder: string, allowVideo: boolean): Promise<string> {
+  const isImg = file.type in IMG_TYPES;
+  const isVid = allowVideo && file.type in VID_TYPES;
+  if (!isImg && !isVid) throw new Error(`"${file.name}": formato não permitido. Use ${allowVideo ? 'JPG, PNG, WebP, AVIF, GIF, MP4 ou WebM' : 'JPG, PNG, WebP, AVIF ou GIF'}.`);
+  if (file.size > (isVid ? MAX_VID : MAX_IMG)) throw new Error(`"${file.name}" é grande demais (máx. ${isVid ? 60 : 10} MB).`);
+  const ext = isVid ? VID_TYPES[file.type] : IMG_TYPES[file.type];
+  const base = slugify(file.name.replace(/\.[^.]+$/, '')).slice(0, 40) || 'arquivo';
+  const rand = Math.random().toString(36).slice(2, 8);
+  const r = ref(storage, `uploads/${folder}/${Date.now()}-${rand}-${base}.${ext}`);
+  await uploadBytes(r, file, { contentType: file.type });
+  return getDownloadURL(r);
+}
+
+// ============================================================
+//  COMPONENTES (fora do Admin para não perder o foco ao digitar)
+// ============================================================
+function Card({ id, title, desc, actions, children }: { id?: string; title: string; desc?: string; actions?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <section className="card" id={id}>
+      <div className="card-h row" style={{ justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+        <div><h2>{title}</h2>{desc && <p>{desc}</p>}</div>
+        {actions}
+      </div>
+      <div className="card-b">{children}</div>
+    </section>
+  );
+}
+
+function Field({ label, hint, children, className }: { label: string; hint?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <label className={`fld ${className || ''}`}>
+      <span className="fld-l">{label}</span>
+      {children}
+      {hint && <span className="fld-h">{hint}</span>}
+    </label>
+  );
+}
+
+function TextIn({ value, onChange, ...rest }: { value: string; onChange: (v: string) => void } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'>) {
+  return <input className="inp" type="text" value={value} onChange={(e) => onChange(e.target.value)} {...rest} />;
+}
+function AreaIn({ value, onChange, rows = 3 }: { value: string; onChange: (v: string) => void; rows?: number }) {
+  return <textarea className="inp" rows={rows} value={value} onChange={(e) => onChange(e.target.value)} />;
+}
+
+function Item({ title, acts, onRemove, children }: { title: string; acts?: React.ReactNode; onRemove?: () => void; children: React.ReactNode }) {
+  return (
+    <div className="item">
+      <div className="item-h">
+        <b>{title}</b>
+        <div className="acts">
+          {acts}
+          {onRemove && <button type="button" className="btn sm danger" onClick={onRemove}>Remover</button>}
+        </div>
+      </div>
+      <div className="item-b">{children}</div>
+    </div>
+  );
+}
+
+function MoveBtns({ i, n, onMove }: { i: number; n: number; onMove: (d: -1 | 1) => void }) {
+  return (
+    <>
+      <button type="button" className="icon-btn" title="Mover para cima" disabled={i === 0} onClick={() => onMove(-1)}><ChevronUp size={16} /></button>
+      <button type="button" className="icon-btn" title="Mover para baixo" disabled={i === n - 1} onClick={() => onMove(1)}><ChevronDown size={16} /></button>
+    </>
+  );
+}
+
+function ImageField({ label, hint, url, onUrl, onPick, busy, allowVideo, inputKey }: {
+  label: string; hint?: string; url: string; onUrl: (v: string) => void; onPick: (f: File) => void; busy: boolean; allowVideo?: boolean; inputKey: string;
+}) {
+  const src = previewSrc(url);
+  return (
+    <div className="img-field">
+      <div className="img-thumb checker">
+        {busy ? <Loader2 size={20} className="spin" />
+          : !src ? <span>sem arquivo</span>
+          : isVideoUrl(url) ? <video src={src} muted preload="metadata" />
+          : <img src={src} alt="" referrerPolicy="no-referrer" />}
+      </div>
+      <div className="img-body">
+        <span className="img-label">{label}</span>
+        {hint && <span className="img-hint">{hint}</span>}
+        <div className="img-row">
+          <label className="btn sm">
+            {busy ? 'Enviando…' : url ? 'Trocar' : 'Escolher arquivo'}
+            <input key={inputKey} type="file" hidden disabled={busy}
+              accept={allowVideo ? 'image/jpeg,image/png,image/webp,image/avif,image/gif,video/mp4,video/webm' : 'image/jpeg,image/png,image/webp,image/avif,image/gif'}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) onPick(f); e.target.value = ''; }} />
+          </label>
+          <span className="img-name">{url ? 'Arquivo definido' : 'Nenhum arquivo'}</span>
+          {url && <button type="button" className="icon-btn del" title="Remover" onClick={() => onUrl('')}><X size={15} /></button>}
+        </div>
+        <input type="text" className="inp sm mono" value={url} onChange={(e) => onUrl(e.target.value)} placeholder="ou cole o endereço (URL) ou caminho, ex.: /img/foto.jpg" />
+      </div>
+    </div>
+  );
+}
+
+function GalleryEditor({ label, items, onChange, onFiles, busy, max, hint }: {
+  label: string; items: Img[]; onChange: (l: Img[]) => void; onFiles: (files: File[]) => void; busy: boolean; max?: number; hint?: string;
+}) {
+  const [over, setOver] = useState(false);
+  const full = max !== undefined && items.length >= max;
+  const pick = (list: FileList | null) => { if (list && list.length) onFiles(Array.from(list)); };
+  return (
+    <div className="gal">
+      <div className="gal-head">
+        <b>{label} <span className="note">· {items.length}{max !== undefined ? ` / ${max}` : ''}</span></b>
+        <label className={`btn sm ${full || busy ? '' : ''}`} style={full || busy ? { opacity: .55, pointerEvents: 'none' } : undefined}>
+          {busy ? <Loader2 size={14} className="spin" /> : <Plus size={14} />} {busy ? 'Enviando…' : 'Adicionar imagens'}
+          <input type="file" multiple hidden accept="image/jpeg,image/png,image/webp,image/avif,image/gif" disabled={full || busy}
+            onChange={(e) => { pick(e.target.files); e.target.value = ''; }} />
+        </label>
+      </div>
+      {hint && <span className="note">{hint}</span>}
+      <div className={`gal-drop ${over ? 'over' : ''}`}
+        onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)}
+        onDrop={(e) => { e.preventDefault(); setOver(false); if (!full && !busy) pick(e.dataTransfer.files); }}>
+        <ImagePlus size={18} style={{ verticalAlign: '-4px', marginRight: 6 }} />
+        {full ? 'Limite de imagens atingido.' : 'Arraste as imagens aqui ou use o botão acima.'}
+      </div>
+      {items.length > 0 && (
+        <div className="gal-items">
+          {items.map((im, i) => (
+            <div className="gal-it" key={im.url + i}>
+              <div className="ph checker"><img src={previewSrc(im.url)} alt="" loading="lazy" referrerPolicy="no-referrer" /></div>
+              <div className="ft">
+                <input className="inp sm" type="text" value={im.alt} placeholder="Legenda (opcional)" onChange={(e) => onChange(setAt(items, i, { alt: e.target.value }))} />
+                <div className="acts">
+                  <span>
+                    <button type="button" className="icon-btn" title="Mover para a esquerda" disabled={i === 0} onClick={() => onChange(moveItem(items, i, -1))}><ChevronLeft size={16} /></button>
+                    <button type="button" className="icon-btn" title="Mover para a direita" disabled={i === items.length - 1} onClick={() => onChange(moveItem(items, i, 1))}><ChevronRight size={16} /></button>
+                  </span>
+                  <button type="button" className="icon-btn del" title="Remover" onClick={() => onChange(removeAt(items, i))}><X size={15} /></button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StringList({ label, items, onChange, placeholder, addLabel }: { label: string; items: string[]; onChange: (l: string[]) => void; placeholder?: string; addLabel: string }) {
+  return (
+    <div className="fld">
+      <span className="fld-l">{label}</span>
+      {items.map((t, i) => (
+        <div className="list-line" key={i}>
+          <input className="inp sm" type="text" value={t} placeholder={placeholder} onChange={(e) => onChange(strAt(items, i, e.target.value))} />
+          <button type="button" className="icon-btn del" title="Remover" onClick={() => onChange(removeAt(items, i))}><X size={15} /></button>
+        </div>
+      ))}
+      <div><button type="button" className="btn sm" onClick={() => onChange([...items, ''])}><Plus size={14} /> {addLabel}</button></div>
+    </div>
+  );
+}
+
+function SaveBar({ where, dirty, busy, disabled }: { where: React.ReactNode; dirty: boolean; busy: boolean; disabled: boolean }) {
+  return (
+    <div className="savebar">
+      <div className="where">{where} {dirty ? <span className="dirty">· alterações não publicadas</span> : <span>· tudo publicado</span>}</div>
+      <button type="submit" className="btn primary" disabled={busy || disabled}>
+        {busy && <Loader2 size={15} className="spin" />}
+        {busy ? 'Publicando…' : 'Publicar alterações'}
+      </button>
+    </div>
+  );
+}
+
+// ---- Editor de texto do blog (sem dependências; o HTML é saneado ao salvar) ----
+function RichEditor({ value, onChange, onPickImage, uploading }: { value: string; onChange: (html: string) => void; onPickImage: (f: File) => Promise<string | null>; uploading: boolean }) {
+  const areaRef = useRef<HTMLDivElement>(null);
+  const savedRange = useRef<Range | null>(null);
+  const [source, setSource] = useState(false);
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('https://');
+  const [srcText, setSrcText] = useState('');
+
+  useLayoutEffect(() => { if (areaRef.current) areaRef.current.innerHTML = sanitizeHtml(value); /* só na montagem (o pai remonta por artigo) */ // eslint-disable-next-line
   }, []);
 
-  // FUNÇÕES DE ORDENAÇÃO (CARROSSÉIS E SLIDERS)
-  const moverSlideHome = (slideIdx: number, direcao: 'cima' | 'baixo') => {
-    const upd = { ...homeData };
-    const slides = [...upd.hero.mediaList];
-    if (direcao === 'cima' && slideIdx > 0) {
-      [slides[slideIdx - 1], slides[slideIdx]] = [slides[slideIdx], slides[slideIdx - 1]];
-    } else if (direcao === 'baixo' && slideIdx < slides.length - 1) {
-      [slides[slideIdx], slides[slideIdx + 1]] = [slides[slideIdx + 1], slides[slideIdx]];
-    }
-    upd.hero.mediaList = slides;
-    setHomeData(upd);
+  const emit = () => { if (areaRef.current) onChange(areaRef.current.innerHTML); };
+  const remember = () => {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount && areaRef.current?.contains(sel.anchorNode)) savedRange.current = sel.getRangeAt(0).cloneRange();
   };
-
-  const moverImagemSetor = (setorIdx: number, imgIdx: number, direcao: 'esq' | 'dir') => {
-    const upd = [...setoresData];
-    const imagens = [...(upd[setorIdx].imagens || [])];
-    if (direcao === 'esq' && imgIdx > 0) {
-      [imagens[imgIdx - 1], imagens[imgIdx]] = [imagens[imgIdx], imagens[imgIdx - 1]];
-    } else if (direcao === 'dir' && imgIdx < imagens.length - 1) {
-      [imagens[imgIdx], imagens[imgIdx + 1]] = [imagens[imgIdx + 1], imagens[imgIdx]];
-    }
-    upd[setorIdx].imagens = imagens;
-    setSetoresData(upd);
+  const restore = () => {
+    areaRef.current?.focus();
+    const sel = window.getSelection();
+    if (sel && savedRange.current) { sel.removeAllRanges(); sel.addRange(savedRange.current); }
   };
-
-  const moverImagemGaleriaObra = (obraIdx: number, imgIdx: number, direcao: 'esq' | 'dir') => {
-    const upd = [...obrasData];
-    const imagens = [...(upd[obraIdx].galeriaImages || [])];
-    if (direcao === 'esq' && imgIdx > 0) {
-      [imagens[imgIdx - 1], imagens[imgIdx]] = [imagens[imgIdx], imagens[imgIdx - 1]];
-    } else if (direcao === 'dir' && imgIdx < imagens.length - 1) {
-      [imagens[imgIdx], imagens[imgIdx + 1]] = [imagens[imgIdx + 1], imagens[imgIdx]];
-    }
-    upd[obraIdx].galeriaImages = imagens;
-    setObrasData(upd);
+  const cmd = (name: string, arg?: string) => { restore(); document.execCommand(name, false, arg); emit(); remember(); };
+  const tb = (title: string, name: string, icon: React.ReactNode, arg?: string) => (
+    <button type="button" title={title} aria-label={title} onMouseDown={(e) => e.preventDefault()} onClick={() => cmd(name, arg)}>{icon}</button>
+  );
+  const applyLink = () => {
+    if (!isSafeUrl(linkUrl) || /^#/.test(linkUrl.trim())) return;
+    restore(); document.execCommand('createLink', false, linkUrl.trim()); emit();
+    areaRef.current?.querySelectorAll('a').forEach((a) => { a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener noreferrer'); });
+    emit(); setLinkOpen(false); setLinkUrl('https://');
   };
-
-  // ===========================================================================
-  // ESTADOS: HOME
-  // ===========================================================================
-  const [homeData, setHomeData] = useState({
-    hero: {
-      mode: 'carousel' as 'single' | 'carousel' | 'video',
-      mediaList: [
-        { 
-          id: 1, type: 'image' as 'image' | 'video', desktopUrl: '/img/bg_hero1.avif', mobileUrl: '/img/bg_hero1_mobile.avif',
-          line1BeforeHighlight: 'CIVIL DE', highlightPart1: 'ALTA', highlightPart2: 'PERFORMANCE', line3AfterHighlight: 'E PRECISÃO',
-          slideDesc: 'Executamos projetos industriais, corporativos, farmacêuticos e residenciais com rigor técnico NBR.',
-          ctaText: 'Saiba Mais', ctaLink: '/servicos'
-        },
-        { 
-          id: 2, type: 'image' as 'image' | 'video', desktopUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000', mobileUrl: '',
-          line1BeforeHighlight: 'PREVISIBILIDADE E', highlightPart1: 'RIGOR', highlightPart2: 'ORÇAMENTÁRIO', line3AfterHighlight: 'EM TODAS AS ETAPAS',
-          slideDesc: 'Gestão Turnkey de ponta a ponta sem surpresas no orçamento final.',
-          ctaText: 'Solicitar Cotação', ctaLink: '/contato'
-        }
-      ]
-    },
-    approach: {
-      badge: 'NOSSA ABORDAGEM',
-      title: 'Engenharia versátil e soluções completas para sua obra',
-      description: 'Atuamos em empreendimentos residenciais, habitação social (Minha Casa Minha Vida), obras corporativas, retrofits e adequações técnicas.',
-      card1: { title: 'Obras Corporativas & Habitação', text: 'Execução de edificações industriais, prédios comerciais e projetos habitacionais integrados.' },
-      card2: { title: 'Gestão Turnkey & Regularização', text: 'Gerenciamento completo do projeto à entrega final, assegurando conformidade com normas NBR.' },
-      card3: { title: 'Retrofit, Reformas & Manutenção', text: 'Modernização de edificações, renovação de fachadas, reformas estruturais e adequações técnicas.' }
-    },
-    aboutMosaic: {
-      title: 'Solução completa para a excelência da sua construção',
-      description: 'A Quattro Construtora conduz todas as etapas da sua obra com máxima transparência, segurança técnica e rigor orçamentário em todo o Brasil.',
-      statNumber: '100%',
-      statLabel: 'Conformidade Técnica',
-      img1: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1000',
-      img2: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800',
-      img3: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=800'
+  const toggleSource = () => {
+    if (!source) { setSrcText(areaRef.current ? areaRef.current.innerHTML : value); setSource(true); }
+    else {
+      const clean = sanitizeHtml(srcText); onChange(clean); setSource(false);
+      requestAnimationFrame(() => { if (areaRef.current) areaRef.current.innerHTML = clean; });
     }
-  });
-
-  // ===========================================================================
-  // ESTADOS: A QUATTRO (QUEM SOMOS)
-  // ===========================================================================
-  const [quemSomosData, setQuemSomosData] = useState({
-    hero: {
-      titleLine1: 'CONHEÇA A',
-      titleHighlight: 'NOSSA EMPRESA',
-      description: 'Da infraestrutura logística e sedes corporativas à escala de grandes complexos residenciais. Transformamos desafios executivos complexos em soluções sólidas e previsíveis.',
-      bgImage: '/img/BG_CTA_QuattroInc_Site.jpeg'
-    },
-    manifesto: {
-      title: 'Soluções End-to-End & Rigor Técnico em Todo o Brasil',
-      p1: 'A Quattro Construtora é especializada em soluções end-to-end de alta complexidade. Com um acervo consolidado e equipe técnica altamente capacitada, gerenciamos e executamos canteiros com transparência e precisão orçamentária.',
-      p2: 'Atuamos no modelo Turnkey (Design & Build), assumindo a responsabilidade integral por todo o ciclo da obra.'
-    },
-    qualidade: {
-      quote: '"A Quattro Construtora atua na construção civil e na incorporação de empreendimentos habitacionais, corporativos e industriais com foco na excelência..."',
-      seloPbqph: '/selos/SELO_pbqph.png',
-      seloIso: '/selos/Logo_ISO9001_2026.png'
-    },
-    governanca: {
-      missao: 'Entregar engenharia de alta performance com compromisso intransigente em qualidade, segurança do trabalho e previsibilidade orçamentária.',
-      visao: 'Ser a parceira estratégica referência no mercado nacional em obras complexas e edificações de grande porte.',
-      valores: 'Rigor Técnico inegociável, Previsibilidade orçamentária total, Transparência executiva e Integridade absoluta.'
-    },
-    timeline: [
-      { id: 1, fase: 'Fundação', desc: 'Início focado em engenharia consultiva e obras técnicas de alta complexidade.' },
-      { id: 2, fase: 'Expansão & Incorporação', desc: 'Cobertura logística em todo o Brasil e consolidação do braço imobiliário (Quattro Inc).' },
-      { id: 3, fase: 'Acreditação Máxima', desc: 'Conquista das certificações PBQP-H Nível A e NBR ISO 9001:2015.' }
-    ]
-  });
-
-  // ===========================================================================
-  // ESTADOS: SETORES & OBRAS
-  // ===========================================================================
-  const [setoresData, setSetoresData] = useState([
-    { 
-      id: 'industrial', slug: 'industrial-e-logistica', title: 'Industrial & Logística', category: 'Logística & Infraestrutura', desc: 'Galpões logísticos, parques fabris e instalações industriais complexas executadas com alto rigor técnico.', 
-      imagens: [{ url: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200', alt: 'Fachada Principal' }] 
-    },
-    { 
-      id: 'hospitalar', slug: 'hospitalar-e-saude', title: 'Setor Hospitalar & Saúde', category: 'Salas Limpas & Anvisa', desc: 'Centros cirúrgicos, UTIs, laboratórios de análise clínica e salas limpas com contaminação controlada.', 
-      imagens: [{ url: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1200', alt: 'Centro Cirúrgico' }] 
-    },
-    { 
-      id: 'manutencao', slug: 'manutencao-e-facilities', title: 'Manutenção & Facilities', category: 'Retrofit & Manutenção', desc: 'Gestão preventiva, corretiva e retrofit de ativos prediais corporativos e industriais.', 
-      imagens: [{ url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200', alt: 'Subestação Elétrica' }] 
-    },
-    { 
-      id: 'residencial', slug: 'residencial', title: 'Residencial', category: 'Habitação & MCMV', desc: 'Construção de residências de alto padrão, vilas corporativas e edifícios de arquitetura autoral.', 
-      imagens: [{ url: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=1200', alt: 'Piscina & Lazer' }] 
-    }
-  ]);
-
-  const [obrasData, setObrasData] = useState([
-    {
-      id: 1,
-      slug: 'centro-de-distribuicao-amazon',
-      title: 'Centro de Distribuição Logístico Amazon',
-      categoriaSlug: 'industrial',
-      local: 'Cajamar – SP',
-      area: '152.500 m²',
-      status: 'Concluído (Turnkey)',
-      client: 'Amazon Brasil',
-      year: '2023',
-      capaImage: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200',
-      galeriaImages: [
-        { url: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200', alt: 'Área Externa' },
-        { url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200', alt: 'Docas de Carga' }
-      ],
-      especificacoes: [{ label: 'Área Construída', value: '152.500 m²' }],
-      resumo: 'Execução de pavimento de alta resistência mecânica.',
-      descricaoCompleta: 'Execução completa em modelo Turnkey.'
-    }
-  ]);
-
-  // ===========================================================================
-  // ESTADOS: SERVIÇOS
-  // ===========================================================================
-  const [servicosData, setServicosData] = useState({
-    hero: {
-      badge: 'SOLUÇÕES INTEGRADAS',
-      title: 'Engenharia Civil de Alta Performance',
-      description: 'Do planejamento inicial à entrega final das chaves, oferecemos gestão rigorosa, inovação tecnológica e conformidade normativa.'
-    },
-    lista: [
-      {
-        id: 'turnkey',
-        title: 'Engenharia Turnkey & EPC',
-        desc: 'Solução completa do conceito à entrega das chaves. Assumimos a responsabilidade integral pelo projeto, compras, construção e comissionamento.',
-        entregaveis: ['Gestão unificada de fornecedores e contratos', 'Preço fechado com previsibilidade orçamentária', 'Prazo de entrega garantido em contrato']
-      },
-      {
-        id: 'gerenciamento',
-        title: 'Gerenciamento & Fiscalização',
-        desc: 'Supervisão técnica rigorosa do canteiro de obras, garantindo o cumprimento de especificações e controle físico-financeiro.',
-        entregaveis: ['Relatórios gerenciais semanais com medições', 'Controle rigoroso de cronograma (Linha de Balanço)']
-      },
-      {
-        id: 'retrofit',
-        title: 'Retrofit & Reformas Corporativas',
-        desc: 'Modernização de edifícios, plantas fabris e escritórios sem interrupção das atividades operacionais do cliente.',
-        entregaveis: ['Atualização de instalações elétricas e hidráulicas', 'Reforço estrutural e adequação de fachadas']
-      }
-    ],
-    fluxo: [
-      { passo: '01', titulo: 'Diagnóstico & Viabilidade', desc: 'Análise detalhada do local e estudo de viabilidade.' },
-      { passo: '02', titulo: 'Planejamento & BIM', desc: 'Compatibilização de projetos e cronograma físico-financeiro.' },
-      { passo: '03', titulo: 'Execução & Controle', desc: 'Mobilização de canteiro e fiscalização contínua.' },
-      { passo: '04', titulo: 'Comissionamento & As-Built', desc: 'Testes finais, documentação legal e entrega das chaves.' }
-    ]
-  });
-
-  // ===========================================================================
-  // ESTADOS: CONTATO
-  // ===========================================================================
-  const [contatoData, setContatoData] = useState({
-    comercialPhone: '+55 (11) 4003-0000',
-    comercialEmail: 'contato@quattroconstrutora.com.br',
-    endereco: 'Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial, Barueri/SP - CEP 06454-000',
-    faqs: [
-      { id: 1, pergunta: 'Sou vizinho de uma obra em andamento. Como relatar um imprevisto?', resposta: 'Selecione a opção "Sou Vizinho de Obra" no formulário de contato.' },
-      { id: 2, pergunta: 'Qual o prazo médio de retorno para solicitações de cotação?', resposta: 'Propostas preliminares são enviadas em até 48 horas úteis.' }
-    ]
-  });
-
-  // ===========================================================================
-  // ESTADOS: BLOG
-  // ===========================================================================
-  const [blogData, setBlogData] = useState([
-    {
-      id: 1,
-      title: 'Novas normas técnicas para galpões logísticos em 2024',
-      author: 'Eng. Carlos Almeida',
-      date: '2024-05-12',
-      capaImage: 'https://images.unsplash.com/photo-1586528116311-ad8ed7c508b0?q=80&w=1200',
-      content: '<h3>Introdução</h3><p>O cenário logístico brasileiro tem exigido pisos cada vez mais resistentes...</p>'
-    }
-  ]);
-
-  // ---------------------------------------------------------------------------
-  // TELA DE LOGIN
-  // ---------------------------------------------------------------------------
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center p-6 font-['Montserrat'] z-[200] relative">
-        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-3xl p-8 sm:p-10 space-y-8 shadow-2xl relative overflow-hidden">
-          <div className="space-y-3 text-center relative z-10">
-            <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-md">
-              Painel CMS
-            </span>
-            <h1 className="text-2xl font-black text-white tracking-tight">QUATTRO CONSTRUTORA</h1>
-            <p className="text-zinc-400 text-xs font-sans">Gestão Completa do Site</p>
-          </div>
-
-          <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }} className="space-y-5 relative z-10 font-sans">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-['Montserrat']">E-mail Corporativo</label>
-              <input type="email" defaultValue="diretoria@quattroconstrutora.com.br" className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 outline-none transition-colors" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-['Montserrat']">Senha de Acesso</label>
-              <input type="password" defaultValue="••••••••" className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-amber-500 outline-none transition-colors" />
-            </div>
-            <button type="submit" className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all font-['Montserrat'] flex items-center justify-center gap-2 cursor-pointer">
-              <Lock className="w-4 h-4" />
-              <span>Acessar Painel</span>
-            </button>
-          </form>
+  };
+  return (
+    <div className="rte">
+      <div className="rte-bar">
+        {!source && <>
+          {tb('Título', 'formatBlock', <Heading2 size={16} />, 'H2')}
+          {tb('Subtítulo', 'formatBlock', <Heading3 size={16} />, 'H3')}
+          {tb('Parágrafo', 'formatBlock', <span>¶</span>, 'P')}
+          <span className="sep" />
+          {tb('Negrito', 'bold', <Bold size={16} />)}
+          {tb('Itálico', 'italic', <Italic size={16} />)}
+          {tb('Sublinhado', 'underline', <Underline size={16} />)}
+          <span className="sep" />
+          {tb('Lista com marcadores', 'insertUnorderedList', <List size={16} />)}
+          {tb('Lista numerada', 'insertOrderedList', <ListOrdered size={16} />)}
+          {tb('Alinhar à esquerda', 'justifyLeft', <AlignLeft size={16} />)}
+          {tb('Centralizar', 'justifyCenter', <AlignCenter size={16} />)}
+          <span className="sep" />
+          <button type="button" title="Inserir link" aria-label="Inserir link" className={linkOpen ? 'on' : ''} onMouseDown={(e) => { e.preventDefault(); remember(); }} onClick={() => setLinkOpen((o) => !o)}><Link2 size={16} /></button>
+          <label className="tb" title="Inserir imagem" onMouseDown={() => remember()}>
+            {uploading ? <Loader2 size={16} className="spin" /> : <ImagePlus size={16} />}
+            <input type="file" hidden accept="image/jpeg,image/png,image/webp,image/avif,image/gif" disabled={uploading}
+              onChange={async (e) => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; const url = await onPickImage(f); if (url) cmd('insertImage', url); }} />
+          </label>
+          {tb('Limpar formatação', 'removeFormat', <Eraser size={16} />)}
+          <span className="sep" />
+        </>}
+        <button type="button" className={source ? 'on' : ''} title="Ver/editar HTML" onClick={toggleSource}><Code2 size={16} /> HTML</button>
+      </div>
+      {linkOpen && !source && (
+        <div className="rte-link">
+          <input className="inp sm" type="text" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://…" autoFocus
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyLink(); } }} />
+          <button type="button" className="btn sm primary" onClick={applyLink} disabled={!isSafeUrl(linkUrl) || /^#/.test(linkUrl.trim())}>Aplicar</button>
+          <button type="button" className="btn sm" onClick={() => setLinkOpen(false)}>Cancelar</button>
         </div>
+      )}
+      {source
+        ? <textarea className="rte-src" value={srcText} onChange={(e) => setSrcText(e.target.value)} spellCheck={false} />
+        : <div ref={areaRef} className="rte-area" contentEditable suppressContentEditableWarning role="textbox" aria-multiline="true"
+            onInput={emit} onKeyUp={remember} onMouseUp={remember} onBlur={() => { remember(); emit(); }}
+            onPaste={(e) => { e.preventDefault(); const t = e.clipboardData.getData('text/plain'); document.execCommand('insertText', false, t); }} />}
+    </div>
+  );
+}
+
+// ============================================================
+//  PÁGINA
+// ============================================================
+function setIn<T>(obj: T, path: (string | number)[], value: any): T {
+  if (!path.length) return value;
+  const [k, ...rest] = path;
+  const copy: any = Array.isArray(obj) ? [...(obj as any)] : { ...(obj as any) };
+  copy[k] = setIn((obj as any)?.[k], rest, value);
+  return copy;
+}
+const renum = <T extends { passo: string }>(l: T[]): T[] => l.map((x, i) => ({ ...x, passo: String(i + 1).padStart(2, '0') }));
+
+const TABS: { id: TabId; label: string; icon: React.ReactNode; title: string; desc: string; site: string; sections: { id: string; label: string }[] }[] = [
+  { id: 'home', label: 'Home', icon: <HomeIcon size={16} />, title: 'Página inicial', desc: 'Hero, abordagem e mosaico da Home.', site: '/',
+    sections: [{ id: 'sec-hero', label: 'Hero' }, { id: 'sec-abordagem', label: 'Abordagem' }, { id: 'sec-mosaico', label: 'Mosaico' }] },
+  { id: 'quemSomos', label: 'A Quattro', icon: <Users size={16} />, title: 'A Quattro (Quem somos)', desc: 'Banner, manifesto, governança, história e selos.', site: '/quem-somos',
+    sections: [{ id: 'sec-hero', label: 'Banner' }, { id: 'sec-manifesto', label: 'Manifesto' }, { id: 'sec-governanca', label: 'Governança' }, { id: 'sec-timeline', label: 'Linha do tempo' }, { id: 'sec-selos', label: 'Selos' }] },
+  { id: 'setores', label: 'Setores e Obras', icon: <Layers size={16} />, title: 'Setores e Obras', desc: 'Setores de atuação e o portfólio de obras.', site: '/setores',
+    sections: [{ id: 'sec-setores', label: 'Setores' }, { id: 'sec-obras', label: 'Obras' }] },
+  { id: 'servicos', label: 'Serviços', icon: <Wrench size={16} />, title: 'Engenharia e Serviços', desc: 'Banner, serviços prestados e fluxo de trabalho.', site: '/servicos',
+    sections: [{ id: 'sec-hero', label: 'Banner' }, { id: 'sec-lista', label: 'Serviços' }, { id: 'sec-fluxo', label: 'Fluxo' }] },
+  { id: 'contato', label: 'Contato', icon: <Phone size={16} />, title: 'Atendimento e sede', desc: 'Telefone, e-mail, endereço e perguntas frequentes.', site: '/contato',
+    sections: [{ id: 'sec-info', label: 'Informações' }, { id: 'sec-faq', label: 'Perguntas frequentes' }] },
+  { id: 'blog', label: 'Blog', icon: <BookOpen size={16} />, title: 'Blog e notícias', desc: 'Escreva e edite os artigos.', site: '/blog',
+    sections: [{ id: 'sec-post-dados', label: 'Dados do artigo' }, { id: 'sec-post-texto', label: 'Texto' }] },
+];
+const DOC_ID: Record<TabId, string> = { home: 'home', quemSomos: 'quemsomos', setores: 'portfolio', servicos: 'servicos', contato: 'contato', blog: 'blog' };
+
+export function Admin() {
+  // ---------- autenticação ----------
+  const [user, setUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [loginUser, setLoginUser] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loggingIn, setLoggingIn] = useState(false);
+
+  // ---------- dados ----------
+  const [loadState, setLoadState] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+  const [loadErr, setLoadErr] = useState('');
+  const [activeTab, setActiveTab] = useState<TabId>('home');
+  const [home, setHome] = useState(DEFAULT_HOME);
+  const [quem, setQuem] = useState(DEFAULT_QUEM);
+  const [setores, setSetores] = useState<Setor[]>([]);
+  const [obras, setObras] = useState<Obra[]>([]);
+  const [servicos, setServicos] = useState(DEFAULT_SERVICOS);
+  const [contato, setContato] = useState(DEFAULT_CONTATO);
+  const [blog, setBlog] = useState<Post[]>([]);
+  const [selPost, setSelPost] = useState<number | null>(null);
+  const snaps = useRef<Record<string, string>>({});
+  const [, setTick] = useState(0);
+
+  const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
+  const [secao, setSecao] = useState('');
+
+  // ---------- avisos e confirmações ----------
+  const [toast, setToast] = useState<{ kind: 'ok' | 'err'; msg: string } | null>(null);
+  const toastTimer = useRef<number | undefined>(undefined);
+  const notify = (kind: 'ok' | 'err', msg: string) => {
+    setToast({ kind, msg });
+    window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), kind === 'err' ? 9000 : 4000);
+  };
+  const [confirmState, setConfirmState] = useState<{ title: string; message: string; label: string; onConfirm: () => void } | null>(null);
+  const askConfirm = (title: string, message: string, label: string, onConfirm: () => void) => setConfirmState({ title, message, label, onConfirm });
+
+  useEffect(() => onAuthStateChanged(auth, (u) => { setUser(u); setAuthReady(true); }), []);
+
+  // ---------- carregar ----------
+  const load = async () => {
+    setLoadState('loading'); setLoadErr('');
+    try {
+      const snap = await Promise.all(['home', 'quemsomos', 'portfolio', 'servicos', 'contato', 'blog'].map((id) => getDoc(doc(db, 'site_data', id))));
+      const d = (i: number): any => (snap[i].exists() ? snap[i].data() : {});
+      const H = mergeDeep(DEFAULT_HOME, d(0));
+      H.hero.mediaList = H.hero.mediaList.map((m: any) => ({ ...m, id: Number(m.id) || newId() }));
+      const Q = mergeDeep(DEFAULT_QUEM, d(1));
+      Q.timeline = Q.timeline.map((t: any) => ({ ...t, id: Number(t.id) || newId() }));
+      const pd = d(2);
+      const SET = (Array.isArray(pd.setores) && pd.setores.length ? pd.setores : SETORES_PADRAO).map(normSetor);
+      const OBR = (Array.isArray(pd.obras) && pd.obras.length ? pd.obras : OBRAS_PADRAO).map(normObra);
+      const S = mergeDeep(DEFAULT_SERVICOS, d(3));
+      const C = mergeDeep(DEFAULT_CONTATO, d(4));
+      C.faqs = C.faqs.map((f: any) => ({ ...f, id: Number(f.id) || newId() }));
+      const B = (Array.isArray(d(5).posts) ? d(5).posts : []).map(normPost);
+      setHome(H); setQuem(Q); setSetores(SET); setObras(OBR); setServicos(S); setContato(C); setBlog(B);
+      setSelPost(B.length ? B[0].id : null);
+      snaps.current = {
+        home: JSON.stringify(H), quemSomos: JSON.stringify(Q), setores: JSON.stringify({ setores: SET, obras: OBR }),
+        servicos: JSON.stringify(S), contato: JSON.stringify(C), blog: JSON.stringify({ posts: B }),
+      };
+      setLoadState('ok');
+    } catch (err: any) {
+      setLoadErr(err?.code === 'permission-denied' ? 'As regras do Firestore bloquearam a leitura (veja SEGURANCA.md).' : errMsg(err));
+      setLoadState('error');
+    }
+  };
+  useEffect(() => { if (user && loadState === 'idle') load(); if (!user) setLoadState('idle'); /* eslint-disable-next-line */ }, [user]);
+
+  const payloadFor = (tab: TabId): any =>
+    tab === 'home' ? home : tab === 'quemSomos' ? quem : tab === 'setores' ? { setores, obras } : tab === 'servicos' ? servicos : tab === 'contato' ? contato : { posts: blog };
+  const isDirty = (tab: TabId) => loadState === 'ok' && JSON.stringify(payloadFor(tab)) !== snaps.current[tab];
+  const dirtyMap: Record<TabId, boolean> = { home: isDirty('home'), quemSomos: isDirty('quemSomos'), setores: isDirty('setores'), servicos: isDirty('servicos'), contato: isDirty('contato'), blog: isDirty('blog') };
+  const anyDirty = Object.values(dirtyMap).some(Boolean);
+
+  useEffect(() => {
+    if (!anyDirty) return;
+    const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', h);
+    return () => window.removeEventListener('beforeunload', h);
+  }, [anyDirty]);
+
+  // ---------- login / logout ----------
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault(); setLoginError(''); setLoggingIn(true);
+    const id = loginUser.trim();
+    const email = id.includes('@') ? id : `${id}@${LOGIN_DOMAIN}`;
+    try { await signInWithEmailAndPassword(auth, email, password); setPassword(''); }
+    catch (err: any) {
+      const c = err?.code;
+      setLoginError(c === 'auth/too-many-requests' ? 'Muitas tentativas. Aguarde alguns minutos e tente de novo.'
+        : c === 'auth/network-request-failed' ? 'Sem conexão com a internet.'
+        : 'Usuário ou senha incorretos.');
+    } finally { setLoggingIn(false); }
+  };
+  const doLogout = async () => { await signOut(auth); setLoadState('idle'); };
+  const handleLogout = () => {
+    if (anyDirty) askConfirm('Sair sem publicar?', 'Há alterações que ainda não foram publicadas. Se sair agora, elas serão perdidas.', 'Sair mesmo assim', doLogout);
+    else doLogout();
+  };
+
+  // ---------- uploads ----------
+  const setUp = (key: string, v: boolean) => setUploading((u) => ({ ...u, [key]: v }));
+  const upErr = (err: any) => notify('err', err?.code === 'storage/unauthorized' ? 'Sem permissão para enviar arquivos: esta conta não está autorizada (veja SEGURANCA.md).' : errMsg(err));
+  const uploadOne = async (key: string, file: File, folder: string, allowVideo: boolean, apply: (url: string) => void) => {
+    setUp(key, true);
+    try { const url = await uploadFile(file, folder, allowVideo); apply(url); notify('ok', 'Arquivo enviado. Publique as alterações para ir ao ar.'); }
+    catch (err) { upErr(err); } finally { setUp(key, false); }
+  };
+  const uploadMany = async (key: string, files: File[], folder: string, room: number | undefined, apply: (imgs: Img[]) => void) => {
+    if (room !== undefined && room <= 0) return;
+    const list = room !== undefined ? files.slice(0, room) : files;
+    setUp(key, true);
+    try {
+      const res = await Promise.allSettled(list.map((f) => uploadFile(f, folder, false)));
+      const ok = res.filter((r): r is PromiseFulfilledResult<string> => r.status === 'fulfilled').map((r) => ({ url: r.value, alt: '' }));
+      const bad = res.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+      if (ok.length) apply(ok);
+      if (bad.length) upErr(bad[0].reason);
+      else notify('ok', `${ok.length} imagem(ns) enviada(s).${list.length < files.length ? ` O limite foi atingido: ${files.length - list.length} não foram enviadas.` : ''} Publique para ir ao ar.`);
+    } finally { setUp(key, false); }
+  };
+
+  // ---------- validar e salvar ----------
+  const validate = (tab: TabId): string | null => {
+    if (tab === 'home') {
+      if (!home.hero.mediaList.length) return 'Adicione ao menos um slide ao hero.';
+      for (let i = 0; i < home.hero.mediaList.length; i++) {
+        const m = home.hero.mediaList[i];
+        if (!m.desktopUrl.trim()) return `Slide ${i + 1}: falta a imagem ou vídeo (desktop).`;
+        if (!linkOk(m.ctaLink)) return `Slide ${i + 1}: o link do botão deve começar com "/" (página do site) ou "https://".`;
+      }
+    }
+    if (tab === 'setores') {
+      const slugs = new Set<string>(); const ids = new Set<string>();
+      for (const s of setores) {
+        if (!s.title.trim()) return 'Há um setor sem título.';
+        const sl = slugify(s.slug || s.title);
+        if (slugs.has(sl)) return `Dois setores com o mesmo endereço (slug): "${sl}".`;
+        if (ids.has(s.id)) return `Dois setores com o mesmo identificador: "${s.id}".`;
+        slugs.add(sl); ids.add(s.id);
+      }
+      const os = new Set<string>();
+      for (const o of obras) {
+        if (!o.title.trim()) return 'Há uma obra sem nome.';
+        const sl = slugify(o.slug || o.title);
+        if (os.has(sl)) return `Duas obras com o mesmo endereço (slug): "${sl}".`;
+        os.add(sl);
+        if (!o.capaImage.trim()) return `Obra "${o.title}": falta a imagem de capa.`;
+        if (o.categoriaSlug && !ids.has(o.categoriaSlug)) return `Obra "${o.title}": a categoria escolhida não existe mais. Selecione outro setor.`;
+      }
+    }
+    if (tab === 'contato' && contato.comercialEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contato.comercialEmail.trim())) return 'O e-mail de contato parece inválido.';
+    if (tab === 'blog') {
+      for (const p of blog) {
+        if (!p.title.trim()) return 'Há um artigo sem título.';
+        if (p.date && Number.isNaN(Date.parse(p.date))) return `Artigo "${p.title}": data inválida.`;
+      }
+    }
+    return null;
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (busy || loadState !== 'ok') return;
+    const problem = validate(activeTab);
+    if (problem) { notify('err', problem); return; }
+    setBusy(true);
+    try {
+      let payload = payloadFor(activeTab);
+      if (activeTab === 'setores') {
+        const S = setores.map((s) => ({ ...s, slug: slugify(s.slug || s.title), nbrs: s.nbrs.map((x) => x.trim()).filter(Boolean), diferenciais: s.diferenciais.map((x) => x.trim()).filter(Boolean) }));
+        const O = obras.map((o) => ({ ...o, slug: slugify(o.slug || o.title), especificacoes: o.especificacoes.filter((x) => x.label.trim() || x.value.trim()) }));
+        payload = { setores: S, obras: O }; setSetores(S); setObras(O);
+      } else if (activeTab === 'blog') {
+        const P = blog.map((p) => ({ ...p, content: sanitizeHtml(p.content) }));
+        payload = { posts: P }; setBlog(P);
+      } else if (activeTab === 'servicos') {
+        const S = { ...servicos, lista: servicos.lista.map((x) => ({ ...x, entregaveis: x.entregaveis.map((t) => t.trim()).filter(Boolean) })) };
+        payload = S; setServicos(S);
+      }
+      await setDoc(doc(db, 'site_data', DOC_ID[activeTab]), payload);
+      snaps.current[activeTab] = JSON.stringify(payload);
+      setTick((t) => t + 1);
+      notify('ok', 'Publicado com sucesso.');
+    } catch (err: any) {
+      notify('err', err?.code === 'permission-denied'
+        ? 'Sem permissão para publicar: esta conta não está autorizada nas regras do Firestore (veja SEGURANCA.md).'
+        : `Não foi possível publicar: ${errMsg(err)}`);
+    } finally { setBusy(false); }
+  };
+
+  // ---------- rolagem / submenu ----------
+  const tab = TABS.find((t) => t.id === activeTab)!;
+  const irPara = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  useEffect(() => {
+    if (!user || loadState !== 'ok') return;
+    const secs = tab.sections;
+    const els = secs.map((s) => document.getElementById(s.id)).filter(Boolean) as HTMLElement[];
+    setSecao(secs[0]?.id || '');
+    if (!els.length) return;
+    const obs = new IntersectionObserver((entries) => {
+      const vis = entries.filter((en) => en.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (vis) setSecao(vis.target.id);
+    }, { rootMargin: '-10% 0px -75% 0px' });
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, [user, loadState, activeTab, selPost, tab]);
+
+  // ---------- telas de estado ----------
+  if (!authReady) return <div className="adm-loading"><style>{ADMIN_CSS}</style><Loader2 size={18} className="spin" /> Carregando…</div>;
+
+  if (!user) {
+    return (
+      <div className="adm login">
+        <style>{ADMIN_CSS}</style>
+        <form className="login-card" onSubmit={handleLogin}>
+          <img src={LOGO_SRC} alt="Quattro Construtora" />
+          <p className="sub2">Acesso ao painel de conteúdo</p>
+          <Field label="Usuário ou e-mail"><input className="inp" type="text" value={loginUser} onChange={(e) => setLoginUser(e.target.value)} required autoComplete="username" autoFocus /></Field>
+          <Field label="Senha"><input className="inp" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" /></Field>
+          {loginError && <div className="login-err" role="alert">{loginError}</div>}
+          <button type="submit" className="btn primary" disabled={loggingIn}>{loggingIn && <Loader2 size={15} className="spin" />} Entrar</button>
+        </form>
       </div>
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // DASHBOARD PRINCIPAL
-  // ---------------------------------------------------------------------------
-  return (
-    <div className="min-h-screen bg-[#f8f9f6] text-zinc-900 font-sans flex flex-col md:flex-row relative z-[200]">
-      
-      {/* SIDEBAR NAVEGAÇÃO */}
-      <aside className="w-full md:w-64 bg-zinc-950 text-white p-6 flex flex-col justify-between border-r border-zinc-800 shrink-0 font-['Montserrat']">
-        <div className="space-y-8">
-          <div className="space-y-1">
-            <span className="bg-amber-500 text-zinc-950 text-[10px] font-black uppercase px-2 py-0.5 rounded">CMS Admin</span>
-            <h2 className="text-lg font-black text-white tracking-tight">QUATTRO</h2>
-          </div>
-          <nav className="space-y-1.5 text-xs font-semibold uppercase tracking-wider">
-            <button onClick={() => setActiveTab('home')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'home' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><HomeIcon className="w-4 h-4" /><span>Home</span></button>
-            <button onClick={() => setActiveTab('quemSomos')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'quemSomos' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Users className="w-4 h-4" /><span>A Quattro</span></button>
-            <button onClick={() => setActiveTab('setores')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'setores' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Layers className="w-4 h-4" /><span>Setores & Obras</span></button>
-            <button onClick={() => setActiveTab('servicos')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'servicos' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Wrench className="w-4 h-4" /><span>Serviços</span></button>
-            <button onClick={() => setActiveTab('contato')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'contato' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><Phone className="w-4 h-4" /><span>Contato & Sede</span></button>
-            <button onClick={() => setActiveTab('blog')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer ${activeTab === 'blog' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white hover:bg-zinc-900'}`}><BookOpen className="w-4 h-4" /><span>Blog & Notícias</span></button>
-          </nav>
+  if (loadState === 'error') {
+    return (
+      <div className="adm" style={{ display: 'block' }}>
+        <style>{ADMIN_CSS}</style>
+        <div className="adm-fail">
+          <h3>Não foi possível carregar o conteúdo</h3>
+          <p className="note">{loadErr}</p>
+          <p className="note">Por segurança, o painel não permite editar sem ter carregado os dados atuais — assim nada é sobrescrito por engano.</p>
+          <div className="row"><button type="button" className="btn primary" onClick={load}>Tentar de novo</button><button type="button" className="btn" onClick={doLogout}>Sair</button></div>
         </div>
-        <div className="pt-6 border-t border-zinc-800">
-          <button onClick={() => setIsLoggedIn(false)} className="flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-rose-400 transition-colors uppercase tracking-wider cursor-pointer"><LogOut className="w-4 h-4" /><span>Sair do Painel</span></button>
+      </div>
+    );
+  }
+  if (loadState !== 'ok') return <div className="adm-loading"><style>{ADMIN_CSS}</style><Loader2 size={18} className="spin" /> Carregando conteúdo…</div>;
+
+  // ---------- atalhos de edição ----------
+  const H = (path: (string | number)[], v: any) => setHome((h) => setIn(h, path, v));
+  const Q = (path: (string | number)[], v: any) => setQuem((q) => setIn(q, path, v));
+  const SV = (path: (string | number)[], v: any) => setServicos((s) => setIn(s, path, v));
+  const CT = (path: (string | number)[], v: any) => setContato((c) => setIn(c, path, v));
+  const patchSetor = (id: string, patch: Partial<Setor>) => setSetores((l) => l.map((s) => (s.id === id ? { ...s, ...patch } : s)));
+  const patchObra = (id: number, patch: Partial<Obra>) => setObras((l) => l.map((o) => (o.id === id ? { ...o, ...patch } : o)));
+  const patchPost = (id: number, patch: Partial<Post>) => setBlog((l) => l.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+  const post = blog.find((p) => p.id === selPost) || null;
+  const up = (k: string) => !!uploading[k];
+
+  const addBtn = (label: string, onClick: () => void) => <button type="button" className="btn add" onClick={onClick}><Plus size={15} /> {label}</button>;
+
+  return (
+    <div className="adm">
+      <style>{ADMIN_CSS}</style>
+
+      <aside className="adm-side">
+        <div className="adm-brand"><img src={LOGO_SRC} alt="Quattro Construtora" /><span>Painel de conteúdo</span></div>
+        <nav className="adm-nav">
+          {TABS.map((t) => (
+            <React.Fragment key={t.id}>
+              <button type="button" className={activeTab === t.id ? 'on' : ''} onClick={() => { setActiveTab(t.id); window.scrollTo({ top: 0 }); }}>
+                {t.icon} {t.label}{dirtyMap[t.id] && <span className="adm-dot" title="Alterações não publicadas" />}
+              </button>
+              {activeTab === t.id && (
+                <div className="adm-sub">
+                  {t.sections.map((sc) => <button key={sc.id} type="button" className={secao === sc.id ? 'on' : ''} onClick={() => irPara(sc.id)}>{sc.label}</button>)}
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+        </nav>
+        <div className="adm-side-foot">
+          <small>{user.email}</small>
+          <button type="button" className="adm-logout" onClick={handleLogout}><LogOut size={15} /> Sair</button>
         </div>
       </aside>
 
-      {/* CONTEÚDO PRINCIPAL */}
-      <main className="flex-1 p-6 md:p-12 overflow-y-auto max-w-6xl">
-        
-        {/* ==================================================================== */}
-        {/* ABA: HOME */}
-        {/* ==================================================================== */}
-        {activeTab === 'home' && (
-          <div className="space-y-10">
-            <div className="flex items-center justify-between border-b border-zinc-200/80 pb-6 font-['Montserrat']">
-              <div>
-                <span className="text-xs font-bold text-amber-600 uppercase tracking-widest block">Personalização da Página</span>
-                <h1 className="text-3xl font-extrabold text-zinc-950 tracking-tight">Página Inicial (Home)</h1>
-              </div>
-            </div>
+      <main className="adm-main">
+        <div className="adm-head">
+          <div><h1>{tab.title}</h1><p>{tab.desc}</p></div>
+          <a className="btn sm" href={tab.site} target="_blank" rel="noopener noreferrer"><ExternalLink size={14} /> Ver no site</a>
+        </div>
 
-            {/* 1. HERO HOME */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2">
-                  <Video className="w-5 h-5 text-amber-500" />
-                  <span>1. Mídias e Textos do Hero</span>
-                </h2>
-                <button onClick={() => handleSave('Hero_Home')} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all font-['Montserrat'] cursor-pointer">
-                  <Save className="w-4 h-4 inline-block mr-1" />
-                  <span>Salvar Hero</span>
-                </button>
-              </div>
+        <div className="adm-jump">{tab.sections.map((s) => <button key={s.id} type="button" onClick={() => irPara(s.id)}>{s.label}</button>)}</div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 font-['Montserrat']">Modo da Mídia</label>
-                  <select 
-                    value={homeData.hero.mode} 
-                    onChange={(e) => setHomeData({...homeData, hero: {...homeData.hero, mode: e.target.value as any}})}
-                    className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm text-zinc-900 outline-none"
-                  >
-                    <option value="carousel">Carrossel de Imagens/Vídeos</option>
-                    <option value="single">Imagem Única</option>
-                    <option value="video">Vídeo em Destaque</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* SLIDES DO HERO */}
-              <div className="space-y-4 pt-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Slides Cadastrados</span>
-                  <button 
-                    onClick={() => {
-                      const newMedia = {
-                        id: Date.now(), type: 'image' as 'image' | 'video', desktopUrl: '/img/placeholder.jpg', mobileUrl: '',
-                        line1BeforeHighlight: 'CIVIL DE', highlightPart1: 'ALTA', highlightPart2: 'PERFORMANCE', line3AfterHighlight: 'E PRECISÃO',
-                        slideDesc: 'Descrição detalhada do slide.', ctaText: 'Saiba Mais', ctaLink: '/servicos'
-                      };
-                      setHomeData({...homeData, hero: {...homeData.hero, mediaList: [...homeData.hero.mediaList, newMedia]}});
-                    }}
-                    className="px-3 py-1.5 bg-zinc-900 text-white rounded-lg text-xs font-bold font-['Montserrat'] cursor-pointer inline-flex items-center gap-1"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Adicionar Slide</span>
-                  </button>
-                </div>
-
-                <div className="space-y-6">
-                  {homeData.hero.mediaList.map((media, idx) => (
-                    <div key={media.id} className="p-5 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-4">
-                      <div className="flex items-center justify-between border-b border-zinc-200/80 pb-3">
-                        <span className="text-xs font-bold text-amber-600 font-['Montserrat'] uppercase">Slide #{idx + 1}</span>
-                        <div className="flex gap-2">
-                          {idx > 0 && (
-                            <button onClick={() => moverSlideHome(idx, 'cima')} className="p-1 text-zinc-500 hover:bg-zinc-200 rounded transition-colors cursor-pointer" title="Mover para cima">
-                              <ChevronUp className="w-4 h-4" />
-                            </button>
-                          )}
-                          {idx < homeData.hero.mediaList.length - 1 && (
-                            <button onClick={() => moverSlideHome(idx, 'baixo')} className="p-1 text-zinc-500 hover:bg-zinc-200 rounded transition-colors cursor-pointer" title="Mover para baixo">
-                              <ChevronDown className="w-4 h-4" />
-                            </button>
-                          )}
-                          <button 
-                            onClick={() => {
-                              const updated = homeData.hero.mediaList.filter(m => m.id !== media.id);
-                              setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                            }}
-                            className="p-1 text-rose-500 hover:bg-rose-50 rounded transition-colors cursor-pointer"
-                            title="Excluir Slide"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Tipo Mídia</label>
-                          <select 
-                            value={media.type} 
-                            onChange={(e) => {
-                              const updated = [...homeData.hero.mediaList];
-                              updated[idx].type = e.target.value as any;
-                              setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                            }}
-                            className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-900"
-                          >
-                            <option value="image">Imagem</option>
-                            <option value="video">Vídeo (.mp4)</option>
-                          </select>
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Desktop URL</label>
-                            <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5">
-                              {uploading === `desktop-${idx}` ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-                              <span>Upload</span>
-                              <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                                const updated = [...homeData.hero.mediaList]; updated[idx].desktopUrl = url; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                              }, `desktop-${idx}`)} />
-                            </label>
-                          </div>
-                          <input type="text" value={media.desktopUrl} onChange={(e) => {
-                              const updated = [...homeData.hero.mediaList]; updated[idx].desktopUrl = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                            }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Mobile URL</label>
-                            <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5">
-                              {uploading === `mobile-${idx}` ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-                              <span>Upload</span>
-                              <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                                const updated = [...homeData.hero.mediaList]; updated[idx].mobileUrl = url; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                              }, `mobile-${idx}`)} />
-                            </label>
-                          </div>
-                          <input type="text" value={media.mobileUrl} onChange={(e) => {
-                              const updated = [...homeData.hero.mediaList]; updated[idx].mobileUrl = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}});
-                            }} placeholder="Opcional" className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700"
-                          />
-                        </div>
-                      </div>
-
-                      {/* CTAs */}
-                      <div className="pt-3 border-t border-zinc-200/80 space-y-3">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 block font-['Montserrat']">Textos e Botões (CTAs)</span>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                          <div className="space-y-1"><label className="text-[10px] font-bold text-zinc-500">Linha 1 Normal</label><input type="text" value={media.line1BeforeHighlight} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].line1BeforeHighlight = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
-                          <div className="space-y-1"><label className="text-[10px] font-bold text-amber-600">Amarelo 1</label><input type="text" value={media.highlightPart1} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].highlightPart1 = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs font-black" /></div>
-                          <div className="space-y-1"><label className="text-[10px] font-bold text-amber-600">Amarelo 2</label><input type="text" value={media.highlightPart2} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].highlightPart2 = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs font-black" /></div>
-                          <div className="space-y-1"><label className="text-[10px] font-bold text-zinc-500">Linha 3 Final</label><input type="text" value={media.line3AfterHighlight} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].line3AfterHighlight = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          <div className="space-y-1 sm:col-span-1"><label className="text-[10px] font-bold text-zinc-500">Texto Botão</label><input type="text" value={media.ctaText} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].ctaText = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
-                          <div className="space-y-1 sm:col-span-2"><label className="text-[10px] font-bold text-zinc-500">Link Destino</label><input type="text" value={media.ctaLink} onChange={(e) => { const updated = [...homeData.hero.mediaList]; updated[idx].ctaLink = e.target.value; setHomeData({...homeData, hero: {...homeData.hero, mediaList: updated}})}} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono" /></div>
-                        </div>
-                      </div>
+        <form onSubmit={handleSave}>
+          {/* ============================ HOME ============================ */}
+          {activeTab === 'home' && (<>
+            <Card id="sec-hero" title="Hero (topo da Home)" desc="Mídias e textos de cada slide.">
+              <Field label="Modo da mídia">
+                <select className="inp" value={home.hero.mode} onChange={(e) => H(['hero', 'mode'], e.target.value)}>
+                  <option value="carousel">Carrossel de imagens/vídeos</option><option value="single">Imagem única</option><option value="video">Vídeo em destaque</option>
+                </select>
+              </Field>
+              {home.hero.mediaList.map((m, i) => {
+                const p = (k: string, v: any) => H(['hero', 'mediaList', i, k], v);
+                return (
+                  <Item key={m.id} title={`Slide ${i + 1}`}
+                    acts={<><MoveBtns i={i} n={home.hero.mediaList.length} onMove={(d) => H(['hero', 'mediaList'], moveItem(home.hero.mediaList, i, d))} />
+                      <button type="button" className="btn sm danger" onClick={() => askConfirm('Remover slide?', `O slide ${i + 1} será removido (só vai ao ar ao publicar).`, 'Remover', () => H(['hero', 'mediaList'], removeAt(home.hero.mediaList, i)))}>Remover</button></>}>
+                    <div className="g2">
+                      <Field label="Tipo de mídia"><select className="inp" value={m.type} onChange={(e) => p('type', e.target.value)}><option value="image">Imagem</option><option value="video">Vídeo (MP4/WebM)</option></select></Field>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* 2. NOSSA ABORDAGEM */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><LayoutGrid className="w-5 h-5 text-amber-500" /><span>2. Nossa Abordagem (3 Cards)</span></h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-1"><label className="text-xs font-bold text-zinc-700">Título Geral</label><input type="text" value={homeData.approach.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, title: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm font-bold" /></div>
-                <div className="space-y-1"><label className="text-xs font-bold text-zinc-700">Descrição Geral</label><textarea rows={2} value={homeData.approach.description} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, description: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl p-3 text-xs" /></div>
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4 border-t border-zinc-100">
-                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3"><span className="text-xs font-bold text-amber-600 block">Card 1</span>
-                  <input type="text" value={homeData.approach.card1.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card1: {...homeData.approach.card1, title: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold" />
-                  <textarea rows={3} value={homeData.approach.card1.text} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card1: {...homeData.approach.card1, text: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs" />
-                </div>
-                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3"><span className="text-xs font-bold text-amber-600 block">Card 2</span>
-                  <input type="text" value={homeData.approach.card2.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card2: {...homeData.approach.card2, title: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold" />
-                  <textarea rows={3} value={homeData.approach.card2.text} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card2: {...homeData.approach.card2, text: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs" />
-                </div>
-                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-3"><span className="text-xs font-bold text-amber-600 block">Card 3</span>
-                  <input type="text" value={homeData.approach.card3.title} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card3: {...homeData.approach.card3, title: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold" />
-                  <textarea rows={3} value={homeData.approach.card3.text} onChange={(e) => setHomeData({...homeData, approach: {...homeData.approach, card3: {...homeData.approach.card3, text: e.target.value}}})} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs" />
-                </div>
-              </div>
-            </div>
-
-            {/* 3. MOSAICO HOME */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><ImageIcon className="w-5 h-5 text-amber-500" /><span>3. Mosaico "Quem Somos"</span></h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold text-zinc-500">Img 1</label>
-                    <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5">
-                      {uploading === 'mosaic-img1' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}<span>Upload</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => setHomeData({...homeData, aboutMosaic: {...homeData.aboutMosaic, img1: url}}), 'mosaic-img1')} />
-                    </label>
-                  </div>
-                  <input type="text" value={homeData.aboutMosaic.img1} onChange={(e) => setHomeData({...homeData, aboutMosaic: {...homeData.aboutMosaic, img1: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold text-zinc-500">Img 2</label>
-                    <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5">
-                      {uploading === 'mosaic-img2' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}<span>Upload</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => setHomeData({...homeData, aboutMosaic: {...homeData.aboutMosaic, img2: url}}), 'mosaic-img2')} />
-                    </label>
-                  </div>
-                  <input type="text" value={homeData.aboutMosaic.img2} onChange={(e) => setHomeData({...homeData, aboutMosaic: {...homeData.aboutMosaic, img2: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold text-zinc-500">Img 3</label>
-                    <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5">
-                      {uploading === 'mosaic-img3' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}<span>Upload</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => setHomeData({...homeData, aboutMosaic: {...homeData.aboutMosaic, img3: url}}), 'mosaic-img3')} />
-                    </label>
-                  </div>
-                  <input type="text" value={homeData.aboutMosaic.img3} onChange={(e) => setHomeData({...homeData, aboutMosaic: {...homeData.aboutMosaic, img3: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700" />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================== */}
-        {/* ABA: QUEM SOMOS */}
-        {/* ==================================================================== */}
-        {activeTab === 'quemSomos' && (
-          <div className="space-y-10">
-            <div className="flex items-center justify-between border-b border-zinc-200/80 pb-6 font-['Montserrat']">
-              <div>
-                <span className="text-xs font-bold text-amber-600 uppercase tracking-widest block">Gerenciamento Institucional</span>
-                <h1 className="text-3xl font-extrabold text-zinc-950 tracking-tight">A Construtora (Quem Somos)</h1>
-              </div>
-            </div>
-
-            {/* 1. HERO INSTITUCIONAL */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><FileText className="w-5 h-5 text-amber-500" /><span>1. Banner Hero Institucional</span></h2>
-                <button onClick={() => handleSave('Hero_QuemSomos')} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all cursor-pointer"><Save className="w-4 h-4 inline-block mr-1" /><span>Salvar Banner</span></button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold uppercase text-zinc-700">Imagem Fundo do Banner</label>
-                    <label className="text-xs font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-1">
-                      {uploading === 'hero-quemsomos-bg' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}<span>Fazer Upload</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => setQuemSomosData({...quemSomosData, hero: {...quemSomosData.hero, bgImage: url}}), 'hero-quemsomos-bg')} />
-                    </label>
-                  </div>
-                  <input type="text" value={quemSomosData.hero.bgImage} onChange={(e) => setQuemSomosData({...quemSomosData, hero: {...quemSomosData.hero, bgImage: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm font-mono text-zinc-700" />
-                </div>
-              </div>
-            </div>
-
-            {/* 2. MANIFESTO INSTITUCIONAL */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-amber-500" /><span>2. Manifesto Institucional</span></h2>
-              </div>
-              <div className="space-y-4">
-                <div className="space-y-1"><label className="text-xs font-bold uppercase text-zinc-700">Título</label><input type="text" value={quemSomosData.manifesto.title} onChange={(e) => setQuemSomosData({...quemSomosData, manifesto: {...quemSomosData.manifesto, title: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm font-bold" /></div>
-                <div className="space-y-1"><label className="text-xs font-bold uppercase text-zinc-700">Parágrafo 1</label><textarea rows={3} value={quemSomosData.manifesto.p1} onChange={(e) => setQuemSomosData({...quemSomosData, manifesto: {...quemSomosData.manifesto, p1: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl p-4 text-sm" /></div>
-                <div className="space-y-1"><label className="text-xs font-bold uppercase text-zinc-700">Parágrafo 2</label><textarea rows={3} value={quemSomosData.manifesto.p2} onChange={(e) => setQuemSomosData({...quemSomosData, manifesto: {...quemSomosData.manifesto, p2: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl p-4 text-sm" /></div>
-              </div>
-            </div>
-
-            {/* 3. GOVERNANÇA (MISSÃO, VISÃO, VALORES) */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Target className="w-5 h-5 text-amber-500" /><span>3. Governança (Missão, Visão e Valores)</span></h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-2"><span className="text-xs font-bold text-amber-600 block">Missão</span><textarea rows={4} value={quemSomosData.governanca.missao} onChange={(e) => setQuemSomosData({...quemSomosData, governanca: {...quemSomosData.governanca, missao: e.target.value}})} className="w-full bg-white border border-zinc-200 rounded-lg p-3 text-xs" /></div>
-                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-2"><span className="text-xs font-bold text-amber-600 block">Visão</span><textarea rows={4} value={quemSomosData.governanca.visao} onChange={(e) => setQuemSomosData({...quemSomosData, governanca: {...quemSomosData.governanca, visao: e.target.value}})} className="w-full bg-white border border-zinc-200 rounded-lg p-3 text-xs" /></div>
-                <div className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-2"><span className="text-xs font-bold text-amber-600 block">Valores</span><textarea rows={4} value={quemSomosData.governanca.valores} onChange={(e) => setQuemSomosData({...quemSomosData, governanca: {...quemSomosData.governanca, valores: e.target.value}})} className="w-full bg-white border border-zinc-200 rounded-lg p-3 text-xs" /></div>
-              </div>
-            </div>
-
-            {/* 4. LINHA DO TEMPO */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Clock className="w-5 h-5 text-amber-500" /><span>4. Linha do Tempo (História)</span></h2>
-                <button onClick={() => setQuemSomosData({...quemSomosData, timeline: [...quemSomosData.timeline, { id: Date.now(), fase: 'Nova Fase', desc: 'Descrição da fase' }]})} className="px-3 py-1.5 bg-zinc-900 text-white rounded-lg text-xs font-bold cursor-pointer inline-flex items-center gap-1">
-                  <Plus className="w-3.5 h-3.5" /><span>Adicionar Marco</span>
-                </button>
-              </div>
-              <div className="space-y-4">
-                {quemSomosData.timeline.map((item, idx) => (
-                  <div key={item.id} className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-amber-600">Marco #{idx + 1}</span>
-                      <button onClick={() => setQuemSomosData({...quemSomosData, timeline: quemSomosData.timeline.filter((_, i) => i !== idx)})} className="p-1 text-rose-500 hover:bg-rose-50 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                    <div className="img-grid">
+                      <ImageField label="Mídia desktop" inputKey={`d${m.id}`} url={m.desktopUrl} onUrl={(v) => p('desktopUrl', v)} busy={up(`hd${m.id}`)} allowVideo
+                        onPick={(f) => uploadOne(`hd${m.id}`, f, 'home', true, (url) => setHome((h) => setIn(h, ['hero', 'mediaList'], h.hero.mediaList.map((x) => (x.id === m.id ? { ...x, desktopUrl: url } : x)))))} />
+                      <ImageField label="Mídia mobile (opcional)" inputKey={`m${m.id}`} url={m.mobileUrl} onUrl={(v) => p('mobileUrl', v)} busy={up(`hm${m.id}`)} allowVideo
+                        onPick={(f) => uploadOne(`hm${m.id}`, f, 'home', true, (url) => setHome((h) => setIn(h, ['hero', 'mediaList'], h.hero.mediaList.map((x) => (x.id === m.id ? { ...x, mobileUrl: url } : x)))))} />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Ano / Fase</label><input type="text" value={item.fase} onChange={(e) => { const upd = [...quemSomosData.timeline]; upd[idx].fase = e.target.value; setQuemSomosData({...quemSomosData, timeline: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
-                      <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Descrição</label><input type="text" value={item.desc} onChange={(e) => { const upd = [...quemSomosData.timeline]; upd[idx].desc = e.target.value; setQuemSomosData({...quemSomosData, timeline: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs" /></div>
+                    <span className="sub">Título do slide</span>
+                    <div className="g4">
+                      <Field label="Linha 1"><TextIn value={m.line1BeforeHighlight} onChange={(v) => p('line1BeforeHighlight', v)} /></Field>
+                      <Field label="Destaque 1 (amarelo)"><TextIn value={m.highlightPart1} onChange={(v) => p('highlightPart1', v)} /></Field>
+                      <Field label="Destaque 2 (amarelo)"><TextIn value={m.highlightPart2} onChange={(v) => p('highlightPart2', v)} /></Field>
+                      <Field label="Linha final"><TextIn value={m.line3AfterHighlight} onChange={(v) => p('line3AfterHighlight', v)} /></Field>
                     </div>
-                  </div>
+                    <Field label="Descrição"><AreaIn rows={2} value={m.slideDesc} onChange={(v) => p('slideDesc', v)} /></Field>
+                    <div className="g2">
+                      <Field label="Texto do botão"><TextIn value={m.ctaText} onChange={(v) => p('ctaText', v)} /></Field>
+                      <Field label="Link do botão" hint="Ex.: /servicos ou https://…"><input className={`inp ${linkOk(m.ctaLink) ? '' : 'err'}`} type="text" value={m.ctaLink} onChange={(e) => p('ctaLink', e.target.value)} /></Field>
+                    </div>
+                  </Item>
+                );
+              })}
+              {addBtn('Adicionar slide', () => H(['hero', 'mediaList'], [...home.hero.mediaList, { id: newId(), type: 'image', desktopUrl: '', mobileUrl: '', line1BeforeHighlight: '', highlightPart1: '', highlightPart2: '', line3AfterHighlight: '', slideDesc: '', ctaText: 'Saiba mais', ctaLink: '/servicos' } as Slide]))}
+            </Card>
+
+            <Card id="sec-abordagem" title="Nossa abordagem" desc="Título geral e três cartões.">
+              <div className="g2">
+                <Field label="Selo superior"><TextIn value={home.approach.badge} onChange={(v) => H(['approach', 'badge'], v)} /></Field>
+                <Field label="Título"><TextIn value={home.approach.title} onChange={(v) => H(['approach', 'title'], v)} /></Field>
+              </div>
+              <Field label="Descrição"><AreaIn rows={2} value={home.approach.description} onChange={(v) => H(['approach', 'description'], v)} /></Field>
+              <div className="g3">
+                {(['card1', 'card2', 'card3'] as const).map((k, i) => (
+                  <Item key={k} title={`Cartão ${i + 1}`}>
+                    <Field label="Título"><TextIn value={home.approach[k].title} onChange={(v) => H(['approach', k, 'title'], v)} /></Field>
+                    <Field label="Texto"><AreaIn value={home.approach[k].text} onChange={(v) => H(['approach', k, 'text'], v)} /></Field>
+                  </Item>
                 ))}
               </div>
-            </div>
+            </Card>
 
-            {/* SELOS */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Award className="w-5 h-5 text-amber-500" /><span>5. Certificações e Selos Oficiais</span></h2>
+            <Card id="sec-mosaico" title='Mosaico "Quem somos"' desc="Texto, indicador e três imagens.">
+              <div className="g2">
+                <Field label="Título"><TextIn value={home.aboutMosaic.title} onChange={(v) => H(['aboutMosaic', 'title'], v)} /></Field>
+                <div className="g2"><Field label="Indicador (número)"><TextIn value={home.aboutMosaic.statNumber} onChange={(v) => H(['aboutMosaic', 'statNumber'], v)} /></Field>
+                  <Field label="Indicador (legenda)"><TextIn value={home.aboutMosaic.statLabel} onChange={(v) => H(['aboutMosaic', 'statLabel'], v)} /></Field></div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-700">Selo PBQP-H</label>
-                    <label className="text-xs font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-1">
-                      {uploading === 'selo-pbqph' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}<span>Upload</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => setQuemSomosData({...quemSomosData, qualidade: {...quemSomosData.qualidade, seloPbqph: url}}), 'selo-pbqph')} />
-                    </label>
-                  </div>
-                  <input type="text" value={quemSomosData.qualidade.seloPbqph} onChange={(e) => setQuemSomosData({...quemSomosData, qualidade: {...quemSomosData.qualidade, seloPbqph: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm font-mono text-zinc-700" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-700">Selo ISO 9001</label>
-                    <label className="text-xs font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-1">
-                      {uploading === 'selo-iso' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}<span>Upload</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => setQuemSomosData({...quemSomosData, qualidade: {...quemSomosData.qualidade, seloIso: url}}), 'selo-iso')} />
-                    </label>
-                  </div>
-                  <input type="text" value={quemSomosData.qualidade.seloIso} onChange={(e) => setQuemSomosData({...quemSomosData, qualidade: {...quemSomosData.qualidade, seloIso: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm font-mono text-zinc-700" />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        {/* ==================================================================== */}
-        {/* ABA: SETORES & OBRAS (COM LIMITES E ORDENAÇÃO DE IMAGENS) */}
-        {/* ==================================================================== */}
-        {activeTab === 'setores' && (
-          <div className="space-y-10">
-            <div className="flex items-center justify-between border-b border-zinc-200/80 pb-6 font-['Montserrat']">
-              <div>
-                <span className="text-xs font-bold text-amber-600 uppercase tracking-widest block">Gerenciamento de Portfólio</span>
-                <h1 className="text-3xl font-extrabold text-zinc-950 tracking-tight">Setores de Atuação & Obras</h1>
-              </div>
-              <button onClick={() => handleSave('Setores e Obras')} className="px-5 py-3 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all font-['Montserrat'] cursor-pointer flex items-center gap-2 shadow-lg shadow-amber-500/20">
-                <Save className="w-4 h-4" />
-                <span>Salvar Tudo</span>
-              </button>
-            </div>
-
-            {/* 1. GERENCIAMENTO DE SETORES */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-amber-500" />
-                  <span>1. Cadastrar / Editar Setores (com Carrossel)</span>
-                </h2>
-                <button 
-                  onClick={() => {
-                    const newSetor = { id: `setor-${Date.now()}`, slug: 'novo-setor', title: 'Novo Setor', category: 'Categoria', desc: 'Descrição.', imagens: [] };
-                    setSetoresData([...setoresData, newSetor]);
-                  }}
-                  className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg text-xs font-bold font-['Montserrat'] cursor-pointer inline-flex items-center gap-1 transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Adicionar Setor</span>
-                </button>
-              </div>
-
-              <div className="space-y-8">
-                {setoresData.map((setor, idx) => (
-                  <div key={setor.id} className="p-6 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-5">
-                    <div className="flex items-center justify-between gap-4 border-b border-zinc-200/80 pb-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-amber-600 font-['Montserrat']">Setor #{idx + 1} ({setor.title})</span>
-                      <button onClick={() => setSetoresData(setoresData.filter((_, i) => i !== idx))} className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg cursor-pointer">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Título do Setor</label>
-                        <input type="text" value={setor.title} onChange={(e) => { const upd = [...setoresData]; upd[idx].title = e.target.value; setSetoresData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-950" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Descrição Curta</label>
-                        <input type="text" value={setor.desc} onChange={(e) => { const upd = [...setoresData]; upd[idx].desc = e.target.value; setSetoresData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs text-zinc-600" />
-                      </div>
-                    </div>
-
-                    {/* GALERIA DO SETOR COM ORDENAÇÃO */}
-                    <div className="space-y-3 pt-2 border-t border-zinc-200/80">
-                      <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat'] block">
-                          Imagens do Carrossel (Arraste e Solte Várias Imagens)
-                        </label>
-                      </div>
-                      
-                      <div 
-                        onDragOver={(e) => { e.preventDefault(); setDragActive(`setor-${idx}`); }}
-                        onDragLeave={(e) => { e.preventDefault(); setDragActive(null); }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          setDragActive(null);
-                          if (e.dataTransfer.files) {
-                            handleMultipleFilesUpload(e.dataTransfer.files, (newUrls) => {
-                              const upd = [...setoresData];
-                              const newImagesObjects = newUrls.map(url => ({ url, alt: '' }));
-                              upd[idx].imagens = [...(upd[idx].imagens || []), ...newImagesObjects];
-                              setSetoresData(upd);
-                            }, `setor-upload-${idx}`);
-                          }
-                        }}
-                        className={`w-full border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center transition-colors ${dragActive === `setor-${idx}` ? 'border-amber-500 bg-amber-50' : 'border-zinc-300 bg-white hover:bg-zinc-50'}`}
-                      >
-                        {uploading === `setor-upload-${idx}` ? (
-                          <div className="flex flex-col items-center">
-                            <Loader2 className="w-8 h-8 text-amber-500 animate-spin mb-3" />
-                            <span className="text-xs font-bold text-zinc-500">Processando imagens...</span>
-                          </div>
-                        ) : (
-                          <>
-                            <ImagePlus className="w-10 h-10 text-zinc-300 mb-3" />
-                            <p className="text-sm font-bold text-zinc-700 mb-1 text-center">Arraste e solte as imagens aqui</p>
-                            <label className="mt-4 px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold rounded-lg cursor-pointer transition-colors shadow-sm font-['Montserrat'] uppercase tracking-wider">
-                              Procurar Arquivos
-                              <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => {
-                                  if (e.target.files) {
-                                    handleMultipleFilesUpload(e.target.files, (newUrls) => {
-                                      const upd = [...setoresData];
-                                      const newImagesObjects = newUrls.map(url => ({ url, alt: '' }));
-                                      upd[idx].imagens = [...(upd[idx].imagens || []), ...newImagesObjects];
-                                      setSetoresData(upd);
-                                    }, `setor-upload-${idx}`);
-                                  }
-                                }} 
-                              />
-                            </label>
-                          </>
-                        )}
-                      </div>
-
-                      {setor.imagens && setor.imagens.length > 0 && (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                          {setor.imagens.map((imgObj: any, imgIdx: number) => (
-                            <div key={imgIdx} className="bg-white border border-zinc-200 rounded-xl overflow-hidden flex flex-col shadow-sm group">
-                              <div className="aspect-video bg-zinc-100 relative">
-                                <img src={imgObj.url} alt={`Preview ${imgIdx}`} className="w-full h-full object-cover" />
-                                
-                                {/* Botões de Reordenação e Exclusão */}
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-start justify-between p-2">
-                                  <div className="flex gap-1">
-                                    {imgIdx > 0 && (
-                                      <button onClick={() => moverImagemSetor(idx, imgIdx, 'esq')} className="bg-white hover:bg-zinc-100 text-zinc-800 p-1.5 rounded-lg shadow cursor-pointer transition-colors" title="Mover para esquerda">
-                                        <ChevronLeft className="w-4 h-4" />
-                                      </button>
-                                    )}
-                                    {imgIdx < setor.imagens.length - 1 && (
-                                      <button onClick={() => moverImagemSetor(idx, imgIdx, 'dir')} className="bg-white hover:bg-zinc-100 text-zinc-800 p-1.5 rounded-lg shadow cursor-pointer transition-colors" title="Mover para direita">
-                                        <ChevronRight className="w-4 h-4" />
-                                      </button>
-                                    )}
-                                  </div>
-                                  <button onClick={() => { const upd = [...setoresData]; upd[idx].imagens = upd[idx].imagens.filter((_:any, i:number) => i !== imgIdx); setSetoresData(upd); }} className="bg-white hover:bg-rose-50 text-rose-500 p-1.5 rounded-lg shadow cursor-pointer transition-colors" title="Remover Imagem">
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
-
-                              </div>
-                              <div className="p-2 border-t border-zinc-100 bg-[#f8f9f6] space-y-2">
-                                <div>
-                                  <label className="text-[9px] font-bold uppercase text-amber-600 block mb-0.5 font-['Montserrat']">Ordem: {imgIdx + 1} | Badge (Alt)</label>
-                                  <input type="text" value={imgObj.alt} onChange={(e) => { const upd = [...setoresData]; upd[idx].imagens[imgIdx].alt = e.target.value; setSetoresData(upd); }} className="w-full text-xs font-bold text-zinc-900 bg-white border border-zinc-200 rounded px-2 py-1 outline-none focus:border-amber-500" placeholder="Ex: Fachada Sul" />
-                                </div>
-                                <div>
-                                  <label className="text-[9px] font-bold uppercase text-zinc-400 block mb-0.5 font-['Montserrat']">Link da Imagem</label>
-                                  <input type="text" value={imgObj.url} onChange={(e) => { const upd = [...setoresData]; upd[idx].imagens[imgIdx].url = e.target.value; setSetoresData(upd); }} className="w-full text-[10px] font-mono text-zinc-500 bg-transparent border-none outline-none" />
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+              <Field label="Descrição"><AreaIn rows={2} value={home.aboutMosaic.description} onChange={(v) => H(['aboutMosaic', 'description'], v)} /></Field>
+              <div className="img-grid">
+                {(['img1', 'img2', 'img3'] as const).map((k, i) => (
+                  <ImageField key={k} label={`Imagem ${i + 1}`} inputKey={k} url={home.aboutMosaic[k]} onUrl={(v) => H(['aboutMosaic', k], v)} busy={up(`mos${k}`)}
+                    onPick={(f) => uploadOne(`mos${k}`, f, 'home', false, (url) => H(['aboutMosaic', k], url))} />
                 ))}
               </div>
-            </div>
+            </Card>
+          </>)}
 
-            {/* 2. GERENCIAMENTO DE OBRAS DO PORTFÓLIO */}
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-amber-500" />
-                  <span>2. Cadastrar / Editar Obras Executadas</span>
-                </h2>
-                <button 
-                  onClick={() => {
-                    const newObra = {
-                      id: Date.now(), slug: 'nova-obra', title: 'Nova Obra Executada', categoriaSlug: 'industrial', local: 'Cidade – UF', area: '', status: 'Em Execução', client: '', year: '',
-                      capaImage: '/img/placeholder.jpg', galeriaImages: [], especificacoes: [], resumo: '', descricaoCompleta: ''
-                    };
-                    setObrasData([...obrasData, newObra]);
-                  }}
-                  className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-lg text-xs font-bold font-['Montserrat'] cursor-pointer inline-flex items-center gap-1 transition-colors"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Adicionar Obra</span>
-                </button>
+          {/* ========================= A QUATTRO ========================= */}
+          {activeTab === 'quemSomos' && (<>
+            <Card id="sec-hero" title="Banner institucional">
+              <div className="g2">
+                <Field label="Título (linha 1)"><TextIn value={quem.hero.titleLine1} onChange={(v) => Q(['hero', 'titleLine1'], v)} /></Field>
+                <Field label="Título (destaque)"><TextIn value={quem.hero.titleHighlight} onChange={(v) => Q(['hero', 'titleHighlight'], v)} /></Field>
               </div>
-
-              <div className="space-y-8">
-                {obrasData.map((obra, idx) => (
-                  <div key={obra.id} className="p-6 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-5">
-                    <div className="flex items-center justify-between gap-4 border-b border-zinc-200/80 pb-3">
-                      <span className="text-xs font-bold uppercase tracking-wider text-amber-600 font-['Montserrat']">Obra #{idx + 1} ({obra.title})</span>
-                      <button onClick={() => setObrasData(obrasData.filter((_, i) => i !== idx))} className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg cursor-pointer">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Nome da Obra</label>
-                        <input type="text" value={obra.title} onChange={(e) => { const upd = [...obrasData]; upd[idx].title = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-950" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Status</label>
-                        <input type="text" value={obra.status} onChange={(e) => { const upd = [...obrasData]; upd[idx].status = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-950" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Local (UF)</label>
-                        <input type="text" value={obra.local} onChange={(e) => { const upd = [...obrasData]; upd[idx].local = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-950" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Área (m²)</label>
-                        <input type="text" value={obra.area} onChange={(e) => { const upd = [...obrasData]; upd[idx].area = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold text-zinc-950" />
-                      </div>
-                      
-                      <div className="space-y-1 lg:col-span-2">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Resumo Curto (Aparece no Card)</label>
-                        <textarea rows={3} value={obra.resumo} onChange={(e) => { const upd = [...obrasData]; upd[idx].resumo = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg p-3 text-xs text-zinc-600 resize-none" />
-                      </div>
-                      <div className="space-y-1 lg:col-span-2">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Detalhes do Projeto (Aparece no Modal)</label>
-                        <textarea rows={3} value={obra.descricaoCompleta} onChange={(e) => { const upd = [...obrasData]; upd[idx].descricaoCompleta = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg p-3 text-xs text-zinc-600 resize-none" />
-                      </div>
-
-                      {/* ESPECIFICAÇÕES DA OBRA (TABELA) */}
-                      <div className="space-y-1 lg:col-span-4 border-t border-zinc-200 pt-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Especificações Técnicas (Tabela Opcional)</label>
-                          <button onClick={() => { const upd = [...obrasData]; upd[idx].especificacoes = [...(upd[idx].especificacoes || []), { label: 'Título', value: 'Valor' }]; setObrasData(upd); }} className="px-2 py-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 rounded text-[10px] font-bold transition-colors">
-                            Adicionar Linha
-                          </button>
-                        </div>
-                        {obra.especificacoes && obra.especificacoes.length > 0 && (
-                          <div className="space-y-2">
-                            {obra.especificacoes.map((spec: any, sIdx: number) => (
-                              <div key={sIdx} className="flex items-center gap-2">
-                                <input type="text" value={spec.label} onChange={(e) => { const upd = [...obrasData]; upd[idx].especificacoes[sIdx].label = e.target.value; setObrasData(upd); }} className="w-1/3 bg-white border border-zinc-200 rounded-lg p-2 text-xs font-bold" placeholder="Ex: Cliente" />
-                                <input type="text" value={spec.value} onChange={(e) => { const upd = [...obrasData]; upd[idx].especificacoes[sIdx].value = e.target.value; setObrasData(upd); }} className="flex-1 bg-white border border-zinc-200 rounded-lg p-2 text-xs" placeholder="Ex: Amazon" />
-                                <button onClick={() => { const upd = [...obrasData]; upd[idx].especificacoes = upd[idx].especificacoes.filter((_:any, i:number) => i !== sIdx); setObrasData(upd); }} className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* CAPA DA OBRA UPLOAD ÚNICO */}
-                      <div className="space-y-1 lg:col-span-4 border-t border-zinc-200 pt-3">
-                        <div className="flex items-center justify-between">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Imagem de Capa da Obra</label>
-                          <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5 font-['Montserrat']">
-                            {uploading === `obra-capa-${idx}` ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}<span>Fazer Upload</span>
-                            <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                              const upd = [...obrasData]; upd[idx].capaImage = url; setObrasData(upd);
-                            }, `obra-capa-${idx}`)} />
-                          </label>
-                        </div>
-                        <input type="text" value={obra.capaImage} onChange={(e) => { const upd = [...obrasData]; upd[idx].capaImage = e.target.value; setObrasData(upd); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-mono text-zinc-700" />
-                      </div>
-                    </div>
-
-                    {/* GALERIA INTERNA DA OBRA COM LIMITE E REORDENAÇÃO */}
-                    <div className="space-y-3 pt-2 border-t border-zinc-200/80">
-                      <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat'] block">
-                          Galeria Interna da Obra (Máx: 5 fotos adicionais)
-                        </label>
-                        <span className="text-[10px] font-bold text-zinc-400 bg-white border border-zinc-200 px-2 py-0.5 rounded">
-                          {obra.galeriaImages?.length || 0} / 5
-                        </span>
-                      </div>
-                      
-                      <div 
-                        onDragOver={(e) => { e.preventDefault(); setDragActive(`obra-${idx}`); }}
-                        onDragLeave={(e) => { e.preventDefault(); setDragActive(null); }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          setDragActive(null);
-                          if (e.dataTransfer.files) {
-                            handleMultipleFilesUpload(e.dataTransfer.files, (newUrls) => {
-                              const upd = [...obrasData];
-                              const currentCount = upd[idx].galeriaImages?.length || 0;
-                              const available = 5 - currentCount;
-                              let urlsToAdd = newUrls;
-                              
-                              if (newUrls.length > available) {
-                                alert(`Atenção: Limite máximo atingido. Apenas ${available} imagem(ns) foram adicionadas.`);
-                                urlsToAdd = newUrls.slice(0, available);
-                              }
-
-                              const newImagesObjects = urlsToAdd.map(url => ({ url, alt: '' }));
-                              upd[idx].galeriaImages = [...(upd[idx].galeriaImages || []), ...newImagesObjects];
-                              setObrasData(upd);
-                            }, `obra-upload-${idx}`);
-                          }
-                        }}
-                        className={`w-full border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center transition-colors ${dragActive === `obra-${idx}` ? 'border-amber-500 bg-amber-50' : 'border-zinc-300 bg-white hover:bg-zinc-50'}`}
-                      >
-                        {uploading === `obra-upload-${idx}` ? (
-                          <div className="flex flex-col items-center">
-                            <Loader2 className="w-8 h-8 text-amber-500 animate-spin mb-3" />
-                            <span className="text-xs font-bold text-zinc-500">Processando imagens...</span>
-                          </div>
-                        ) : (
-                          <>
-                            <ImagePlus className="w-10 h-10 text-zinc-300 mb-3" />
-                            <p className="text-sm font-bold text-zinc-700 mb-1 text-center">Arraste e solte fotos da obra aqui</p>
-                            <label className="mt-4 px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold rounded-lg cursor-pointer transition-colors shadow-sm font-['Montserrat'] uppercase tracking-wider">
-                              Procurar Arquivos
-                              <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => {
-                                  if (e.target.files) {
-                                    handleMultipleFilesUpload(e.target.files, (newUrls) => {
-                                      const upd = [...obrasData];
-                                      const currentCount = upd[idx].galeriaImages?.length || 0;
-                                      const available = 5 - currentCount;
-                                      let urlsToAdd = newUrls;
-
-                                      if (newUrls.length > available) {
-                                        alert(`Atenção: Limite máximo atingido. Apenas ${available} imagem(ns) foram adicionadas.`);
-                                        urlsToAdd = newUrls.slice(0, available);
-                                      }
-
-                                      const newImagesObjects = urlsToAdd.map(url => ({ url, alt: '' }));
-                                      upd[idx].galeriaImages = [...(upd[idx].galeriaImages || []), ...newImagesObjects];
-                                      setObrasData(upd);
-                                    }, `obra-upload-${idx}`);
-                                  }
-                                }} 
-                              />
-                            </label>
-                          </>
-                        )}
-                      </div>
-
-                      {/* EXIBIÇÃO DA GALERIA COM BOTÕES DE REORDENAÇÃO */}
-                      {obra.galeriaImages && obra.galeriaImages.length > 0 && (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                          {obra.galeriaImages.map((imgObj: any, imgIdx: number) => (
-                            <div key={imgIdx} className="bg-white border border-zinc-200 rounded-xl overflow-hidden flex flex-col shadow-sm group">
-                              <div className="aspect-video bg-zinc-100 relative">
-                                <img src={imgObj.url} alt={`Preview ${imgIdx}`} className="w-full h-full object-cover" />
-                                
-                                {/* Botões de Reordenação e Exclusão (Escondidos, aparecem no Hover) */}
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-start justify-between p-2">
-                                  <div className="flex gap-1">
-                                    {imgIdx > 0 && (
-                                      <button onClick={() => moverImagemGaleriaObra(idx, imgIdx, 'esq')} className="bg-white hover:bg-zinc-100 text-zinc-800 p-1.5 rounded-lg shadow cursor-pointer transition-colors" title="Mover para esquerda">
-                                        <ChevronLeft className="w-4 h-4" />
-                                      </button>
-                                    )}
-                                    {imgIdx < obra.galeriaImages.length - 1 && (
-                                      <button onClick={() => moverImagemGaleriaObra(idx, imgIdx, 'dir')} className="bg-white hover:bg-zinc-100 text-zinc-800 p-1.5 rounded-lg shadow cursor-pointer transition-colors" title="Mover para direita">
-                                        <ChevronRight className="w-4 h-4" />
-                                      </button>
-                                    )}
-                                  </div>
-                                  <button onClick={() => { const upd = [...obrasData]; upd[idx].galeriaImages = upd[idx].galeriaImages.filter((_:any, i:number) => i !== imgIdx); setObrasData(upd); }} className="bg-white hover:bg-rose-50 text-rose-500 p-1.5 rounded-lg shadow cursor-pointer transition-colors" title="Remover Imagem">
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
-                                
-                              </div>
-                              <div className="p-2 border-t border-zinc-100 bg-[#f8f9f6] space-y-2">
-                                <div>
-                                  <label className="text-[9px] font-bold uppercase text-amber-600 block mb-0.5 font-['Montserrat']">Ordem: {imgIdx + 2} / {obra.galeriaImages.length + 1} | Badge (Alt)</label>
-                                  <input type="text" value={imgObj.alt} onChange={(e) => { const upd = [...obrasData]; upd[idx].galeriaImages[imgIdx].alt = e.target.value; setObrasData(upd); }} className="w-full text-xs font-bold text-zinc-900 bg-white border border-zinc-200 rounded px-2 py-1 outline-none focus:border-amber-500" placeholder="Ex: Refeitório" />
-                                </div>
-                                <div>
-                                  <label className="text-[9px] font-bold uppercase text-zinc-400 block mb-0.5 font-['Montserrat']">Link da Imagem</label>
-                                  <input type="text" value={imgObj.url} onChange={(e) => { const upd = [...obrasData]; upd[idx].galeriaImages[imgIdx].url = e.target.value; setObrasData(upd); }} className="w-full text-[10px] font-mono text-zinc-500 bg-transparent border-none outline-none" />
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+              <Field label="Descrição"><AreaIn value={quem.hero.description} onChange={(v) => Q(['hero', 'description'], v)} /></Field>
+              <ImageField label="Imagem de fundo" inputKey="qbg" url={quem.hero.bgImage} onUrl={(v) => Q(['hero', 'bgImage'], v)} busy={up('qbg')}
+                onPick={(f) => uploadOne('qbg', f, 'quem-somos', false, (url) => Q(['hero', 'bgImage'], url))} />
+            </Card>
+            <Card id="sec-manifesto" title="Manifesto institucional">
+              <Field label="Título"><TextIn value={quem.manifesto.title} onChange={(v) => Q(['manifesto', 'title'], v)} /></Field>
+              <Field label="Parágrafo 1"><AreaIn value={quem.manifesto.p1} onChange={(v) => Q(['manifesto', 'p1'], v)} /></Field>
+              <Field label="Parágrafo 2"><AreaIn value={quem.manifesto.p2} onChange={(v) => Q(['manifesto', 'p2'], v)} /></Field>
+            </Card>
+            <Card id="sec-governanca" title="Governança" desc="Missão, visão e valores.">
+              <div className="g3">
+                <Field label="Missão"><AreaIn rows={5} value={quem.governanca.missao} onChange={(v) => Q(['governanca', 'missao'], v)} /></Field>
+                <Field label="Visão"><AreaIn rows={5} value={quem.governanca.visao} onChange={(v) => Q(['governanca', 'visao'], v)} /></Field>
+                <Field label="Valores"><AreaIn rows={5} value={quem.governanca.valores} onChange={(v) => Q(['governanca', 'valores'], v)} /></Field>
+              </div>
+            </Card>
+            <Card id="sec-timeline" title="Linha do tempo" desc="Marcos da história da empresa.">
+              {quem.timeline.map((t, i) => (
+                <Item key={t.id} title={`Marco ${i + 1}`} onRemove={() => Q(['timeline'], removeAt(quem.timeline, i))}
+                  acts={<MoveBtns i={i} n={quem.timeline.length} onMove={(d) => Q(['timeline'], moveItem(quem.timeline, i, d))} />}>
+                  <div className="g2">
+                    <Field label="Ano / fase"><TextIn value={t.fase} onChange={(v) => Q(['timeline', i, 'fase'], v)} /></Field>
+                    <Field label="Descrição"><TextIn value={t.desc} onChange={(v) => Q(['timeline', i, 'desc'], v)} /></Field>
                   </div>
-                ))}
+                </Item>
+              ))}
+              {addBtn('Adicionar marco', () => Q(['timeline'], [...quem.timeline, { id: newId(), fase: '', desc: '' }]))}
+            </Card>
+            <Card id="sec-selos" title="Qualidade e selos" desc="Citação e selos de certificação exibidos na página.">
+              <Field label="Citação"><AreaIn rows={3} value={quem.qualidade.quote} onChange={(v) => Q(['qualidade', 'quote'], v)} /></Field>
+              <div className="img-grid">
+                <ImageField label="Selo PBQP-H" inputKey="spb" url={quem.qualidade.seloPbqph} onUrl={(v) => Q(['qualidade', 'seloPbqph'], v)} busy={up('spb')}
+                  onPick={(f) => uploadOne('spb', f, 'selos', false, (url) => Q(['qualidade', 'seloPbqph'], url))} />
+                <ImageField label="Selo ISO 9001 (CBG)" inputKey="siso" url={quem.qualidade.seloIso} onUrl={(v) => Q(['qualidade', 'seloIso'], v)} busy={up('siso')}
+                  onPick={(f) => uploadOne('siso', f, 'selos', false, (url) => Q(['qualidade', 'seloIso'], url))} />
               </div>
-            </div>
-          </div>
-        )}
+            </Card>
+          </>)}
 
-        {/* ==================================================================== */}
-        {/* ABA: SERVIÇOS */}
-        {/* ==================================================================== */}
-        {activeTab === 'servicos' && (
-          <div className="space-y-10">
-            <div className="flex items-center justify-between border-b border-zinc-200/80 pb-6 font-['Montserrat']">
-              <div>
-                <span className="text-xs font-bold text-amber-600 uppercase tracking-widest block">Gerenciamento da Página</span>
-                <h1 className="text-3xl font-extrabold text-zinc-950 tracking-tight">Engenharia & Serviços</h1>
-              </div>
-            </div>
+          {/* ======================= SETORES E OBRAS ======================= */}
+          {activeTab === 'setores' && (<>
+            <Card id="sec-setores" title="Setores de atuação" desc="Cada setor tem um carrossel de imagens, normas e diferenciais.">
+              {setores.map((s, i) => (
+                <Item key={s.id} title={s.title || `Setor ${i + 1}`}
+                  acts={<><MoveBtns i={i} n={setores.length} onMove={(d) => setSetores(moveItem(setores, i, d))} />
+                    <button type="button" className="btn sm danger" onClick={() => {
+                      const n = obras.filter((o) => o.categoriaSlug === s.id).length;
+                      askConfirm('Remover setor?', n ? `O setor "${s.title}" tem ${n} obra(s) vinculada(s); elas ficarão sem categoria até você escolher outro setor.` : `O setor "${s.title}" será removido.`, 'Remover', () => setSetores((l) => l.filter((x) => x.id !== s.id)));
+                    }}>Remover</button></>}>
+                  <div className="g2">
+                    <Field label="Título"><TextIn value={s.title} onChange={(v) => patchSetor(s.id, { title: v })} /></Field>
+                    <Field label="Endereço (slug)" hint={`Usado na URL e na âncora: ${slugify(s.slug || s.title) || 'slug'}`}><TextIn value={s.slug} onChange={(v) => patchSetor(s.id, { slug: v })} /></Field>
+                  </div>
+                  <Field label="Descrição"><AreaIn value={s.desc} onChange={(v) => patchSetor(s.id, { desc: v })} /></Field>
+                  <StringList label="Normas técnicas (etiquetas)" items={s.nbrs} onChange={(l) => patchSetor(s.id, { nbrs: l })} placeholder="Ex.: NBR 15575" addLabel="Adicionar norma" />
+                  <StringList label="Diferenciais" items={s.diferenciais} onChange={(l) => patchSetor(s.id, { diferenciais: l })} placeholder="Descreva o diferencial" addLabel="Adicionar diferencial" />
+                  <GalleryEditor label="Imagens do carrossel" items={s.imagens} onChange={(l) => patchSetor(s.id, { imagens: l })} busy={up(`set${s.id}`)}
+                    onFiles={(files) => uploadMany(`set${s.id}`, files, 'setores', undefined, (imgs) => setSetores((l) => l.map((x) => (x.id === s.id ? { ...x, imagens: [...x.imagens, ...imgs] } : x))))} />
+                </Item>
+              ))}
+              {addBtn('Adicionar setor', () => {
+                const n = setores.length + 1; let id = `setor-${n}`; while (setores.some((x) => x.id === id)) id += '-x';
+                setSetores([...setores, { id, slug: id, title: '', desc: '', nbrs: [], diferenciais: [], imagens: [] }]);
+              })}
+            </Card>
 
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Wrench className="w-5 h-5 text-amber-500" /><span>1. Banner Hero da Página de Serviços</span></h2>
-                <button onClick={() => handleSave('Hero_Serviços')} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all font-['Montserrat'] cursor-pointer"><Save className="w-4 h-4 inline-block mr-1" /><span>Salvar Hero</span></button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2"><label className="text-xs font-bold text-zinc-700">Badge Superior</label><input type="text" value={servicosData.hero.badge} onChange={(e) => setServicosData({...servicosData, hero: {...servicosData.hero, badge: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm text-zinc-900" /></div>
-                <div className="space-y-2"><label className="text-xs font-bold text-zinc-700">Título Principal</label><input type="text" value={servicosData.hero.title} onChange={(e) => setServicosData({...servicosData, hero: {...servicosData.hero, title: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm font-bold text-zinc-950" /></div>
-                <div className="md:col-span-2 space-y-2"><label className="text-xs font-bold text-zinc-700">Descrição</label><textarea rows={3} value={servicosData.hero.description} onChange={(e) => setServicosData({...servicosData, hero: {...servicosData.hero, description: e.target.value}})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl p-4 text-sm text-zinc-700 resize-none font-sans" /></div>
-              </div>
-            </div>
-
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Layers className="w-5 h-5 text-amber-500" /><span>2. Serviços Prestados</span></h2>
-                <button onClick={() => handleSave('Serviços')} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all cursor-pointer"><Save className="w-4 h-4 inline-block mr-1" /><span>Salvar Tudo</span></button>
-              </div>
-              <div className="space-y-6">
-                {servicosData.lista.map((servico, idx) => (
-                  <div key={servico.id} className="p-5 bg-[#f8f9f6] border border-zinc-200 rounded-2xl space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase text-zinc-500">Título do Serviço</label>
-                      <input type="text" value={servico.title} onChange={(e) => { const updated = [...servicosData.lista]; updated[idx].title = e.target.value; setServicosData({...servicosData, lista: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm font-bold text-zinc-950" />
+            <Card id="sec-obras" title="Obras executadas" desc="Aparecem no portfólio; a capa é a primeira imagem da galeria do modal (até 5 fotos adicionais).">
+              {obras.map((o, i) => {
+                const statusOpts = ['Concluído', 'Em Execução'];
+                return (
+                  <Item key={o.id} title={o.title || `Obra ${i + 1}`}
+                    acts={<><MoveBtns i={i} n={obras.length} onMove={(d) => setObras(moveItem(obras, i, d))} />
+                      <button type="button" className="btn sm danger" onClick={() => askConfirm('Remover obra?', `A obra "${o.title}" será removida (só vai ao ar ao publicar).`, 'Remover', () => setObras((l) => l.filter((x) => x.id !== o.id)))}>Remover</button></>}>
+                    <div className="g3">
+                      <Field label="Nome da obra"><TextIn value={o.title} onChange={(v) => patchObra(o.id, { title: v })} /></Field>
+                      <Field label="Endereço (slug)"><TextIn value={o.slug} onChange={(v) => patchObra(o.id, { slug: v })} placeholder={slugify(o.title)} /></Field>
+                      <Field label="Status">
+                        <select className="inp" value={o.status} onChange={(e) => patchObra(o.id, { status: e.target.value })}>
+                          {[...statusOpts, ...(statusOpts.includes(o.status) ? [] : [o.status])].map((x) => <option key={x}>{x}</option>)}
+                        </select>
+                      </Field>
+                      <Field label="Setor (categoria)">
+                        <select className="inp" value={o.categoriaSlug} onChange={(e) => patchObra(o.id, { categoriaSlug: e.target.value })}>
+                          <option value="">— escolha —</option>
+                          {setores.map((s) => <option key={s.id} value={s.id}>{s.title || s.id}</option>)}
+                        </select>
+                      </Field>
+                      <Field label="Rótulo exibido" hint="Texto curto no card. Ex.: Industrial"><TextIn value={o.categoriaLabel} onChange={(v) => patchObra(o.id, { categoriaLabel: v })} /></Field>
+                      <Field label="Local"><TextIn value={o.local} onChange={(v) => patchObra(o.id, { local: v })} placeholder="Cidade – UF" /></Field>
+                      <Field label="Área"><TextIn value={o.area} onChange={(v) => patchObra(o.id, { area: v })} placeholder="Ex.: 12.800 m²" /></Field>
+                      <Field label="Cliente"><TextIn value={o.client} onChange={(v) => patchObra(o.id, { client: v })} /></Field>
+                      <Field label="Ano"><TextIn value={o.year} onChange={(v) => patchObra(o.id, { year: v })} /></Field>
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase text-zinc-500">Descrição do Serviço</label>
-                      <textarea rows={2} value={servico.desc} onChange={(e) => { const updated = [...servicosData.lista]; updated[idx].desc = e.target.value; setServicosData({...servicosData, lista: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg p-2.5 text-xs text-zinc-600 resize-none" />
+                    <label className="chk"><input type="checkbox" checked={o.destaque} onChange={(e) => patchObra(o.id, { destaque: e.target.checked })} /> Obra em destaque</label>
+                    <div className="g2">
+                      <Field label="Resumo (aparece no card)"><AreaIn rows={3} value={o.resumo} onChange={(v) => patchObra(o.id, { resumo: v })} /></Field>
+                      <Field label="Detalhes do projeto (aparece no modal)"><AreaIn rows={3} value={o.descricaoCompleta} onChange={(v) => patchObra(o.id, { descricaoCompleta: v })} /></Field>
                     </div>
-                    <div className="space-y-2 pt-3 border-t border-zinc-200">
-                      <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-bold uppercase text-amber-600 block">Itens Inclusos (Entregáveis)</label>
-                        <button onClick={() => { const upd = [...servicosData.lista]; upd[idx].entregaveis = [...(upd[idx].entregaveis || []), 'Novo Item']; setServicosData({...servicosData, lista: upd}); }} className="px-2 py-1 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 rounded text-[10px] font-bold transition-colors">Adicionar Item</button>
-                      </div>
-                      {servico.entregaveis && servico.entregaveis.map((item: string, iItem: number) => (
-                        <div key={iItem} className="flex items-center gap-2">
-                          <input type="text" value={item} onChange={(e) => { const upd = [...servicosData.lista]; upd[idx].entregaveis[iItem] = e.target.value; setServicosData({...servicosData, lista: upd}); }} className="flex-1 bg-white border border-zinc-200 rounded p-1.5 text-xs" />
-                          <button onClick={() => { const upd = [...servicosData.lista]; upd[idx].entregaveis = upd[idx].entregaveis.filter((_:any, i:number) => i !== iItem); setServicosData({...servicosData, lista: upd}); }} className="p-1.5 text-rose-500 hover:bg-rose-50 rounded"><Trash2 className="w-3.5 h-3.5" /></button>
+                    <div className="fld">
+                      <span className="fld-l">Especificações técnicas (tabela opcional)</span>
+                      {o.especificacoes.map((sp, k) => (
+                        <div className="list-line" key={k}>
+                          <input className="inp sm" style={{ maxWidth: 220 }} type="text" value={sp.label} placeholder="Ex.: Cliente" onChange={(e) => patchObra(o.id, { especificacoes: setAt(o.especificacoes, k, { label: e.target.value }) })} />
+                          <input className="inp sm" type="text" value={sp.value} placeholder="Ex.: Amazon" onChange={(e) => patchObra(o.id, { especificacoes: setAt(o.especificacoes, k, { value: e.target.value }) })} />
+                          <button type="button" className="icon-btn del" title="Remover linha" onClick={() => patchObra(o.id, { especificacoes: removeAt(o.especificacoes, k) })}><X size={15} /></button>
                         </div>
                       ))}
+                      <div><button type="button" className="btn sm" onClick={() => patchObra(o.id, { especificacoes: [...o.especificacoes, { label: '', value: '' }] })}><Plus size={14} /> Adicionar linha</button></div>
                     </div>
-                  </div>
-                ))}
+                    <ImageField label="Imagem de capa" inputKey={`cv${o.id}`} url={o.capaImage} onUrl={(v) => patchObra(o.id, { capaImage: v })} busy={up(`ocv${o.id}`)}
+                      onPick={(f) => uploadOne(`ocv${o.id}`, f, 'obras', false, (url) => patchObra(o.id, { capaImage: url }))} />
+                    <GalleryEditor label="Galeria interna" max={5} items={o.galeriaImages} onChange={(l) => patchObra(o.id, { galeriaImages: l })} busy={up(`og${o.id}`)}
+                      onFiles={(files) => uploadMany(`og${o.id}`, files, 'obras', 5 - o.galeriaImages.length, (imgs) => setObras((l) => l.map((x) => (x.id === o.id ? { ...x, galeriaImages: [...x.galeriaImages, ...imgs].slice(0, 5) } : x))))} />
+                  </Item>
+                );
+              })}
+              {addBtn('Adicionar obra', () => setObras([...obras, normObra({ id: newId(), title: '', status: 'Em Execução', categoriaSlug: setores[0]?.id || '' })]))}
+            </Card>
+          </>)}
+
+          {/* =========================== SERVIÇOS =========================== */}
+          {activeTab === 'servicos' && (<>
+            <Card id="sec-hero" title="Banner da página de serviços">
+              <div className="g2">
+                <Field label="Selo superior"><TextIn value={servicos.hero.badge} onChange={(v) => SV(['hero', 'badge'], v)} /></Field>
+                <Field label="Título"><TextIn value={servicos.hero.title} onChange={(v) => SV(['hero', 'title'], v)} /></Field>
               </div>
-            </div>
-
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><LayoutGrid className="w-5 h-5 text-amber-500" /><span>3. Fluxo de Trabalho (Passo a Passo)</span></h2>
-                <button onClick={() => setServicosData({...servicosData, fluxo: [...servicosData.fluxo, { passo: `0${servicosData.fluxo.length + 1}`, titulo: 'Novo Passo', desc: 'Descrição' }]})} className="px-3 py-1.5 bg-zinc-900 text-white rounded-lg text-xs font-bold cursor-pointer inline-flex items-center gap-1"><Plus className="w-3.5 h-3.5" /><span>Adicionar Passo</span></button>
-              </div>
-              <div className="space-y-4">
-                {servicosData.fluxo.map((item, idx) => (
-                  <div key={idx} className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-amber-600">Passo {item.passo}</span>
-                      <button onClick={() => setServicosData({...servicosData, fluxo: servicosData.fluxo.filter((_, i) => i !== idx)})} className="p-1 text-rose-500 hover:bg-rose-50 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Número</label><input type="text" value={item.passo} onChange={(e) => { const upd = [...servicosData.fluxo]; upd[idx].passo = e.target.value; setServicosData({...servicosData, fluxo: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
-                      <div className="space-y-1"><label className="text-[10px] font-bold uppercase text-zinc-500">Título</label><input type="text" value={item.titulo} onChange={(e) => { const upd = [...servicosData.fluxo]; upd[idx].titulo = e.target.value; setServicosData({...servicosData, fluxo: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-bold" /></div>
-                      <div className="space-y-1 sm:col-span-2"><label className="text-[10px] font-bold uppercase text-zinc-500">Descrição</label><textarea rows={2} value={item.desc} onChange={(e) => { const upd = [...servicosData.fluxo]; upd[idx].desc = e.target.value; setServicosData({...servicosData, fluxo: upd}); }} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs resize-none" /></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================== */}
-        {/* ABA: CONTATO */}
-        {/* ==================================================================== */}
-        {activeTab === 'contato' && (
-          <div className="space-y-10">
-            <div className="flex items-center justify-between border-b border-zinc-200/80 pb-6 font-['Montserrat']">
-              <div>
-                <span className="text-xs font-bold text-amber-600 uppercase tracking-widest block">Canais Institucionais</span>
-                <h1 className="text-3xl font-extrabold text-zinc-950 tracking-tight">Atendimento & Sede</h1>
-              </div>
-            </div>
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><Phone className="w-5 h-5 text-amber-500" /><span>1. Informações de Contato</span></h2>
-                <button onClick={() => handleSave('Contato')} className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-xs tracking-wider rounded-xl transition-all cursor-pointer"><Save className="w-4 h-4 inline-block mr-1" /><span>Salvar Contato</span></button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2"><label className="text-xs font-bold text-zinc-700">Telefone Comercial</label><input type="text" value={contatoData.comercialPhone} onChange={(e) => setContatoData({...contatoData, comercialPhone: e.target.value})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm text-zinc-900" /></div>
-                <div className="space-y-2"><label className="text-xs font-bold text-zinc-700">E-mail Direto</label><input type="email" value={contatoData.comercialEmail} onChange={(e) => setContatoData({...contatoData, comercialEmail: e.target.value})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm text-zinc-900" /></div>
-                <div className="md:col-span-2 space-y-2"><label className="text-xs font-bold text-zinc-700">Endereço da Sede</label><input type="text" value={contatoData.endereco} onChange={(e) => setContatoData({...contatoData, endereco: e.target.value})} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm text-zinc-900" /></div>
-              </div>
-            </div>
-
-            <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-4 font-['Montserrat']">
-                <h2 className="text-xl font-bold text-zinc-950 flex items-center gap-2"><HelpCircle className="w-5 h-5 text-amber-500" /><span>2. Perguntas Frequentes (FAQs)</span></h2>
-                <button onClick={() => setContatoData({...contatoData, faqs: [...contatoData.faqs, { id: Date.now(), pergunta: 'Nova Pergunta?', resposta: 'Resposta' }]})} className="px-3 py-1.5 bg-zinc-900 text-white rounded-lg text-xs font-bold cursor-pointer inline-flex items-center gap-1"><Plus className="w-3.5 h-3.5" /><span>Adicionar</span></button>
-              </div>
-              <div className="space-y-4">
-                {contatoData.faqs.map((faq, idx) => (
-                  <div key={faq.id} className="p-4 bg-[#f8f9f6] border border-zinc-200 rounded-2xl flex flex-col gap-3">
-                    <div className="flex items-center justify-between"><span className="text-xs font-bold text-amber-600">Pergunta #{idx + 1}</span><button onClick={() => setContatoData({...contatoData, faqs: contatoData.faqs.filter((_, i) => i !== idx)})} className="p-1 text-rose-500 hover:bg-rose-50 rounded cursor-pointer"><Trash2 className="w-4 h-4" /></button></div>
-                    <input type="text" value={faq.pergunta} onChange={(e) => { const updated = [...contatoData.faqs]; updated[idx].pergunta = e.target.value; setContatoData({...contatoData, faqs: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-1.5 text-xs font-bold text-zinc-950" />
-                    <textarea rows={2} value={faq.resposta} onChange={(e) => { const updated = [...contatoData.faqs]; updated[idx].resposta = e.target.value; setContatoData({...contatoData, faqs: updated}); }} className="w-full bg-white border border-zinc-200 rounded-lg p-2 text-xs text-zinc-600 resize-none" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ==================================================================== */}
-        {/* ABA: BLOG */}
-        {/* ==================================================================== */}
-        {activeTab === 'blog' && (
-          <div className="space-y-10">
-            <div className="flex items-center justify-between border-b border-zinc-200/80 pb-6 font-['Montserrat']">
-              <div>
-                <span className="text-xs font-bold text-amber-600 uppercase tracking-widest block">Publicações e Notícias</span>
-                <h1 className="text-3xl font-extrabold text-zinc-950 tracking-tight">Gerenciador do Blog</h1>
-              </div>
-              <button 
-                  onClick={() => {
-                    const newPost = { id: Date.now(), title: 'Novo Artigo', author: 'Autor', date: new Date().toISOString().split('T')[0], capaImage: '/img/placeholder.jpg', content: '<p>Comece a escrever seu artigo aqui...</p>' };
-                    setBlogData([newPost, ...blogData]);
-                  }}
-                  className="px-5 py-3 bg-zinc-950 text-white rounded-xl text-xs font-bold uppercase tracking-wider font-['Montserrat'] cursor-pointer inline-flex items-center gap-2 hover:bg-zinc-800 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Novo Artigo</span>
-              </button>
-            </div>
-
-            <div className="space-y-8">
-              {blogData.map((post, idx) => (
-                <div key={post.id} className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-                  
-                  <div className="flex items-center justify-between border-b border-zinc-100 pb-4">
-                    <h2 className="text-lg font-bold text-zinc-950 flex items-center gap-2 font-['Montserrat']">
-                      <BookOpen className="w-5 h-5 text-amber-500" />
-                      <span>Artigo: {post.title}</span>
-                    </h2>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => handleSave('Blog')} className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold uppercase text-[10px] tracking-wider rounded-lg transition-all font-['Montserrat'] cursor-pointer">
-                        Salvar
-                      </button>
-                      <button onClick={() => setBlogData(blogData.filter((_, i) => i !== idx))} className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg cursor-pointer">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-1 md:col-span-2">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Título da Publicação</label>
-                      <input type="text" value={post.title} onChange={(e) => { const upd = [...blogData]; upd[idx].title = e.target.value; setBlogData(upd); }} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm font-bold text-zinc-950 outline-none" />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Data</label>
-                      <input type="date" value={post.date} onChange={(e) => { const upd = [...blogData]; upd[idx].date = e.target.value; setBlogData(upd); }} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm font-bold text-zinc-950 outline-none" />
-                    </div>
-
-                    <div className="space-y-1 md:col-span-2">
-                      <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Imagem de Capa (Banner)</label>
-                        <label className="text-[10px] font-bold text-amber-600 hover:underline cursor-pointer flex items-center gap-0.5 font-['Montserrat']">
-                          {uploading === `blog-capa-${idx}` ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-                          <span>Upload da Capa</span>
-                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                            const upd = [...blogData]; upd[idx].capaImage = url; setBlogData(upd);
-                          }, `blog-capa-${idx}`)} />
-                        </label>
-                      </div>
-                      <input type="text" value={post.capaImage} onChange={(e) => { const upd = [...blogData]; upd[idx].capaImage = e.target.value; setBlogData(upd); }} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-xs font-mono text-zinc-700 outline-none" />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat']">Autor</label>
-                      <input type="text" value={post.author} onChange={(e) => { const upd = [...blogData]; upd[idx].author = e.target.value; setBlogData(upd); }} className="w-full bg-[#f8f9f6] border border-zinc-200 rounded-xl px-4 py-3 text-sm font-bold text-zinc-950 outline-none" />
-                    </div>
-                  </div>
-
-                  {/* EDITOR DE TEXTO RICH */}
-                  <div className="space-y-2 pt-4">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 font-['Montserrat'] block">Corpo do Artigo (Editor de Texto)</label>
-                    <div className="border border-zinc-200 rounded-xl overflow-hidden flex flex-col">
-                      <div className="bg-zinc-100 border-b border-zinc-200 p-2 flex items-center gap-1 overflow-x-auto">
-                        <button className="p-2 hover:bg-zinc-200 text-zinc-700 rounded transition-colors" title="Negrito"><Bold className="w-4 h-4" /></button>
-                        <button className="p-2 hover:bg-zinc-200 text-zinc-700 rounded transition-colors" title="Itálico"><Italic className="w-4 h-4" /></button>
-                        <button className="p-2 hover:bg-zinc-200 text-zinc-700 rounded transition-colors" title="Sublinhado"><Underline className="w-4 h-4" /></button>
-                        <div className="w-px h-5 bg-zinc-300 mx-1"></div>
-                        <button className="p-2 hover:bg-zinc-200 text-zinc-700 rounded transition-colors" title="Lista com Marcadores"><List className="w-4 h-4" /></button>
-                        <button className="p-2 hover:bg-zinc-200 text-zinc-700 rounded transition-colors" title="Alinhar"><AlignLeft className="w-4 h-4" /></button>
-                        <div className="w-px h-5 bg-zinc-300 mx-1"></div>
-                        <button className="p-2 hover:bg-zinc-200 text-zinc-700 rounded transition-colors" title="Inserir Link"><Link2 className="w-4 h-4" /></button>
-                        <label className="p-2 hover:bg-zinc-200 text-zinc-700 rounded transition-colors cursor-pointer flex items-center gap-1" title="Inserir Imagem no Texto">
-                          <ImageIcon className="w-4 h-4" />
-                          <span className="text-[10px] font-bold">Mídia</span>
-                          <input type="file" accept="image/*" className="hidden" onChange={(e) => handleFileUpload(e, (url) => {
-                            const upd = [...blogData];
-                            upd[idx].content += `<br/><img src="${url}" alt="midia-blog" style="max-width:100%; border-radius:8px;"/><br/>`;
-                            setBlogData(upd);
-                          }, `blog-media-${idx}`)} />
-                        </label>
-                      </div>
-                      <textarea 
-                        rows={10} 
-                        value={post.content} 
-                        onChange={(e) => { const upd = [...blogData]; upd[idx].content = e.target.value; setBlogData(upd); }}
-                        className="w-full bg-white p-4 text-sm text-zinc-800 outline-none resize-y font-sans leading-relaxed"
-                        placeholder="Escreva ou cole seu conteúdo aqui..."
-                      />
-                    </div>
-                  </div>
-                </div>
+              <Field label="Descrição"><AreaIn value={servicos.hero.description} onChange={(v) => SV(['hero', 'description'], v)} /></Field>
+            </Card>
+            <Card id="sec-lista" title="Serviços prestados">
+              {servicos.lista.map((s, i) => (
+                <Item key={s.id} title={s.title || `Serviço ${i + 1}`} onRemove={() => SV(['lista'], removeAt(servicos.lista, i))}
+                  acts={<MoveBtns i={i} n={servicos.lista.length} onMove={(d) => SV(['lista'], moveItem(servicos.lista, i, d))} />}>
+                  <Field label="Título"><TextIn value={s.title} onChange={(v) => SV(['lista', i, 'title'], v)} /></Field>
+                  <Field label="Descrição"><AreaIn rows={2} value={s.desc} onChange={(v) => SV(['lista', i, 'desc'], v)} /></Field>
+                  <StringList label="Itens inclusos (entregáveis)" items={s.entregaveis} onChange={(l) => SV(['lista', i, 'entregaveis'], l)} addLabel="Adicionar item" />
+                </Item>
               ))}
+              {addBtn('Adicionar serviço', () => SV(['lista'], [...servicos.lista, { id: `servico-${newId()}`, title: '', desc: '', entregaveis: [] }]))}
+            </Card>
+            <Card id="sec-fluxo" title="Fluxo de trabalho" desc="Passo a passo numerado automaticamente.">
+              {servicos.fluxo.map((f, i) => (
+                <Item key={i} title={`Passo ${f.passo}`} onRemove={() => SV(['fluxo'], renum(removeAt(servicos.fluxo, i)))}
+                  acts={<MoveBtns i={i} n={servicos.fluxo.length} onMove={(d) => SV(['fluxo'], renum(moveItem(servicos.fluxo, i, d)))} />}>
+                  <div className="g2">
+                    <Field label="Título"><TextIn value={f.titulo} onChange={(v) => SV(['fluxo', i, 'titulo'], v)} /></Field>
+                    <Field label="Número"><TextIn value={f.passo} onChange={(v) => SV(['fluxo', i, 'passo'], v)} /></Field>
+                  </div>
+                  <Field label="Descrição"><AreaIn rows={2} value={f.desc} onChange={(v) => SV(['fluxo', i, 'desc'], v)} /></Field>
+                </Item>
+              ))}
+              {addBtn('Adicionar passo', () => SV(['fluxo'], renum([...servicos.fluxo, { passo: '', titulo: '', desc: '' }])))}
+            </Card>
+          </>)}
+
+          {/* ============================ CONTATO ============================ */}
+          {activeTab === 'contato' && (<>
+            <Card id="sec-info" title="Informações de contato">
+              <div className="g2">
+                <Field label="Telefone comercial"><TextIn value={contato.comercialPhone} onChange={(v) => CT(['comercialPhone'], v)} /></Field>
+                <Field label="E-mail direto"><input className="inp" type="email" value={contato.comercialEmail} onChange={(e) => CT(['comercialEmail'], e.target.value)} /></Field>
+              </div>
+              <Field label="Endereço da sede"><TextIn value={contato.endereco} onChange={(v) => CT(['endereco'], v)} /></Field>
+            </Card>
+            <Card id="sec-faq" title="Perguntas frequentes">
+              {contato.faqs.map((f, i) => (
+                <Item key={f.id} title={`Pergunta ${i + 1}`} onRemove={() => CT(['faqs'], removeAt(contato.faqs, i))}
+                  acts={<MoveBtns i={i} n={contato.faqs.length} onMove={(d) => CT(['faqs'], moveItem(contato.faqs, i, d))} />}>
+                  <Field label="Pergunta"><TextIn value={f.pergunta} onChange={(v) => CT(['faqs', i, 'pergunta'], v)} /></Field>
+                  <Field label="Resposta"><AreaIn rows={2} value={f.resposta} onChange={(v) => CT(['faqs', i, 'resposta'], v)} /></Field>
+                </Item>
+              ))}
+              {addBtn('Adicionar pergunta', () => CT(['faqs'], [...contato.faqs, { id: newId(), pergunta: '', resposta: '' }]))}
+            </Card>
+          </>)}
+
+          {/* ============================== BLOG ============================== */}
+          {activeTab === 'blog' && (<>
+            <div className="adm-picker">
+              <label htmlFor="selPost">Editando</label>
+              <select id="selPost" className="inp" value={post ? String(post.id) : ''} onChange={(e) => setSelPost(Number(e.target.value))} disabled={!blog.length}>
+                {!blog.length && <option value="">Nenhum artigo ainda</option>}
+                {blog.map((p) => <option key={p.id} value={p.id}>{p.title || '(sem título)'}</option>)}
+              </select>
+              <button type="button" className="btn sm" onClick={() => { const id = newId(); setBlog([{ id, title: '', author: '', date: new Date().toISOString().slice(0, 10), capaImage: '', content: '<p></p>' }, ...blog]); setSelPost(id); }}><Plus size={14} /> Novo artigo</button>
+              {post && <button type="button" className="btn sm danger" onClick={() => askConfirm('Excluir artigo?', `"${post.title || 'Sem título'}" será removido (só vai ao ar ao publicar).`, 'Excluir', () => { const rest = blog.filter((p) => p.id !== post.id); setBlog(rest); setSelPost(rest[0]?.id ?? null); })}>Excluir</button>}
+            </div>
+            {post ? (<>
+              <Card id="sec-post-dados" title="Dados do artigo">
+                <div className="g3">
+                  <Field label="Título" className="grow"><TextIn value={post.title} onChange={(v) => patchPost(post.id, { title: v })} /></Field>
+                  <Field label="Autor"><TextIn value={post.author} onChange={(v) => patchPost(post.id, { author: v })} /></Field>
+                  <Field label="Data"><input className="inp" type="date" value={post.date} onChange={(e) => patchPost(post.id, { date: e.target.value })} /></Field>
+                </div>
+                <ImageField label="Imagem de capa" inputKey={`bc${post.id}`} url={post.capaImage} onUrl={(v) => patchPost(post.id, { capaImage: v })} busy={up(`bc${post.id}`)}
+                  onPick={(f) => uploadOne(`bc${post.id}`, f, 'blog', false, (url) => patchPost(post.id, { capaImage: url }))} />
+              </Card>
+              <Card id="sec-post-texto" title="Texto do artigo" desc="O conteúdo é limpo automaticamente ao publicar (scripts e códigos perigosos são removidos).">
+                <RichEditor key={post.id} value={post.content} onChange={(h) => patchPost(post.id, { content: h })} uploading={up(`bm${post.id}`)}
+                  onPickImage={(f) => new Promise((resolve) => { uploadOne(`bm${post.id}`, f, 'blog', false, (url) => resolve(url)).then(() => resolve(null)); })} />
+              </Card>
+            </>) : <Card title="Nenhum artigo"><p className="note">Clique em "Novo artigo" para começar.</p></Card>}
+          </>)}
+
+          <SaveBar where={<>Editando: <b>{tab.title}</b></>} dirty={dirtyMap[activeTab]} busy={busy} disabled={false} />
+        </form>
+      </main>
+
+      {confirmState && (
+        <div className="overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) setConfirmState(null); }}>
+          <div className="modal" role="dialog" aria-modal="true">
+            <h3>{confirmState.title}</h3>
+            <p>{confirmState.message}</p>
+            <div className="modal-actions">
+              <button type="button" className="btn" onClick={() => setConfirmState(null)}>Cancelar</button>
+              <button type="button" className="btn danger solid" onClick={() => { const fn = confirmState.onConfirm; setConfirmState(null); fn(); }}>{confirmState.label}</button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-      </main>
+      {toast && (
+        <div className={`toast ${toast.kind}`} role="status">
+          <span>{toast.msg}</span>
+          <button type="button" aria-label="Fechar" onClick={() => setToast(null)}><X size={14} /></button>
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default Admin;

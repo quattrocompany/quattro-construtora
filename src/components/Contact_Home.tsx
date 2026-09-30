@@ -52,7 +52,7 @@ export const Contact_Home: React.FC = () => {
                 <a
                   href="https://www.google.com/maps/dir/-23.5012724,-46.8485149/Quattro+Construtora,+Al.+Rio+Negro,+503+-+Conj+907+-+Alphaville+Industrial,+Barueri+-+SP,+06454-000/@-23.5017254,-46.8509089,17z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x94ce574f51a7c4bd:0x6406a5f3e39d192b!2m2!1d-46.8486349!2d-23.5022332?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="text-sm font-bold text-zinc-950 hover:text-amber-600 transition-colors block font-sans"
                 >
                   Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial - Barueri/SP

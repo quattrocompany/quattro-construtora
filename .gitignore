@@ -26,3 +26,8 @@ dist-ssr
 # Environment
 .env
 .env.*
+!.env.example
+# Chaves de conta de serviço usadas no script de migração
+antigo.json
+novo.json
+*-firebase-adminsdk-*.json

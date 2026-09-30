@@ -6,6 +6,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Loader2 } from 'lucide-react';
 import type { BlogPost as BlogPostType } from '../../types';
 import { blogPosts } from '../../data/blogPosts';
+import { sanitizeHtml } from '../../utils/sanitizeHtml';
 
 // TODO (Etapa 2/5 do plano): trocar por uma leitura real do Firestore
 // (coleção 'posts', filtrando por slug). Por enquanto os dados vêm de uma
@@ -80,7 +81,7 @@ export const BlogPost: React.FC = () => {
         <div className="max-w-[800px] mx-auto px-6">
           <div 
             className="prose prose-zinc prose-lg max-w-none prose-headings:font-bold prose-a:text-amber-600 prose-img:rounded-2xl [&>p]:mb-6"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
           />
         </div>
       </section>

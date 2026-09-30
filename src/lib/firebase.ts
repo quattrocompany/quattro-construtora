@@ -1,29 +1,12 @@
 // src/lib/firebase.ts
 // Ponto único de acesso ao Firebase/Firestore do projeto.
-// (Antes esta lógica estava duplicada entre src/lib/firebase.ts e
-// src/services/firestoreService.ts, com nomes de campo inconsistentes
-// entre eles: createdAt vs criadoEm. Unificado aqui.)
+// A inicialização do app fica em src/firebase.ts (antes havia uma segunda
+// inicialização duplicada aqui).
 
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-};
-
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
-export const db = getFirestore(app);
+export { db };
 
 // ---------------------------------------------------------------------------
 // Leads (formulário de contato / LeadForm)
@@ -45,17 +28,29 @@ export interface Lead {
 
 export type LeadData = Omit<Lead, 'id' | 'createdAt'>;
 
+const cut = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+
 /**
  * Salva a captação de lead (B2B/B2C) na coleção 'leads' do Firestore.
+ * Só os campos esperados são enviados (lista fechada) e todos têm tamanho
+ * máximo — o mesmo limite é exigido em firestore.rules.
  * Retorna true/false para o formulário decidir o feedback ao usuário.
  */
 export const saveLead = async (data: LeadData): Promise<boolean> => {
   try {
-    await addDoc(collection(db, 'leads'), {
-      ...data,
-      origem: data.origem || 'Site Oficial Quattro',
+    const payload: Record<string, unknown> = {
+      nome: cut(data.nome, 120),
+      email: cut(data.email, 160),
+      telefone: cut(data.telefone, 30),
+      empresa: cut(data.empresa, 120),
+      assunto: cut(data.assunto, 60),
+      mensagem: cut(data.mensagem, 2000),
+      termoAceito: data.termoAceito === true,
+      origem: 'Site Oficial Quattro',
       createdAt: serverTimestamp(),
-    });
+    };
+    if (data.obraId) payload.obraId = cut(String(data.obraId), 80);
+    await addDoc(collection(db, 'leads'), payload);
     return true;
   } catch (error) {
     console.error('Erro ao salvar lead no Firestore:', error);

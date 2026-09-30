@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// Regras do Storage — Quattro Construtora
+// Como aplicar: Console do Firebase > Storage > Regras > colar > Publicar.
+// Troque COLE_AQUI_O_UID_DO_ADMIN pelo mesmo UID usado em firestore.rules.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid in ['COLE_AQUI_O_UID_DO_ADMIN'];
+    }
+
+    function imagemValida() {
+      return request.resource.contentType.matches('image/(jpeg|png|webp|avif|gif)')
+        && request.resource.size < 10 * 1024 * 1024;
+    }
+
+    function videoValido() {
+      return request.resource.contentType.matches('video/(mp4|webm)')
+        && request.resource.size < 60 * 1024 * 1024;
+    }
+
+    // Arquivos enviados pelo /admin: leitura pública (aparecem no site);
+    // gravar só o admin, só imagem/vídeo e dentro do limite de tamanho.
+    match /uploads/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if isAdmin() && (imagemValida() || videoValido());
+      allow delete: if isAdmin();
+    }
+
+    // Demais arquivos: leitura pública, nenhuma gravação.
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

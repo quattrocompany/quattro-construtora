@@ -58,7 +58,7 @@ export const Footer: React.FC = () => {
                   key={idx}
                   href={social.href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   aria-label={social.label}
                   className="footer-social-link"
                 >
@@ -96,9 +96,9 @@ export const Footer: React.FC = () => {
             <h4 className="footer-col-title">Atendimento</h4>
             <ul className="footer-list">
               <li>
-                <a href="https://quattro-construtora-git-main-quattrocompanys-projects.vercel.app/portal-cliente" target="_blank" rel="noreferrer" className="footer-link">
+                <Link to="/portal-cliente" className="footer-link">
                   Portal do Cliente
-                </a>
+                </Link>
               </li>
               <li>
                 <Link to="/duvidas-frequentes" className="footer-link">
@@ -122,7 +122,7 @@ export const Footer: React.FC = () => {
                 <a
                   href="https://www.google.com/maps/dir/-23.5012724,-46.8485149/Quattro+Construtora,+Al.+Rio+Negro,+503+-+Conj+907+-+Alphaville+Industrial,+Barueri+-+SP,+06454-000/@-23.5017254,-46.8509089,17z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x94ce574f51a7c4bd:0x6406a5f3e39d192b!2m2!1d-46.8486349!2d-23.5022332?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="hover:text-amber-500 transition-colors block"
                 >
                   Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial, Barueri/SP - CEP: 06454-000

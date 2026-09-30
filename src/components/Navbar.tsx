@@ -140,7 +140,7 @@ export const Navbar: React.FC = () => {
           <a
             href="https://portal.quattroconstrutora.com.br/colaborador"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="w-full py-4 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 font-['Montserrat',sans-serif]"
           >
             <HardHat className="w-4 h-4" />

@@ -87,7 +87,7 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
           <a
             href="https://webmail.quattroconstrutora.com.br/"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="group p-5 bg-zinc-950/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl transition-all duration-300 flex flex-col items-center text-center justify-between hover:-translate-y-1 shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500/50"
           >
             <div className="p-3 bg-zinc-900 group-hover:bg-amber-500/10 rounded-xl text-amber-500 transition-colors mb-3">
@@ -106,7 +106,7 @@ export const ModalColaborador: React.FC<ModalColaboradorProps> = ({ isOpen, onCl
           <a
             href="https://conecta.quattrocompany.com.br"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="group p-5 bg-zinc-950/80 border border-zinc-800 hover:border-amber-500/50 rounded-2xl transition-all duration-300 flex flex-col items-center text-center justify-between hover:-translate-y-1 shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500/50"
           >
             <div className="p-3 bg-zinc-900 group-hover:bg-amber-500/10 rounded-xl text-amber-500 transition-colors mb-3">
