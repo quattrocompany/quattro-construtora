@@ -8,7 +8,7 @@ service firebase.storage {
 
     function isAdmin() {
       return request.auth != null
-        && request.auth.uid in ['COLE_AQUI_O_UID_DO_ADMIN'];
+        && request.auth.uid in ['bCipaHliVxSPqKIaQFBAKDamZ872'];
     }
 
     function imagemValida() {
