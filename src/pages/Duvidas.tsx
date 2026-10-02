@@ -1,4 +1,5 @@
 // src/pages/Duvidas.tsx
+import { useImagens } from '../lib/siteContent';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HelpCircle, ArrowRight, ChevronRight, Search } from 'lucide-react';
@@ -16,6 +17,7 @@ const CATEGORIAS = [{ id: 'todos', label: 'Todos os Temas' }, ...CATEGORIAS_FAQ]
 // ============================================================================
 
 export const Duvidas: React.FC = () => {
+  const img = useImagens();
   const [busca, setBusca] = useState('');
   const [categoriaAtiva, setCategoriaAtiva] = useState('todos');
   const [faqs, setFaqs] = useState<FaqPublico[]>(FAQS_PADRAO);
@@ -44,7 +46,7 @@ export const Duvidas: React.FC = () => {
         {/* MÍDIA DE FUNDO FULL WIDTH */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
-            src="/img/faq_619.jpg"
+            src={img.bannerDuvidas}
             alt="Quattro Construtora - Dúvidas Frequentes"
             className="w-full h-full object-cover object-center"
           />
@@ -189,7 +191,7 @@ export const Duvidas: React.FC = () => {
               <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
                 <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
                   <img
-                    src="/img/Amazon_imgRodape.avif"
+                    src={img.fotoCirculoProposta}
                     alt="Engenharia Quattro Construtora"
                     className="w-full h-full object-cover object-center"
                   />

@@ -181,3 +181,75 @@ export const DEFAULT_CONTATO_INFO = {
 };
 
 export type ContatoInfo = typeof DEFAULT_CONTATO_INFO;
+
+// ---------------------------------------------------------------------------
+// Imagens avulsas do site (aba "Imagens" do /admin). Cada chave é um "espaço" de imagem.
+// ---------------------------------------------------------------------------
+export const DEFAULT_IMAGENS = {
+  logoCabecalho: '/logo/Logo_Quattro Construtora_cut.svg',
+  logoRodape: '/logo/logo_quattro-construtora.svg',
+  fotoCirculoProposta: '/img/Amazon_imgRodape.avif',
+  bannerContato: '/img/contato-14791.jpg',
+  bannerDuvidas: '/img/faq_619.jpg',
+  bannerSetores: '/img/Amazon_Entrada.jpg',
+  bannerBlog: '/img/BG_CTA_QuattroInc_Site.jpeg',
+  bannerPrivacidade: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000',
+  bannerTermos: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000',
+  grafismoQuem: '/img/Grafismo.png',
+  fundoManifestoQuem: '/img/BG-Quem-Somos-Home.jpg',
+  fundoTrajetoriaQuem: '/img/trajetoriacrescimento_2148993907.jpg',
+  faixaImagemQuem: '/img/Lumini1_Testeira1.avif',
+  faixaImagemServicos: '/img/Sequoia_Img1.jpg',
+  obrasIndustrial1: '/img/Amazon_Img1.jpg',
+  obrasIndustrial2: '/img/CisTambore_Img1.jpg',
+  obrasIndustrial3: '/img/Sequoia_Img1.jpg',
+  obrasCorporativo1: '/img/Vivo_Img1.jpeg',
+  obrasCorporativo2: '/img/Servidores_Img2.jpeg',
+  obrasCorporativo3: '/img/vivo_img3.jpeg',
+  obrasFarmaceutico1: '/img/CDR_Img1.jpg',
+  obrasFarmaceutico2: '/img/Lavoisier_Img2.jpg',
+  obrasFarmaceutico3: '/img/HelioBerzaghi_Img3.jpg',
+  obrasResidencial1: '/img/Lumini1_Testeira1.avif',
+  obrasResidencial2: '/img/Lumini2_Quarto.png',
+  obrasResidencial3: '/img/piscina_Lumini3.jpg',
+};
+
+export type ImagensDoc = typeof DEFAULT_IMAGENS;
+export type ImagemKey = keyof ImagensDoc;
+
+export const GRUPOS_IMAGENS: { id: string; label: string; itens: { key: ImagemKey; label: string; dica?: string }[] }[] = [
+  { id: 'geral', label: 'Logos e círculo', itens: [
+    { key: 'logoCabecalho', label: 'Logo do cabeçalho', dica: 'Aparece no topo do site e no menu do celular.' },
+    { key: 'logoRodape', label: 'Logo do rodapé' },
+    { key: 'fotoCirculoProposta', label: 'Círculo "Proposta personalizada"', dica: 'Foto redonda no fim das páginas A Quattro, Serviços, Setores, Dúvidas, Privacidade e Termos.' },
+  ] },
+  { id: 'banners', label: 'Banners das páginas', itens: [
+    { key: 'bannerContato', label: 'Contato' },
+    { key: 'bannerDuvidas', label: 'Dúvidas frequentes' },
+    { key: 'bannerSetores', label: 'Setores e Obras' },
+    { key: 'bannerBlog', label: 'Blog' },
+    { key: 'bannerPrivacidade', label: 'Política de Privacidade' },
+    { key: 'bannerTermos', label: 'Termos de Uso' },
+  ] },
+  { id: 'quem', label: 'A Quattro e Serviços', itens: [
+    { key: 'grafismoQuem', label: 'Grafismo do banner (A Quattro)' },
+    { key: 'fundoManifestoQuem', label: 'Fundo do manifesto (A Quattro)' },
+    { key: 'fundoTrajetoriaQuem', label: 'Fundo da trajetória (A Quattro)' },
+    { key: 'faixaImagemQuem', label: 'Faixa de imagem (A Quattro)' },
+    { key: 'faixaImagemServicos', label: 'Faixa de imagem (Serviços)' },
+  ] },
+  { id: 'obras', label: 'Grandes obras (A Quattro)', itens: [
+    { key: 'obrasIndustrial1', label: 'Industrial & Logística · principal' },
+    { key: 'obrasIndustrial2', label: 'Industrial & Logística · detalhe 1' },
+    { key: 'obrasIndustrial3', label: 'Industrial & Logística · detalhe 2' },
+    { key: 'obrasCorporativo1', label: 'Corporativo · principal' },
+    { key: 'obrasCorporativo2', label: 'Corporativo · detalhe 1' },
+    { key: 'obrasCorporativo3', label: 'Corporativo · detalhe 2' },
+    { key: 'obrasFarmaceutico1', label: 'Farmacêutico · principal' },
+    { key: 'obrasFarmaceutico2', label: 'Farmacêutico · detalhe 1' },
+    { key: 'obrasFarmaceutico3', label: 'Farmacêutico · detalhe 2' },
+    { key: 'obrasResidencial1', label: 'Residencial · principal' },
+    { key: 'obrasResidencial2', label: 'Residencial · detalhe 1' },
+    { key: 'obrasResidencial3', label: 'Residencial · detalhe 2' },
+  ] },
+];

@@ -1,4 +1,5 @@
 // src/pages/Contato.tsx
+import { useImagens } from '../lib/siteContent';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, HelpCircle, ChevronRight, ArrowRight } from 'lucide-react';
@@ -15,6 +16,7 @@ const montarCanais = (c: ContatoInfo) => [
 ];
 
 export const Contato: React.FC = () => {
+  const img = useImagens();
   const contato = useContato();
   const CANAIS_DIRETOS = montarCanais(contato);
   // Perguntas marcadas em /admin > Contato como "Mostrar também na página Contato".
@@ -32,7 +34,7 @@ export const Contato: React.FC = () => {
         {/* MÍDIA DE FUNDO FULL WIDTH */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
-            src="/img/contato-14791.jpg"
+            src={img.bannerContato}
             alt="Quattro Construtora - Atendimento"
             className="w-full h-full object-cover object-center"
           />

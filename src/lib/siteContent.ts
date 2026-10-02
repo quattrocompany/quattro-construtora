@@ -74,3 +74,13 @@ export const useContato = (): ContatoInfo => useSiteDoc<ContatoInfo>('contato', 
 /** Link do Google Maps montado a partir do endereço cadastrado. */
 export const hrefMapa = (c: ContatoInfo) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${c.enderecoLinha1}, ${c.enderecoLinha2}`)}`;
+
+import { DEFAULT_IMAGENS, type ImagensDoc } from '../data/siteDefaults';
+
+/** Imagens avulsas editáveis na aba "Imagens" do /admin (campo vazio = imagem padrão). */
+export const useImagens = (): ImagensDoc => {
+  const d = useSiteDoc<ImagensDoc>('imagens', DEFAULT_IMAGENS);
+  const out: any = { ...DEFAULT_IMAGENS };
+  for (const k of Object.keys(DEFAULT_IMAGENS)) if (typeof (d as any)[k] === 'string' && (d as any)[k].trim()) out[k] = (d as any)[k];
+  return out;
+};

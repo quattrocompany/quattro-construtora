@@ -3,10 +3,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useSiteDoc } from '../lib/siteContent';
-import { DEFAULT_HOME } from '../data/siteDefaults';
+import { DEFAULT_HOME, DEFAULT_QUEM } from '../data/siteDefaults';
 
 export const AboutMosaic_Home: React.FC = () => {
   const { aboutMosaic: m } = useSiteDoc('home', DEFAULT_HOME);
+  const quem = useSiteDoc('quemsomos', DEFAULT_QUEM);
   return (
     <section className="about-mosaic-section">
       <div className="about-mosaic-overlay" />
@@ -69,7 +70,7 @@ export const AboutMosaic_Home: React.FC = () => {
             <div className="about-mosaic-seal-card">
               <div className="about-seal-img-wrapper">
                 <img
-                  src="/selos/SELO_pbqph.png"
+                  src={quem.qualidade.seloPbqph}
                   alt="Selo PBQP-H Nível A"
                   className="about-seal-img"
                 />
@@ -82,7 +83,7 @@ export const AboutMosaic_Home: React.FC = () => {
             <div className="about-mosaic-seal-card">
               <div className="about-seal-img-wrapper">
                 <img
-                  src="/selos/Logo_ISO9001_2026.png"
+                  src={quem.qualidade.seloIso}
                   alt="Selo ISO 9001 - certificação CBG Certificadora Brasileira de Gestão"
                   className="about-seal-img"
                   style={{ height: "4.5rem", width: "auto" }}

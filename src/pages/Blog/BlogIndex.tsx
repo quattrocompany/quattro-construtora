@@ -1,6 +1,7 @@
 // ============================================================================
 // src/pages/Blog/BlogIndex.tsx
 // ============================================================================
+import { useImagens } from '../../lib/siteContent';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Loader2, ChevronRight } from 'lucide-react';
@@ -8,6 +9,7 @@ import type { BlogPost } from '../../types';
 import { getPostsPublicados, formatarData } from '../../lib/blog';
 
 export const BlogIndex: React.FC = () => {
+  const img = useImagens();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +34,7 @@ export const BlogIndex: React.FC = () => {
       <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat',sans-serif]">
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
-            src="/img/BG_CTA_QuattroInc_Site.jpeg"
+            src={img.bannerBlog}
             alt="Quattro Construtora - Blog"
             className="w-full h-full object-cover object-center"
           />

@@ -1,7 +1,7 @@
 // src/pages/QuemSomos.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useSiteDoc } from '../lib/siteContent';
+import { useSiteDoc, useImagens } from '../lib/siteContent';
 import { DEFAULT_QUEM } from '../data/siteDefaults';
 import { comNegrito } from '../lib/richText';
 import { 
@@ -194,6 +194,13 @@ const TRAJ_PASSO = 330; // ms entre uma caixinha e a próxima
 
 export const QuemSomos: React.FC = () => {
   const { hero, manifesto, qualidade, governanca, timeline: TRAJETORIA_TIMELINE } = useSiteDoc('quemsomos', DEFAULT_QUEM);
+  const img = useImagens();
+  const imgsObras = [
+    [img.obrasIndustrial1, img.obrasIndustrial2, img.obrasIndustrial3],
+    [img.obrasCorporativo1, img.obrasCorporativo2, img.obrasCorporativo3],
+    [img.obrasFarmaceutico1, img.obrasFarmaceutico2, img.obrasFarmaceutico3],
+    [img.obrasResidencial1, img.obrasResidencial2, img.obrasResidencial3],
+  ];
   const [activeSegment, setActiveSegment] = useState(0);
 
   useEffect(() => {
@@ -310,7 +317,7 @@ export const QuemSomos: React.FC = () => {
 
         <div className="absolute inset-0 w-full h-full z-10 pointer-events-none overflow-hidden flex items-center justify-end">
           <img
-            src="/img/Grafismo.png"
+            src={img.grafismoQuem}
             alt=""
             className="w-[80%] sm:w-[60%] lg:w-[45%] max-w-3xl h-auto object-contain object-right opacity-40 mix-blend-overlay"
           />
@@ -354,7 +361,7 @@ export const QuemSomos: React.FC = () => {
       <section 
         className="relative py-20 sm:py-28 bg-cover bg-center border-b border-zinc-200/80 font-['Montserrat']"
         style={{
-          backgroundImage: `linear-gradient(to right, rgba(248, 249, 246, 0.98) 0%, rgba(248, 249, 246, 0.88) 45%, rgba(248, 249, 246, 0.3) 100%), url('/img/BG-Quem-Somos-Home.jpg')`
+          backgroundImage: `linear-gradient(to right, rgba(248, 249, 246, 0.98) 0%, rgba(248, 249, 246, 0.88) 45%, rgba(248, 249, 246, 0.3) 100%), url('${img.fundoManifestoQuem}')`
         }}
       >
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-10 grid lg:grid-cols-12 gap-10 lg:gap-12 items-stretch">
@@ -509,7 +516,7 @@ export const QuemSomos: React.FC = () => {
                   >
                     <div className="flex-1 rounded-lg overflow-hidden relative group">
                       <img 
-                        src={setor.images?.[0]?.src || '/img/Amazon_Img1.jpg'} 
+                        src={imgsObras[idx]?.[0] || setor.images?.[0]?.src} 
                         alt={`Obra principal ${setor.title}`}
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                       />
@@ -517,14 +524,14 @@ export const QuemSomos: React.FC = () => {
                     <div className="h-[35%] flex gap-2 sm:gap-3">
                       <div className="flex-1 rounded-lg overflow-hidden relative group">
                         <img 
-                          src={setor.images?.[1]?.src || '/img/CisTambore_Img1.jpg'} 
+                          src={imgsObras[idx]?.[1] || setor.images?.[1]?.src} 
                           alt={`Detalhe 1 ${setor.title}`}
                           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                         />
                       </div>
                       <div className="flex-1 rounded-lg overflow-hidden relative group">
                         <img 
-                          src={setor.images?.[2]?.src || '/img/Sequoia_Img1.jpg'} 
+                          src={imgsObras[idx]?.[2] || setor.images?.[2]?.src} 
                           alt={`Detalhe 2 ${setor.title}`}
                           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                         />
@@ -695,7 +702,7 @@ export const QuemSomos: React.FC = () => {
       {/* SEÇÃO PARALLAX */}
       <section 
         className="w-full h-[40vh] sm:h-[50vh] bg-fixed bg-center bg-cover bg-no-repeat relative flex items-center justify-center border-y border-zinc-200/80"
-        style={{ backgroundImage: `url('/img/Lumini1_Testeira1.avif')` }}
+        style={{ backgroundImage: `url('${img.faixaImagemQuem}')` }}
       >
         <div className="absolute inset-0 bg-zinc-950/0 backdrop-blur-none" />
       </section>
@@ -759,7 +766,7 @@ export const QuemSomos: React.FC = () => {
       <section className="relative py-8 sm:py-10 bg-white border-b border-zinc-200/80 font-['Montserrat'] overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center blur-md pointer-events-none"
-          style={{ backgroundImage: "url('/img/trajetoriacrescimento_2148993907.jpg')", opacity: 0.5, transform: "scale(1.1)" }}
+          style={{ backgroundImage: `url('${img.fundoTrajetoriaQuem}')`, opacity: 0.5, transform: "scale(1.1)" }}
         />
         <div className="absolute inset-0 bg-white/35 pointer-events-none" />
         <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-12 space-y-6 md:space-y-8">
@@ -921,7 +928,7 @@ export const QuemSomos: React.FC = () => {
               <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
                 <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
                   <img 
-                    src="/img/Amazon_imgRodape.avif" 
+                    src={img.fotoCirculoProposta} 
                     alt="Engenharia Quattro Construtora" 
                     className="w-full h-full object-cover object-center"
                   />

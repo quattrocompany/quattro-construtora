@@ -1,7 +1,7 @@
 // src/components/Header.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { useContato, hrefTelefone } from '../lib/siteContent';
+import { useContato, useImagens, hrefTelefone } from '../lib/siteContent';
 import { 
   Menu, 
   X, 
@@ -31,6 +31,7 @@ const YoutubeIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
 
 export const Header: React.FC = () => {
   const contato = useContato();
+  const img = useImagens();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -116,7 +117,7 @@ export const Header: React.FC = () => {
         <div className="header-container !relative !z-[60]">
           <Link to="/" className="logo-hanging !relative !z-[70]" aria-label="Quattro Construtora - Home">
             <img
-              src="/logo/Logo_Quattro Construtora_cut.svg"
+              src={img.logoCabecalho}
               alt="Quattro Construtora"
             />
           </Link>

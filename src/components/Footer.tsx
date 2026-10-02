@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useContato, hrefMapa } from '../lib/siteContent';
+import { useContato, useImagens, hrefMapa } from '../lib/siteContent';
 import { 
   MapPin
 } from 'lucide-react';
@@ -25,6 +25,7 @@ const YoutubeIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }
 
 export const Footer: React.FC = () => {
   const contato = useContato();
+  const img = useImagens();
   return (
     <footer className="footer-section">
       
@@ -40,7 +41,7 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             <Link to="/" className="inline-block group focus:outline-none">
               <img 
-                src="/logo/logo_quattro-construtora.svg" 
+                src={img.logoRodape} 
                 alt="Quattro Construtora" 
                 className="h-20 md:h-24 lg:h-28 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />

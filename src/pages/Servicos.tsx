@@ -1,4 +1,5 @@
 // src/pages/Servicos.tsx
+import { useImagens } from '../lib/siteContent';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSiteDoc } from '../lib/siteContent';
@@ -27,6 +28,7 @@ const ICONES: Record<string, React.ElementType> = {
 const ICONES_ROTATIVOS = [Layers, ClipboardCheck, Wrench, Compass, FileText, Settings];
 
 export const Servicos: React.FC = () => {
+  const img = useImagens();
   const { hero, lista, fluxo: FLUXO_TRABALHO } = useSiteDoc('servicos', DEFAULT_SERVICOS);
   const SERVICOS_LIST = lista.map((s, i) => ({
     ...s,
@@ -201,7 +203,7 @@ export const Servicos: React.FC = () => {
       {/* 3.5. PARALLAX */}
       <section
         className="relative h-[45vh] sm:h-[55vh] lg:h-[60vh] bg-zinc-950 lg:bg-fixed bg-cover bg-center overflow-hidden"
-        style={{ backgroundImage: "url('/img/Sequoia_Img1.jpg')" }}
+        style={{ backgroundImage: `url('${img.faixaImagemServicos}')` }}
       >
         <div className="absolute inset-0 bg-zinc-950/40" />
       </section>
@@ -289,7 +291,7 @@ export const Servicos: React.FC = () => {
               <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
                 <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
                   <img
-                    src="/img/Amazon_imgRodape.avif"
+                    src={img.fotoCirculoProposta}
                     alt="Engenharia Quattro Construtora"
                     className="w-full h-full object-cover object-center"
                   />

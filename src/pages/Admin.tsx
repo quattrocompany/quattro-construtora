@@ -10,14 +10,14 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import {
   Home as HomeIcon, Users, Layers, Wrench, Phone, BookOpen, LogOut, Loader2, X, Plus,
   ChevronUp, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Bold, Italic, Underline,
-  List, ListOrdered, Link2, ImagePlus, Heading2, Heading3, AlignLeft, AlignCenter, Code2, Eraser,
+  List, ListOrdered, Link2, ImagePlus, Image as ImageIcon, Heading2, Heading3, AlignLeft, AlignCenter, Code2, Eraser,
 } from 'lucide-react';
 import { auth, db, storage } from '../firebase';
 import { sanitizeHtml, isSafeUrl } from '../utils/sanitizeHtml';
 import { SETORES_PADRAO, OBRAS_PADRAO } from '../data/portfolioDefaults';
 import { blogPosts as BLOG_PADRAO } from '../data/blogPosts';
 import { FAQS_PADRAO, CATEGORIAS_FAQ } from '../lib/faq';
-import { DEFAULT_HOME, DEFAULT_QUEM, DEFAULT_SERVICOS, DEFAULT_CONTATO_INFO, type Slide } from '../data/siteDefaults';
+import { DEFAULT_HOME, DEFAULT_QUEM, DEFAULT_SERVICOS, DEFAULT_CONTATO_INFO, DEFAULT_IMAGENS, GRUPOS_IMAGENS, type ImagensDoc, type Slide } from '../data/siteDefaults';
 
 // Se o usuário digitar só "marketing", completa com este domínio.
 const LOGIN_DOMAIN = 'quattroconstrutora.com.br';
@@ -244,7 +244,7 @@ type Obra = {
   resumo: string; descricaoCompleta: string; [k: string]: any;
 };
 type Post = { id: number; title: string; author: string; date: string; capaImage: string; content: string; slug: string; excerpt: string; published: boolean; [k: string]: any };
-type TabId = 'home' | 'quemSomos' | 'setores' | 'servicos' | 'contato' | 'blog';
+type TabId = 'home' | 'quemSomos' | 'setores' | 'servicos' | 'contato' | 'imagens' | 'blog';
 
 // Os padrões (= o que já está no ar) ficam em src/data/siteDefaults.ts, compartilhados com o site.
 const DEFAULT_CONTATO = {
@@ -597,10 +597,12 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode; title: string; de
     sections: [{ id: 'sec-hero', label: 'Banner' }, { id: 'sec-lista', label: 'Serviços' }, { id: 'sec-fluxo', label: 'Fluxo' }] },
   { id: 'contato', label: 'Contato', icon: <Phone size={16} />, title: 'Atendimento e sede', desc: 'Telefone, e-mail, endereço e perguntas frequentes.', site: '/contato',
     sections: [{ id: 'sec-info', label: 'Informações' }, { id: 'sec-faq', label: 'Perguntas frequentes' }] },
+  { id: 'imagens', label: 'Imagens', icon: <ImageIcon size={16} />, title: 'Imagens do site', desc: 'Logos, banners, fundos e fotos avulsas das páginas. Campo vazio volta para a imagem original.', site: '/',
+    sections: GRUPOS_IMAGENS.map((g) => ({ id: `sec-${g.id}`, label: g.label })) },
   { id: 'blog', label: 'Blog', icon: <BookOpen size={16} />, title: 'Blog e notícias', desc: 'Escreva e edite os artigos.', site: '/blog',
     sections: [{ id: 'sec-post-dados', label: 'Dados do artigo' }, { id: 'sec-post-texto', label: 'Texto' }] },
 ];
-const DOC_ID: Record<TabId, string> = { home: 'home', quemSomos: 'quemsomos', setores: 'portfolio', servicos: 'servicos', contato: 'contato', blog: 'blog' };
+const DOC_ID: Record<TabId, string> = { home: 'home', quemSomos: 'quemsomos', setores: 'portfolio', servicos: 'servicos', contato: 'contato', imagens: 'imagens', blog: 'blog' };
 
 export function Admin() {
   // ---------- autenticação ----------
@@ -621,6 +623,7 @@ export function Admin() {
   const [obras, setObras] = useState<Obra[]>([]);
   const [servicos, setServicos] = useState(DEFAULT_SERVICOS);
   const [contato, setContato] = useState(DEFAULT_CONTATO);
+  const [imagens, setImagens] = useState<ImagensDoc>(DEFAULT_IMAGENS);
   const [blog, setBlog] = useState<Post[]>([]);
   const [selPost, setSelPost] = useState<number | null>(null);
   const snaps = useRef<Record<string, string>>({});
@@ -647,7 +650,7 @@ export function Admin() {
   const load = async () => {
     setLoadState('loading'); setLoadErr('');
     try {
-      const snap = await Promise.all(['home', 'quemsomos', 'portfolio', 'servicos', 'contato', 'blog'].map((id) => getDoc(doc(db, 'site_data', id))));
+      const snap = await Promise.all(['home', 'quemsomos', 'portfolio', 'servicos', 'contato', 'blog', 'imagens'].map((id) => getDoc(doc(db, 'site_data', id))));
       const d = (i: number): any => (snap[i].exists() ? snap[i].data() : {});
       const H = mergeDeep(DEFAULT_HOME, d(0));
       H.hero.mediaList = H.hero.mediaList.map((m: any) => ({ ...m, id: Number(m.id) || newId(), line0: typeof m.line0 === 'string' ? m.line0 : 'ENGENHARIA' }));
@@ -661,11 +664,14 @@ export function Admin() {
       const C = mergeDeep(DEFAULT_CONTATO, d(4));
       C.faqs = C.faqs.map((f: any) => ({ ...f, id: Number(f.id) || newId(), categoria: String(f.categoria || 'geral'), destaque: !!f.destaque }));
       const B: Post[] = snap[5].exists() && Array.isArray(d(5).posts) ? d(5).posts.map(normPost) : POSTS_PADRAO();
+      const IMG: any = { ...DEFAULT_IMAGENS };
+      for (const k of Object.keys(DEFAULT_IMAGENS)) if (typeof d(6)[k] === 'string') IMG[k] = d(6)[k];
+      setImagens(IMG as ImagensDoc);
       setHome(H); setQuem(Q); setSetores(SET); setObras(OBR); setServicos(S); setContato(C); setBlog(B);
       setSelPost(B.length ? B[0].id : null);
       snaps.current = {
         home: JSON.stringify(H), quemSomos: JSON.stringify(Q), setores: JSON.stringify({ setores: SET, obras: OBR }),
-        servicos: JSON.stringify(S), contato: JSON.stringify(C), blog: JSON.stringify({ posts: B }),
+        servicos: JSON.stringify(S), contato: JSON.stringify(C), blog: JSON.stringify({ posts: B }), imagens: JSON.stringify(IMG),
       };
       setLoadState('ok');
     } catch (err: any) {
@@ -676,9 +682,9 @@ export function Admin() {
   useEffect(() => { if (user && loadState === 'idle') load(); if (!user) setLoadState('idle'); /* eslint-disable-next-line */ }, [user]);
 
   const payloadFor = (tab: TabId): any =>
-    tab === 'home' ? home : tab === 'quemSomos' ? quem : tab === 'setores' ? { setores, obras } : tab === 'servicos' ? servicos : tab === 'contato' ? contato : { posts: blog };
+    tab === 'home' ? home : tab === 'quemSomos' ? quem : tab === 'setores' ? { setores, obras } : tab === 'servicos' ? servicos : tab === 'contato' ? contato : tab === 'imagens' ? imagens : { posts: blog };
   const isDirty = (tab: TabId) => loadState === 'ok' && JSON.stringify(payloadFor(tab)) !== snaps.current[tab];
-  const dirtyMap: Record<TabId, boolean> = { home: isDirty('home'), quemSomos: isDirty('quemSomos'), setores: isDirty('setores'), servicos: isDirty('servicos'), contato: isDirty('contato'), blog: isDirty('blog') };
+  const dirtyMap: Record<TabId, boolean> = { home: isDirty('home'), quemSomos: isDirty('quemSomos'), setores: isDirty('setores'), servicos: isDirty('servicos'), contato: isDirty('contato'), imagens: isDirty('imagens'), blog: isDirty('blog') };
   const anyDirty = Object.values(dirtyMap).some(Boolean);
 
   useEffect(() => {
@@ -1175,6 +1181,22 @@ export function Admin() {
           </>)}
 
           {/* ============================== BLOG ============================== */}
+          {activeTab === 'imagens' && (<>
+            {GRUPOS_IMAGENS.map((g) => (
+              <Card key={g.id} id={`sec-${g.id}`} title={g.label} desc="Troque a imagem e publique. Para voltar à original, limpe o campo.">
+                <div className="img-grid">
+                  {g.itens.map((it) => (
+                    <div key={it.key}>
+                      <ImageField label={it.label} inputKey={`im${it.key}`} url={imagens[it.key]} onUrl={(v) => setImagens((x) => ({ ...x, [it.key]: v }))} busy={up(`im${it.key}`)}
+                        onPick={(f) => uploadOne(`im${it.key}`, f, 'imagens', false, (url) => setImagens((x) => ({ ...x, [it.key]: url })))} />
+                      {it.dica && <span className="sub" style={{ display: 'block', marginTop: 4 }}>{it.dica}</span>}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ))}
+          </>)}
+
           {activeTab === 'blog' && (<>
             <div className="adm-picker">
               <label htmlFor="selPost">Editando</label>

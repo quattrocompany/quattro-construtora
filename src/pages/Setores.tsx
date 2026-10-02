@@ -1,4 +1,5 @@
 // src/pages/Setores.tsx
+import { useImagens } from '../lib/siteContent';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -27,6 +28,7 @@ const iconMap: Record<string, any> = {
 };
 
 export const Setores: React.FC = () => {
+  const img = useImagens();
   const [setoresData, setSetoresData] = useState<any[]>(SETORES_PADRAO);
   const [obrasData, setObrasData] = useState<any[]>(OBRAS_PADRAO);
   const [loading, setLoading] = useState(true);
@@ -115,7 +117,7 @@ export const Setores: React.FC = () => {
       <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat',sans-serif]">
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
-            src="/img/Amazon_Entrada.jpg"
+            src={img.bannerSetores}
             alt="Quattro Construtora - Setores de Atuação"
             className="w-full h-full object-cover object-center"
           />
@@ -408,7 +410,7 @@ export const Setores: React.FC = () => {
               <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
                 <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
                   <img
-                    src="/img/Amazon_imgRodape.avif"
+                    src={img.fotoCirculoProposta}
                     alt="Engenharia Quattro Construtora"
                     className="w-full h-full object-cover object-center"
                   />
