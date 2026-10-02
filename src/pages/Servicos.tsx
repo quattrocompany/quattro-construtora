@@ -291,7 +291,7 @@ export const Servicos: React.FC = () => {
               <div className="relative -mt-40 md:-mt-48 lg:-mt-32 xl:-mt-40">
                 <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[380px] lg:h-[380px] xl:w-[440px] xl:h-[440px] rounded-full border-4 border-amber-500 overflow-hidden shadow-2xl bg-zinc-900">
                   <img
-                    src={img.fotoCirculoProposta}
+                    src={img.circuloServicos}
                     alt="Engenharia Quattro Construtora"
                     className="w-full h-full object-cover object-center"
                   />

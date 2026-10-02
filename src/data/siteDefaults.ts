@@ -188,7 +188,12 @@ export type ContatoInfo = typeof DEFAULT_CONTATO_INFO;
 export const DEFAULT_IMAGENS = {
   logoCabecalho: '/logo/Logo_Quattro Construtora_cut.svg',
   logoRodape: '/logo/logo_quattro-construtora.svg',
-  fotoCirculoProposta: '/img/Amazon_imgRodape.avif',
+  circuloQuem: '/img/Amazon_imgRodape.avif',
+  circuloServicos: '/img/Amazon_imgRodape.avif',
+  circuloSetores: '/img/Amazon_imgRodape.avif',
+  circuloDuvidas: '/img/Amazon_imgRodape.avif',
+  circuloPrivacidade: '/img/Amazon_imgRodape.avif',
+  circuloTermos: '/img/Amazon_imgRodape.avif',
   bannerContato: '/img/contato-14791.jpg',
   bannerDuvidas: '/img/faq_619.jpg',
   bannerSetores: '/img/Amazon_Entrada.jpg',
@@ -218,10 +223,17 @@ export type ImagensDoc = typeof DEFAULT_IMAGENS;
 export type ImagemKey = keyof ImagensDoc;
 
 export const GRUPOS_IMAGENS: { id: string; label: string; itens: { key: ImagemKey; label: string; dica?: string }[] }[] = [
-  { id: 'geral', label: 'Logos e círculo', itens: [
+  { id: 'geral', label: 'Logos', itens: [
     { key: 'logoCabecalho', label: 'Logo do cabeçalho', dica: 'Aparece no topo do site e no menu do celular.' },
     { key: 'logoRodape', label: 'Logo do rodapé' },
-    { key: 'fotoCirculoProposta', label: 'Círculo "Proposta personalizada"', dica: 'Foto redonda no fim das páginas A Quattro, Serviços, Setores, Dúvidas, Privacidade e Termos.' },
+  ] },
+  { id: 'circulos', label: 'Círculo "Proposta personalizada"', itens: [
+    { key: 'circuloQuem', label: 'A Quattro', dica: 'Foto redonda no fim da página.' },
+    { key: 'circuloServicos', label: 'Serviços' },
+    { key: 'circuloSetores', label: 'Setores e Obras' },
+    { key: 'circuloDuvidas', label: 'Dúvidas frequentes' },
+    { key: 'circuloPrivacidade', label: 'Política de Privacidade' },
+    { key: 'circuloTermos', label: 'Termos de Uso' },
   ] },
   { id: 'banners', label: 'Banners das páginas', itens: [
     { key: 'bannerContato', label: 'Contato' },
