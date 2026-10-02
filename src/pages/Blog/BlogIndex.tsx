@@ -5,16 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ArrowRight, Loader2, ChevronRight } from 'lucide-react';
 import type { BlogPost } from '../../types';
-import { blogPosts } from '../../data/blogPosts';
-
-// TODO (Etapa 2/5 do plano): trocar por uma leitura real da coleção 'posts'
-// no Firestore. Por enquanto os dados vêm de uma lista estática migrada do
-// blog anterior (src/data/blogPosts.ts).
-const fetchPosts = async (): Promise<BlogPost[]> => {
-  return [...blogPosts]
-    .filter((post) => post.published)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-};
+import { getPostsPublicados, formatarData } from '../../lib/blog';
 
 export const BlogIndex: React.FC = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -23,7 +14,7 @@ export const BlogIndex: React.FC = () => {
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const data = await fetchPosts();
+        const data = await getPostsPublicados();
         setPosts(data);
       } catch (error) {
         console.error("Erro ao carregar posts:", error);
@@ -107,7 +98,7 @@ export const BlogIndex: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post) => {
-                const postDate = new Date(post.date).toLocaleDateString('pt-BR');
+                const postDate = formatarData(post.date);
 
                 return (
                   <div key={post.slug} className="bg-white border border-zinc-200/80 rounded-3xl overflow-hidden group hover:shadow-xl hover:border-amber-500/40 transition-all duration-300 flex flex-col h-full">

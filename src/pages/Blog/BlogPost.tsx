@@ -5,15 +5,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Loader2 } from 'lucide-react';
 import type { BlogPost as BlogPostType } from '../../types';
-import { blogPosts } from '../../data/blogPosts';
 import { sanitizeHtml } from '../../utils/sanitizeHtml';
-
-// TODO (Etapa 2/5 do plano): trocar por uma leitura real do Firestore
-// (coleção 'posts', filtrando por slug). Por enquanto os dados vêm de uma
-// lista estática migrada do blog anterior (src/data/blogPosts.ts).
-const fetchPostBySlug = async (slug: string): Promise<BlogPostType | null> => {
-  return blogPosts.find((post) => post.slug === slug && post.published) ?? null;
-};
+import { getPostPorSlug, formatarData } from '../../lib/blog';
 
 export const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -24,7 +17,7 @@ export const BlogPost: React.FC = () => {
     const loadPost = async () => {
       if (!slug) return;
       try {
-        const data = await fetchPostBySlug(slug);
+        const data = await getPostPorSlug(slug);
         setPost(data);
       } catch (error) {
         console.error("Erro ao carregar o post:", error);
@@ -52,7 +45,7 @@ export const BlogPost: React.FC = () => {
     );
   }
 
-  const postDate = new Date(post.date).toLocaleDateString('pt-BR');
+  const postDate = formatarData(post.date);
 
   return (
     <div className="w-full bg-white text-zinc-900 font-['Inter',sans-serif]">

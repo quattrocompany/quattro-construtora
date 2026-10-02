@@ -15,6 +15,7 @@ import {
 import { auth, db, storage } from '../firebase';
 import { sanitizeHtml, isSafeUrl } from '../utils/sanitizeHtml';
 import { SETORES_PADRAO, OBRAS_PADRAO } from '../data/portfolioDefaults';
+import { blogPosts as BLOG_PADRAO } from '../data/blogPosts';
 
 // Se o usuário digitar só "marketing", completa com este domínio.
 const LOGIN_DOMAIN = 'quattroconstrutora.com.br';
@@ -244,7 +245,7 @@ type Obra = {
   client: string; year: string; destaque: boolean; capaImage: string; galeriaImages: Img[]; especificacoes: { label: string; value: string }[];
   resumo: string; descricaoCompleta: string; [k: string]: any;
 };
-type Post = { id: number; title: string; author: string; date: string; capaImage: string; content: string; [k: string]: any };
+type Post = { id: number; title: string; author: string; date: string; capaImage: string; content: string; slug: string; excerpt: string; published: boolean; [k: string]: any };
 type TabId = 'home' | 'quemSomos' | 'setores' | 'servicos' | 'contato' | 'blog';
 
 const DEFAULT_HOME = {
@@ -359,7 +360,9 @@ const normObra = (o: any): Obra => ({
   especificacoes: (Array.isArray(o?.especificacoes) ? o.especificacoes : []).map((e: any) => ({ label: String(e?.label ?? ''), value: String(e?.value ?? '') })),
   resumo: String(o?.resumo ?? ''), descricaoCompleta: String(o?.descricaoCompleta ?? ''),
 });
-const normPost = (p: any): Post => ({ ...p, id: Number(p?.id) || newId(), title: String(p?.title ?? ''), author: String(p?.author ?? ''), date: String(p?.date ?? ''), capaImage: String(p?.capaImage ?? ''), content: String(p?.content ?? '') });
+const normPost = (p: any): Post => ({ ...p, id: Number(p?.id) || newId(), title: String(p?.title ?? ''), author: String(p?.author ?? ''), date: String(p?.date ?? ''), capaImage: String(p?.capaImage ?? ''), content: String(p?.content ?? ''), slug: String(p?.slug ?? ''), excerpt: String(p?.excerpt ?? ''), published: p?.published !== false });
+// Artigos que já estão no ar (src/data/blogPosts.ts): aparecem no painel enquanto site_data/blog ainda não existe.
+const POSTS_PADRAO = (): Post[] => BLOG_PADRAO.map((b, i) => normPost({ id: Date.now() + i, title: b.title, author: b.author, date: b.date, capaImage: b.coverImage, content: b.content, slug: b.slug, excerpt: b.excerpt, published: b.published }));
 
 const moveItem = <T,>(arr: T[], i: number, d: -1 | 1): T[] => {
   const j = i + d; if (j < 0 || j >= arr.length) return arr;
@@ -730,7 +733,7 @@ export function Admin() {
       const S = mergeDeep(DEFAULT_SERVICOS, d(3));
       const C = mergeDeep(DEFAULT_CONTATO, d(4));
       C.faqs = C.faqs.map((f: any) => ({ ...f, id: Number(f.id) || newId() }));
-      const B = (Array.isArray(d(5).posts) ? d(5).posts : []).map(normPost);
+      const B: Post[] = snap[5].exists() && Array.isArray(d(5).posts) ? d(5).posts.map(normPost) : POSTS_PADRAO();
       setHome(H); setQuem(Q); setSetores(SET); setObras(OBR); setServicos(S); setContato(C); setBlog(B);
       setSelPost(B.length ? B[0].id : null);
       snaps.current = {
@@ -830,9 +833,14 @@ export function Admin() {
     }
     if (tab === 'contato' && contato.comercialEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contato.comercialEmail.trim())) return 'O e-mail de contato parece inválido.';
     if (tab === 'blog') {
+      const slugsPosts = new Set<string>();
       for (const p of blog) {
         if (!p.title.trim()) return 'Há um artigo sem título.';
         if (p.date && Number.isNaN(Date.parse(p.date))) return `Artigo "${p.title}": data inválida.`;
+        const sl = slugify(p.slug || p.title);
+        if (!sl) return `Artigo "${p.title}": o endereço (slug) ficou vazio.`;
+        if (slugsPosts.has(sl)) return `Dois artigos com o mesmo endereço (slug): "${sl}".`;
+        slugsPosts.add(sl);
       }
     }
     return null;
@@ -851,7 +859,7 @@ export function Admin() {
         const O = obras.map((o) => ({ ...o, slug: slugify(o.slug || o.title), especificacoes: o.especificacoes.filter((x) => x.label.trim() || x.value.trim()) }));
         payload = { setores: S, obras: O }; setSetores(S); setObras(O);
       } else if (activeTab === 'blog') {
-        const P = blog.map((p) => ({ ...p, content: sanitizeHtml(p.content) }));
+        const P = blog.map((p) => ({ ...p, slug: slugify(p.slug || p.title), excerpt: p.excerpt.trim(), content: sanitizeHtml(p.content) }));
         payload = { posts: P }; setBlog(P);
       } else if (activeTab === 'servicos') {
         const S = { ...servicos, lista: servicos.lista.map((x) => ({ ...x, entregaveis: x.entregaveis.map((t) => t.trim()).filter(Boolean) })) };
@@ -1231,7 +1239,7 @@ export function Admin() {
                 {!blog.length && <option value="">Nenhum artigo ainda</option>}
                 {blog.map((p) => <option key={p.id} value={p.id}>{p.title || '(sem título)'}</option>)}
               </select>
-              <button type="button" className="btn sm" onClick={() => { const id = newId(); setBlog([{ id, title: '', author: '', date: new Date().toISOString().slice(0, 10), capaImage: '', content: '<p></p>' }, ...blog]); setSelPost(id); }}><Plus size={14} /> Novo artigo</button>
+              <button type="button" className="btn sm" onClick={() => { const id = newId(); setBlog([{ id, title: '', author: '', date: new Date().toISOString().slice(0, 10), capaImage: '', content: '<p></p>', slug: '', excerpt: '', published: true }, ...blog]); setSelPost(id); }}><Plus size={14} /> Novo artigo</button>
               {post && <button type="button" className="btn sm danger" onClick={() => askConfirm('Excluir artigo?', `"${post.title || 'Sem título'}" será removido (só vai ao ar ao publicar).`, 'Excluir', () => { const rest = blog.filter((p) => p.id !== post.id); setBlog(rest); setSelPost(rest[0]?.id ?? null); })}>Excluir</button>}
             </div>
             {post ? (<>
@@ -1241,6 +1249,9 @@ export function Admin() {
                   <Field label="Autor"><TextIn value={post.author} onChange={(v) => patchPost(post.id, { author: v })} /></Field>
                   <Field label="Data"><input className="inp" type="date" value={post.date} onChange={(e) => patchPost(post.id, { date: e.target.value })} /></Field>
                 </div>
+                <Field label="Endereço (slug)" hint={`Usado na URL: /blog/${slugify(post.slug || post.title) || 'endereco-do-artigo'}`}><TextIn value={post.slug} onChange={(v) => patchPost(post.id, { slug: v })} placeholder={slugify(post.title)} /></Field>
+                <Field label="Resumo" hint="Aparece no card da lista do blog. Se ficar vazio, usamos o início do texto."><AreaIn rows={2} value={post.excerpt} onChange={(v) => patchPost(post.id, { excerpt: v })} /></Field>
+                <label className="chk"><input type="checkbox" checked={post.published} onChange={(e) => patchPost(post.id, { published: e.target.checked })} /> Publicado no site (desmarque para guardar como rascunho)</label>
                 <ImageField label="Imagem de capa" inputKey={`bc${post.id}`} url={post.capaImage} onUrl={(v) => patchPost(post.id, { capaImage: v })} busy={up(`bc${post.id}`)}
                   onPick={(f) => uploadOne(`bc${post.id}`, f, 'blog', false, (url) => patchPost(post.id, { capaImage: url }))} />
               </Card>
