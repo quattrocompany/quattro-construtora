@@ -15,6 +15,7 @@ import { Privacidade } from './pages/Privacidade';
 import { Termos } from './pages/Termos';
 import { Admin } from './pages/Admin';
 import { PortalCliente } from './pages/PortalCliente';
+import { ScrollEffects } from './lib/scrollEffects';
 
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -68,6 +69,7 @@ export const App: React.FC = () => {
   return (
     <Router>
       <ScrollToTop />
+      <ScrollEffects />
       <MainLayout />
     </Router>
   );
