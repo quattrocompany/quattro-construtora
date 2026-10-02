@@ -46,9 +46,9 @@ const ADMIN_CSS = `
 .adm button, .adm input, .adm select, .adm textarea { font-family: inherit; }
 
 /* ---------- Barra lateral ---------- */
-.adm-side { background: var(--side); color: var(--side-ink); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; padding: 22px 14px 16px; }
+.adm-side { background: var(--side); color: var(--side-ink); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; width: 240px; height: 100vh; padding: 22px 14px 16px; z-index: 5; }
 .adm-brand { padding: 2px 10px 22px; text-align: center; }
-.adm-brand img { display: block; width: 172px; height: auto; margin: 0 auto; }
+.adm-brand img { display: block; width: 132px; height: auto; margin: 0 auto; }
 .adm-brand span { display: block; margin-top: 11px; font-size: 12px; color: var(--side-muted); }
 .adm-nav { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; min-height: 0; }
 .adm-sub { display: flex; flex-direction: column; margin: 2px 0 8px 18px; padding-left: 10px; border-left: 1px solid var(--side-line); }
@@ -67,7 +67,7 @@ const ADMIN_CSS = `
 .adm-logout:hover { color: #fff; }
 
 /* ---------- Conteúdo ---------- */
-.adm-main { padding: 34px 44px 40px; max-width: 1080px; width: 100%; }
+.adm-main { padding: 34px 44px 40px; max-width: 1080px; width: 100%; grid-column: 2; }
 .adm-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
 .adm-head h1 { font-size: 22px; font-weight: 650; letter-spacing: -.01em; }
 .adm-head p { color: var(--muted); margin-top: 3px; font-size: 13.5px; }
@@ -214,7 +214,8 @@ select.inp { padding-right: 28px; }
 @media (max-width: 860px) {
   .adm { grid-template-columns: minmax(0, 1fr); }
   .adm-main { min-width: 0; overflow-x: hidden; }
-  .adm-side { position: static; height: auto; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px 14px; padding: 12px 14px; }
+  .adm-main { grid-column: auto; }
+  .adm-side { position: static; width: auto; height: auto; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px 14px; padding: 12px 14px; }
   .adm-brand { padding: 0; }
   .adm-brand span { display: none; }
   .adm-brand img { width: 84px; }
