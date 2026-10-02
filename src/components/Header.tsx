@@ -1,6 +1,7 @@
 // src/components/Header.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { useContato, hrefTelefone } from '../lib/siteContent';
 import { 
   Menu, 
   X, 
@@ -29,6 +30,7 @@ const YoutubeIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
 );
 
 export const Header: React.FC = () => {
+  const contato = useContato();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -57,18 +59,18 @@ export const Header: React.FC = () => {
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <a 
-              href="mailto:contato@quattroconstrutora.com.br" 
+              href={`mailto:${contato.comercialEmail}`} 
               className="flex items-center gap-2 hover:opacity-80 transition-opacity text-zinc-500 font-semibold"
             >
               <Mail className="w-3.5 h-3.5 text-zinc-500" />
-              <span>contato@quattroconstrutora.com.br</span>
+              <span>{contato.comercialEmail}</span>
             </a>
             <a 
-              href="tel:1130450826" 
+              href={hrefTelefone(contato.comercialPhone)} 
               className="flex items-center gap-2 hover:opacity-80 transition-opacity text-zinc-500 font-semibold"
             >
               <Phone className="w-3.5 h-3.5 text-zinc-500" />
-              <span>(11) 3045-0826</span>
+              <span>{contato.comercialPhone}</span>
             </a>
           </div>
 
@@ -177,13 +179,13 @@ export const Header: React.FC = () => {
           <div className="space-y-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">ATENDIMENTO</p>
             <div className="flex flex-col gap-2.5 text-xs text-zinc-800 font-medium">
-              <a href="mailto:contato@quattroconstrutora.com.br" className="flex items-center gap-2 hover:text-amber-600 transition-colors">
+              <a href={`mailto:${contato.comercialEmail}`} className="flex items-center gap-2 hover:text-amber-600 transition-colors">
                 <Mail className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>contato@quattroconstrutora.com.br</span>
+                <span>{contato.comercialEmail}</span>
               </a>
-              <a href="tel:1130450826" className="flex items-center gap-2 hover:text-amber-600 transition-colors">
+              <a href={hrefTelefone(contato.comercialPhone)} className="flex items-center gap-2 hover:text-amber-600 transition-colors">
                 <Phone className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>(11) 3045-0826</span>
+                <span>{contato.comercialPhone}</span>
               </a>
             </div>
           </div>

@@ -1,6 +1,8 @@
 // src/pages/Servicos.tsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useSiteDoc } from '../lib/siteContent';
+import { DEFAULT_SERVICOS } from '../data/siteDefaults';
 import { 
   ArrowRight, 
   CheckCircle2, 
@@ -14,112 +16,24 @@ import {
   ChevronDown
 } from 'lucide-react';
 
-const SERVICOS_LIST = [
-  {
-    id: 'turnkey',
-    title: 'Engenharia Turnkey & EPC',
-    icon: Layers,
-    image: '/img/turnkey_2150290086.jpg',
-    desc: 'Solução completa do conceito à entrega das chaves. Assumimos a responsabilidade integral pelo projeto, compras, construção e comissionamento.',
-    entregaveis: [
-      'Gestão unificada de fornecedores e contratos',
-      'Preço fechado com previsibilidade orçamentária',
-      'Prazo de entrega garantido em contrato',
-      'Comissionamento e startup de instalações'
-    ]
-  },
-  {
-    id: 'gerenciamento',
-    title: 'Gerenciamento & Fiscalização',
-    icon: ClipboardCheck,
-    image: '/img/fiscalizacao_2151589549.jpg',
-    desc: 'Supervisão técnica rigorosa do canteiro de obras, garantindo o cumprimento de especificações, controle físico-financeiro e auditoria de qualidade.',
-    entregaveis: [
-      'Relatórios gerenciais semanais com medições',
-      'Controle rigoroso de cronograma (Linha de Balanço)',
-      'Auditoria de segurança do trabalho (NR-35 / NR-18)',
-      'Inspeção de recebimento de materiais e insumos'
-    ]
-  },
-  {
-    id: 'retrofit',
-    title: 'Retrofit & Reformas Corporativas',
-    icon: Wrench,
-    image: '/img/retrofit_2150290083.jpg',
-    desc: 'Modernização de edifícios, plantas fabris e escritórios sem interrupção das atividades operacionais do cliente.',
-    entregaveis: [
-      'Atualização de instalações elétricas e hidráulicas',
-      'Reforço estrutural e adequação de fachadas',
-      'Trabalho em turnos especiais (noturno/finais de semana)',
-      'Adequação às normas de acessibilidade e AVCB'
-    ]
-  },
-  {
-    id: 'bim',
-    title: 'Compatibilização & Projetos BIM',
-    icon: Compass,
-    image: '/img/compatibilizacao_2151908069.jpg',
-    desc: 'Modelagem tridimensional inteligente para antecipar interferências entre arquitetura, estrutura e instalações (MEP) antes da fase de obra.',
-    entregaveis: [
-      'Detecção automatizada de conflitos (Clash Detection)',
-      'Levantamento quantitativo preciso de insumos',
-      'Visualização fidedigna em modelo 3D/4D',
-      'Facilidade de manutenção posterior (As-Built)'
-    ]
-  },
-  {
-    id: 'laudos',
-    title: 'Laudos Técnicos & Vistorias',
-    icon: FileText,
-    image: '/img/laudos_135766.jpg',
-    desc: 'Avaliação pericial de estruturas, patologias da construção civil e conformidade normativa para auditorias e regularização predial.',
-    entregaveis: [
-      'Inspeção predial com laudo assinado por Engenheiro (ART)',
-      'Diagnóstico de patologias (infiltrações, trincas, recalque)',
-      'Plano de ação corretivo com estimativa de custos',
-      'Vistoria cautelar de vizinhança pré-obra'
-    ]
-  },
-  {
-    id: 'manutencao',
-    title: 'Manutenção Predial & Facilities',
-    icon: Settings,
-    image: '/img/manutencao_53070.jpg',
-    desc: 'Gestão preventiva e corretiva contínua para preservar o valor do ativo imobiliário e garantir a continuidade das operações.',
-    entregaveis: [
-      'Planos de Manutenção Operacional (PMOC)',
-      'Manutenção preventiva de utilidades e climatização',
-      'Atendimento emergencial com SLA estruturado',
-      'Gestão de ativos e inventário patrimonial'
-    ]
-  }
-];
-
-const FLUXO_TRABALHO = [
-  {
-    passo: '01',
-    titulo: 'Diagnóstico & Viabilidade',
-    desc: 'Análise detalhada do local, levantamento de requisitos técnicos, estudo de viabilidade e alinhamento de expectativas financeiras.'
-  },
-  {
-    passo: '02',
-    titulo: 'Planejamento & BIM',
-    desc: 'Desenvolvimento e compatibilização de projetos, elaboração do cronograma físico-financeiro detalhado e cotação de insumos.'
-  },
-  {
-    passo: '03',
-    titulo: 'Execução & Controle',
-    desc: 'Mobilização de canteiro, aplicação estrita de normas NBR, fiscalização contínua e envio de relatórios de evolução ao cliente.'
-  },
-  {
-    passo: '04',
-    titulo: 'Comissionamento & As-Built',
-    desc: 'Testes finais de instalações, entrega dos manuais do usuário, documentação legal (Habite-se/AVCB) e entrega oficial das chaves.'
-  }
-];
+const ICONES: Record<string, React.ElementType> = {
+  turnkey: Layers,
+  gerenciamento: ClipboardCheck,
+  retrofit: Wrench,
+  bim: Compass,
+  laudos: FileText,
+  manutencao: Settings,
+};
+const ICONES_ROTATIVOS = [Layers, ClipboardCheck, Wrench, Compass, FileText, Settings];
 
 export const Servicos: React.FC = () => {
-  const [activeServico, setActiveServico] = useState<string>(SERVICOS_LIST[0].id);
+  const { hero, lista, fluxo: FLUXO_TRABALHO } = useSiteDoc('servicos', DEFAULT_SERVICOS);
+  const SERVICOS_LIST = lista.map((s, i) => ({
+    ...s,
+    icon: ICONES[s.id] || ICONES_ROTATIVOS[i % ICONES_ROTATIVOS.length],
+    image: s.image || DEFAULT_SERVICOS.lista.find((d) => d.id === s.id)?.image || '',
+  }));
+  const [activeServico, setActiveServico] = useState<string>(DEFAULT_SERVICOS.lista[0].id);
 
   return (
     <div className="w-full bg-[#f8f9f6] text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
@@ -129,7 +43,7 @@ export const Servicos: React.FC = () => {
         {/* MÍDIA DE FUNDO FULL WIDTH */}
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
-            src="/img/Servicos_596.jpg"
+            src={hero.bgImage}
             alt="Quattro Construtora - Serviços de Engenharia"
             className="w-full h-full object-cover object-center"
           />
@@ -148,14 +62,14 @@ export const Servicos: React.FC = () => {
             </nav>
 
             <h1 className="text-[2.3rem] font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
-              SOLUÇÕES INTEGRADAS DE <br />
+              {hero.titleLine1} <br />
               <span className="bg-amber-500 text-zinc-950 px-3.5 py-1 rounded-md inline-block mt-2 font-black">
-                ENGENHARIA CIVIL
+                {hero.titleHighlight}
               </span>
             </h1>
 
             <p className="text-zinc-300 text-base md:text-lg font-normal leading-relaxed max-w-xl font-sans">
-              Do planejamento inicial à entrega final das chaves, oferecemos gestão rigorosa, inovação tecnológica e conformidade normativa para garantir o sucesso do seu empreendimento.
+              {hero.description}
             </p>
 
             <div className="pt-2">

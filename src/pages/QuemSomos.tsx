@@ -1,6 +1,9 @@
 // src/pages/QuemSomos.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useSiteDoc } from '../lib/siteContent';
+import { DEFAULT_QUEM } from '../data/siteDefaults';
+import { comNegrito } from '../lib/richText';
 import { 
   Target, 
   Eye, 
@@ -186,30 +189,9 @@ const PROVA_SOCIAL_OBRAS = [
   }
 ];
 
-const TRAJETORIA_TIMELINE = [
-  {
-    fase: 'Fundação',
-    desc: 'Início focado em engenharia consultiva e obras técnicas de alta complexidade.'
-  },
-  {
-    fase: 'Expansão & Incorporação',
-    desc: 'Cobertura logística em todo o Brasil e consolidação do braço imobiliário (Quattro Inc).'
-  },
-  {
-    fase: 'Acreditação Máxima',
-    desc: 'Conquista das certificações PBQP-H Nível A e NBR ISO 9001:2015.'
-  },
-  {
-    fase: 'Grandes Contas B2B',
-    desc: 'Parcerias estratégicas com multinacionais dos setores de logística, telecomunicações e saúde.'
-  },
-  {
-    fase: 'Escala Residencial',
-    desc: 'Expansão da marca com megacomplexos residenciais de milhares de unidades entregues.'
-  }
-];
 
 export const QuemSomos: React.FC = () => {
+  const { hero, manifesto, qualidade, governanca, timeline: TRAJETORIA_TIMELINE } = useSiteDoc('quemsomos', DEFAULT_QUEM);
   const [activeSegment, setActiveSegment] = useState(0);
 
   useEffect(() => {
@@ -260,7 +242,7 @@ export const QuemSomos: React.FC = () => {
     ro.observe(el);
     trajetoriaCardRefs.current.forEach((card) => card && ro.observe(card));
     return () => ro.disconnect();
-  }, []);
+  }, [TRAJETORIA_TIMELINE.length]);
 
   const trajW = trajetoriaSize.width || 1000;
   const trajH = trajetoriaSize.height || 260;
@@ -286,7 +268,7 @@ export const QuemSomos: React.FC = () => {
 
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden opacity-30">
           <img
-            src="/img/QuemSomos_3321.jpg"
+            src={hero.bgImage}
             alt="Quattro Construtora - Quem Somos"
             className="w-full h-full object-cover object-center"
           />
@@ -311,14 +293,14 @@ export const QuemSomos: React.FC = () => {
             </nav>
 
             <h1 className="text-[2.3rem] font-extrabold text-white uppercase tracking-tight leading-[1.12] font-['Montserrat']">
-              CONHEÇA A <br />
+              {hero.titleLine1} <br />
               <span className="bg-amber-500 text-zinc-950 px-3.5 py-1 rounded-md inline-block mt-2 font-black">
-                NOSSA EMPRESA
+                {hero.titleHighlight}
               </span>
             </h1>
 
             <p className="text-zinc-300 text-base md:text-lg font-normal leading-relaxed max-w-xl font-sans">
-              Da infraestrutura logística e sedes corporativas à escala de grandes complexos residenciais. Transformamos desafios executivos complexos em soluções sólidas, previsíveis e sustentáveis em todo o Brasil.
+              {hero.description}
             </p>
 
             <div className="pt-2">
@@ -350,17 +332,12 @@ export const QuemSomos: React.FC = () => {
               </span>
               
               <h2 className="text-[2.3rem] font-extrabold text-zinc-950 font-['Montserrat'] leading-[1.12] tracking-tight">
-                Soluções End-to-End <br className="hidden sm:block" />
-                & Rigor Técnico
+                {manifesto.title}
               </h2>
 
               <div className="space-y-4 text-zinc-600 text-sm md:text-base font-normal leading-relaxed font-sans max-w-xl">
-                <p>
-                  A Quattro Construtora é especializada em soluções end-to-end de alta complexidade. Com mais de 1 milhão de metros quadrados executados, construímos nossa reputação onde o rigor técnico é inegociável: de galpões logísticos e plantas industriais a sedes corporativas, ambientes farmacêuticos controlados e complexos residenciais.
-                </p>
-                <p>
-                  Atuamos no modelo Turnkey (Design & Build), assumindo responsabilidade integral por todo o ciclo da obra — dos estudos de viabilidade e projetos executivos ao comissionamento e entrega final das chaves.
-                </p>
+                <p>{manifesto.p1}</p>
+                <p>{manifesto.p2}</p>
               </div>
             </div>
 
@@ -620,7 +597,7 @@ export const QuemSomos: React.FC = () => {
 
               <div className="space-y-6 pt-2">
                 <blockquote className="text-zinc-700 text-sm md:text-base leading-relaxed italic border-l-4 border-amber-500 pl-4 font-sans">
-                  "A Quattro Construtora atua na construção civil e na incorporação de empreendimentos habitacionais, corporativos e industriais com foco na excelência dos produtos e serviços entregues. Assegura a satisfação dos clientes, garante o cumprimento dos requisitos legais e promove a melhoria contínua dos processos, mantendo o compromisso com práticas sustentáveis e inovadoras que respeitam o meio ambiente."
+                  &quot;{String(qualidade.quote).replace(/^["“”]+|["“”]+$/g, '')}&quot;
                 </blockquote>
 
                 <div className="flex items-start gap-3 pt-2">
@@ -642,7 +619,7 @@ export const QuemSomos: React.FC = () => {
                 <div className="bg-white border border-zinc-200/80 p-6 sm:p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6">
                   <div className="h-16 flex items-center justify-center sm:justify-start">
                     <img 
-                      src="/selos/SELO_pbqph.png" 
+                      src={qualidade.seloPbqph} 
                       alt="Selo PBQP-H Nível A" 
                       className="max-h-full max-w-full object-contain"
                     />
@@ -660,7 +637,7 @@ export const QuemSomos: React.FC = () => {
                 <div className="bg-white border border-zinc-200/80 p-6 sm:p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-6">
                   <div className="h-24 flex items-center justify-center sm:justify-start">
                     <img 
-                      src="/selos/Logo_ISO9001_2026.png" 
+                      src={qualidade.seloIso} 
                       alt="Selo ISO 9001 - certificação CBG Certificadora Brasileira de Gestão" 
                       className="max-h-full max-w-full object-contain"
                     />
@@ -716,7 +693,7 @@ export const QuemSomos: React.FC = () => {
               </div>
               <h3 className="text-xl font-bold text-zinc-950 font-['Montserrat']">Missão</h3>
               <p className="text-sm text-zinc-600 font-sans leading-relaxed">
-                Entregar engenharia de alta performance com compromisso intransigente em qualidade, segurança e previsibilidade orçamentária, gerando valor sustentável para clientes e sociedade.
+                {governanca.missao}
               </p>
             </div>
 
@@ -726,7 +703,7 @@ export const QuemSomos: React.FC = () => {
               </div>
               <h3 className="text-xl font-bold text-zinc-950 font-['Montserrat']">Visão</h3>
               <p className="text-sm text-zinc-600 font-sans leading-relaxed">
-                Ser a parceira estratégica referência no mercado nacional em obras complexas nos setores Industrial, Corporativo, Farmacêutico e Residencial.
+                {governanca.visao}
               </p>
             </div>
 
@@ -736,7 +713,7 @@ export const QuemSomos: React.FC = () => {
               </div>
               <h3 className="text-xl font-bold text-zinc-950 font-['Montserrat']">Valores e Ética</h3>
               <p className="text-sm text-zinc-600 font-sans leading-relaxed">
-                Atuamos com <strong className="text-zinc-950 font-['Montserrat'] font-semibold">Rigor Técnico</strong> inegociável, asseguramos <strong className="text-zinc-950 font-['Montserrat'] font-semibold">Previsibilidade</strong> total, mantemos <strong className="text-zinc-950 font-['Montserrat'] font-semibold">Integridade</strong> absoluta e valorizamos a <strong className="text-zinc-950 font-['Montserrat'] font-semibold">Segurança</strong> e a sustentabilidade <strong className="text-zinc-950 font-['Montserrat'] font-semibold">(ESG)</strong>.
+                {comNegrito(governanca.valores, "text-zinc-950 font-['Montserrat'] font-semibold")}
               </p>
             </div>
           </div>
@@ -792,7 +769,7 @@ export const QuemSomos: React.FC = () => {
                   </marker>
                 </defs>
 
-                {[0, 1, 2, 3].map((idx) => (
+                {TRAJETORIA_TIMELINE.slice(0, -1).map((_, idx) => (
                   <path 
                     key={idx}
                     d={trajetoriaArrowPath(idx)}
@@ -805,7 +782,7 @@ export const QuemSomos: React.FC = () => {
                 ))}
               </svg>
 
-              <div className="grid grid-cols-5 gap-6 items-end relative z-10">
+              <div className="grid gap-6 items-end relative z-10" style={{ gridTemplateColumns: `repeat(${Math.max(TRAJETORIA_TIMELINE.length, 1)}, minmax(0, 1fr))` }}>
                 {TRAJETORIA_TIMELINE.map((item, idx) => {
                   return (
                     <div key={idx} className="relative flex flex-col items-center" style={{ marginBottom: idx * 18 }}>

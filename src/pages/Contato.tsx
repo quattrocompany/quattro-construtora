@@ -4,39 +4,19 @@ import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, HelpCircle, ChevronRight, ArrowRight } from 'lucide-react';
 import { LeadForm } from '../components/LeadForm';
 import { FAQS_PADRAO, getFaqs, type FaqPublico } from '../lib/faq';
+import { useContato, hrefWhatsapp, hrefMapa } from '../lib/siteContent';
+import type { ContatoInfo } from '../data/siteDefaults';
 
-const CANAIS_DIRETOS = [
-  {
-    icon: Phone,
-    titulo: 'Telefone & WhatsApp Comercial',
-    info: '(11) 3045-0826',
-    sub: '',
-    href: 'https://wa.me/551130450826'
-  },
-  {
-    icon: Mail,
-    titulo: 'E-mail Institucional',
-    info: 'contato@quattroconstrutora.com.br',
-    sub: 'Resposta média em até 24h úteis',
-    href: 'mailto:contato@quattroconstrutora.com.br'
-  },
-  {
-    icon: MapPin,
-    titulo: 'Sede Administrativa',
-    info: 'Al. Rio Negro, 503 - Conj 907',
-    sub: 'Alphaville Industrial – Barueri / SP - CEP 06454-000',
-    href: 'https://www.google.com/maps/dir/-23.5012724,-46.8485149/Quattro+Construtora,+Al.+Rio+Negro,+503+-+Conj+907+-+Alphaville+Industrial,+Barueri+-+SP,+06454-000/@-23.5017254,-46.8509089,17z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x94ce574f51a7c4bd:0x6406a5f3e39d192b!2m2!1d-46.8486349!2d-23.5022332?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D'
-  },
-  {
-    icon: Clock,
-    titulo: 'Horário de Atendimento',
-    info: 'Seg a Qui: 08h às 18h | Sex: 08h às 17h',
-    sub: '',
-    href: null
-  }
+const montarCanais = (c: ContatoInfo) => [
+  { icon: Phone, titulo: 'Telefone & WhatsApp Comercial', info: c.comercialPhone, sub: '', href: hrefWhatsapp(c.comercialPhone) as string | null },
+  { icon: Mail, titulo: 'E-mail Institucional', info: c.comercialEmail, sub: 'Resposta média em até 24h úteis', href: `mailto:${c.comercialEmail}` as string | null },
+  { icon: MapPin, titulo: 'Sede Administrativa', info: c.enderecoLinha1, sub: c.enderecoLinha2, href: hrefMapa(c) as string | null },
+  { icon: Clock, titulo: 'Horário de Atendimento', info: c.horario, sub: '', href: null as string | null },
 ];
 
 export const Contato: React.FC = () => {
+  const contato = useContato();
+  const CANAIS_DIRETOS = montarCanais(contato);
   // Perguntas marcadas em /admin > Contato como "Mostrar também na página Contato".
   const [faqs, setFaqs] = useState<FaqPublico[]>(FAQS_PADRAO);
   useEffect(() => {

@@ -17,6 +17,7 @@ import { sanitizeHtml, isSafeUrl } from '../utils/sanitizeHtml';
 import { SETORES_PADRAO, OBRAS_PADRAO } from '../data/portfolioDefaults';
 import { blogPosts as BLOG_PADRAO } from '../data/blogPosts';
 import { FAQS_PADRAO, CATEGORIAS_FAQ } from '../lib/faq';
+import { DEFAULT_HOME, DEFAULT_QUEM, DEFAULT_SERVICOS, DEFAULT_CONTATO_INFO, type Slide } from '../data/siteDefaults';
 
 // Se o usuário digitar só "marketing", completa com este domínio.
 const LOGIN_DOMAIN = 'quattroconstrutora.com.br';
@@ -235,11 +236,6 @@ select.inp { padding-right: 28px; }
 //  TIPOS, PADRÕES E HELPERS
 // ============================================================
 type Img = { url: string; alt: string };
-type Slide = {
-  id: number; type: 'image' | 'video'; desktopUrl: string; mobileUrl: string;
-  line1BeforeHighlight: string; highlightPart1: string; highlightPart2: string; line3AfterHighlight: string;
-  slideDesc: string; ctaText: string; ctaLink: string;
-};
 type Setor = { id: string; slug: string; title: string; desc: string; nbrs: string[]; diferenciais: string[]; imagens: Img[]; [k: string]: any };
 type Obra = {
   id: number; slug: string; title: string; categoriaSlug: string; categoriaLabel: string; local: string; area: string; status: string;
@@ -249,79 +245,9 @@ type Obra = {
 type Post = { id: number; title: string; author: string; date: string; capaImage: string; content: string; slug: string; excerpt: string; published: boolean; [k: string]: any };
 type TabId = 'home' | 'quemSomos' | 'setores' | 'servicos' | 'contato' | 'blog';
 
-const DEFAULT_HOME = {
-  hero: {
-    mode: 'carousel' as 'single' | 'carousel' | 'video',
-    mediaList: [
-      { id: 1, type: 'image', desktopUrl: '/img/bg_hero1.avif', mobileUrl: '/img/bg_hero1_mobile.avif', line1BeforeHighlight: 'CIVIL DE', highlightPart1: 'ALTA', highlightPart2: 'PERFORMANCE', line3AfterHighlight: 'E PRECISÃO', slideDesc: 'Executamos projetos industriais, corporativos, farmacêuticos e residenciais com rigor técnico NBR.', ctaText: 'Saiba Mais', ctaLink: '/servicos' },
-      { id: 2, type: 'image', desktopUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000', mobileUrl: '', line1BeforeHighlight: 'PREVISIBILIDADE E', highlightPart1: 'RIGOR', highlightPart2: 'ORÇAMENTÁRIO', line3AfterHighlight: 'EM TODAS AS ETAPAS', slideDesc: 'Gestão Turnkey de ponta a ponta sem surpresas no orçamento final.', ctaText: 'Solicitar Cotação', ctaLink: '/contato' },
-    ] as Slide[],
-  },
-  approach: {
-    badge: 'NOSSA ABORDAGEM',
-    title: 'Engenharia versátil e soluções completas para sua obra',
-    description: 'Atuamos em empreendimentos residenciais, habitação social (Minha Casa Minha Vida), obras corporativas, retrofits e adequações técnicas.',
-    card1: { title: 'Obras Corporativas & Habitação', text: 'Execução de edificações industriais, prédios comerciais e projetos habitacionais integrados.' },
-    card2: { title: 'Gestão Turnkey & Regularização', text: 'Gerenciamento completo do projeto à entrega final, assegurando conformidade com normas NBR.' },
-    card3: { title: 'Retrofit, Reformas & Manutenção', text: 'Modernização de edificações, renovação de fachadas, reformas estruturais e adequações técnicas.' },
-  },
-  aboutMosaic: {
-    title: 'Solução completa para a excelência da sua construção',
-    description: 'A Quattro Construtora conduz todas as etapas da sua obra com máxima transparência, segurança técnica e rigor orçamentário em todo o Brasil.',
-    statNumber: '100%', statLabel: 'Conformidade Técnica',
-    img1: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1000',
-    img2: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800',
-    img3: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=800',
-  },
-};
-
-const DEFAULT_QUEM = {
-  hero: {
-    titleLine1: 'CONHEÇA A', titleHighlight: 'NOSSA EMPRESA',
-    description: 'Da infraestrutura logística e sedes corporativas à escala de grandes complexos residenciais. Transformamos desafios executivos complexos em soluções sólidas e previsíveis.',
-    bgImage: '/img/BG_CTA_QuattroInc_Site.jpeg',
-  },
-  manifesto: {
-    title: 'Soluções End-to-End & Rigor Técnico em Todo o Brasil',
-    p1: 'A Quattro Construtora é especializada em soluções end-to-end de alta complexidade. Com um acervo consolidado e equipe técnica altamente capacitada, gerenciamos e executamos canteiros com transparência e precisão orçamentária.',
-    p2: 'Atuamos no modelo Turnkey (Design & Build), assumindo a responsabilidade integral por todo o ciclo da obra.',
-  },
-  qualidade: {
-    quote: '"A Quattro Construtora atua na construção civil e na incorporação de empreendimentos habitacionais, corporativos e industriais com foco na excelência..."',
-    seloPbqph: '/selos/SELO_pbqph.png',
-    seloIso: '/selos/Logo_ISO9001_2026.png',
-  },
-  governanca: {
-    missao: 'Entregar engenharia de alta performance com compromisso intransigente em qualidade, segurança do trabalho e previsibilidade orçamentária.',
-    visao: 'Ser a parceira estratégica referência no mercado nacional em obras complexas e edificações de grande porte.',
-    valores: 'Rigor Técnico inegociável, Previsibilidade orçamentária total, Transparência executiva e Integridade absoluta.',
-  },
-  timeline: [
-    { id: 1, fase: 'Fundação', desc: 'Início focado em engenharia consultiva e obras técnicas de alta complexidade.' },
-    { id: 2, fase: 'Expansão & Incorporação', desc: 'Cobertura logística em todo o Brasil e consolidação do braço imobiliário (Quattro Inc).' },
-    { id: 3, fase: 'Acreditação Máxima', desc: 'Conquista das certificações PBQP-H Nível A e NBR ISO 9001:2015.' },
-  ] as { id: number; fase: string; desc: string }[],
-};
-
-const DEFAULT_SERVICOS = {
-  hero: { badge: 'SOLUÇÕES INTEGRADAS', title: 'Engenharia Civil de Alta Performance', description: 'Do planejamento inicial à entrega final das chaves, oferecemos gestão rigorosa, inovação tecnológica e conformidade normativa.' },
-  lista: [
-    { id: 'turnkey', title: 'Engenharia Turnkey & EPC', desc: 'Solução completa do conceito à entrega das chaves. Assumimos a responsabilidade integral pelo projeto, compras, construção e comissionamento.', entregaveis: ['Gestão unificada de fornecedores e contratos', 'Preço fechado com previsibilidade orçamentária', 'Prazo de entrega garantido em contrato'] },
-    { id: 'gerenciamento', title: 'Gerenciamento & Fiscalização', desc: 'Supervisão técnica rigorosa do canteiro de obras, garantindo o cumprimento de especificações e controle físico-financeiro.', entregaveis: ['Relatórios gerenciais semanais com medições', 'Controle rigoroso de cronograma (Linha de Balanço)'] },
-    { id: 'retrofit', title: 'Retrofit & Reformas Corporativas', desc: 'Modernização de edifícios, plantas fabris e escritórios sem interrupção das atividades operacionais do cliente.', entregaveis: ['Atualização de instalações elétricas e hidráulicas', 'Reforço estrutural e adequação de fachadas'] },
-  ] as { id: string; title: string; desc: string; entregaveis: string[] }[],
-  fluxo: [
-    { passo: '01', titulo: 'Diagnóstico & Viabilidade', desc: 'Análise detalhada do local e estudo de viabilidade.' },
-    { passo: '02', titulo: 'Planejamento & BIM', desc: 'Compatibilização de projetos e cronograma físico-financeiro.' },
-    { passo: '03', titulo: 'Execução & Controle', desc: 'Mobilização de canteiro e fiscalização contínua.' },
-    { passo: '04', titulo: 'Comissionamento & As-Built', desc: 'Testes finais, documentação legal e entrega das chaves.' },
-  ] as { passo: string; titulo: string; desc: string }[],
-};
-
+// Os padrões (= o que já está no ar) ficam em src/data/siteDefaults.ts, compartilhados com o site.
 const DEFAULT_CONTATO = {
-  comercialPhone: '(11) 3045-0826',
-  comercialEmail: 'contato@quattroconstrutora.com.br',
-  endereco: 'Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial, Barueri/SP - CEP 06454-000',
+  ...DEFAULT_CONTATO_INFO,
   // Mesmas perguntas que já estão no ar (src/lib/faq.ts), até alguém publicar a aba Contato.
   faqs: FAQS_PADRAO.map((f, i) => ({ id: i + 1, ...f })) as { id: number; pergunta: string; resposta: string; categoria: string; destaque: boolean }[],
 };
@@ -723,13 +649,14 @@ export function Admin() {
       const snap = await Promise.all(['home', 'quemsomos', 'portfolio', 'servicos', 'contato', 'blog'].map((id) => getDoc(doc(db, 'site_data', id))));
       const d = (i: number): any => (snap[i].exists() ? snap[i].data() : {});
       const H = mergeDeep(DEFAULT_HOME, d(0));
-      H.hero.mediaList = H.hero.mediaList.map((m: any) => ({ ...m, id: Number(m.id) || newId() }));
+      H.hero.mediaList = H.hero.mediaList.map((m: any) => ({ ...m, id: Number(m.id) || newId(), line0: typeof m.line0 === 'string' ? m.line0 : 'ENGENHARIA' }));
       const Q = mergeDeep(DEFAULT_QUEM, d(1));
       Q.timeline = Q.timeline.map((t: any) => ({ ...t, id: Number(t.id) || newId() }));
       const pd = d(2);
       const SET = (Array.isArray(pd.setores) && pd.setores.length ? pd.setores : SETORES_PADRAO).map(normSetor);
       const OBR = (Array.isArray(pd.obras) && pd.obras.length ? pd.obras : OBRAS_PADRAO).map(normObra);
       const S = mergeDeep(DEFAULT_SERVICOS, d(3));
+      S.lista = S.lista.map((x: any) => ({ ...x, image: typeof x.image === 'string' ? x.image : (DEFAULT_SERVICOS.lista.find((z) => z.id === x.id)?.image || '') }));
       const C = mergeDeep(DEFAULT_CONTATO, d(4));
       C.faqs = C.faqs.map((f: any) => ({ ...f, id: Number(f.id) || newId(), categoria: String(f.categoria || 'geral'), destaque: !!f.destaque }));
       const B: Post[] = snap[5].exists() && Array.isArray(d(5).posts) ? d(5).posts.map(normPost) : POSTS_PADRAO();
@@ -1001,6 +928,7 @@ export function Admin() {
                         onPick={(f) => uploadOne(`hm${m.id}`, f, 'home', true, (url) => setHome((h) => setIn(h, ['hero', 'mediaList'], h.hero.mediaList.map((x) => (x.id === m.id ? { ...x, mobileUrl: url } : x)))))} />
                     </div>
                     <span className="sub">Título do slide</span>
+                    <Field label="Linha inicial" hint="Primeira palavra do título, acima do destaque. Ex.: ENGENHARIA"><TextIn value={m.line0} onChange={(v) => p('line0', v)} /></Field>
                     <div className="g4">
                       <Field label="Linha 1"><TextIn value={m.line1BeforeHighlight} onChange={(v) => p('line1BeforeHighlight', v)} /></Field>
                       <Field label="Destaque 1 (amarelo)"><TextIn value={m.highlightPart1} onChange={(v) => p('highlightPart1', v)} /></Field>
@@ -1015,7 +943,7 @@ export function Admin() {
                   </Item>
                 );
               })}
-              {addBtn('Adicionar slide', () => H(['hero', 'mediaList'], [...home.hero.mediaList, { id: newId(), type: 'image', desktopUrl: '', mobileUrl: '', line1BeforeHighlight: '', highlightPart1: '', highlightPart2: '', line3AfterHighlight: '', slideDesc: '', ctaText: 'Saiba mais', ctaLink: '/servicos' } as Slide]))}
+              {addBtn('Adicionar slide', () => H(['hero', 'mediaList'], [...home.hero.mediaList, { id: newId(), type: 'image', desktopUrl: '', mobileUrl: '', line0: 'ENGENHARIA', line1BeforeHighlight: '', highlightPart1: '', highlightPart2: '', line3AfterHighlight: '', slideDesc: '', ctaText: 'Entre em Contato', ctaLink: '/contato' } as Slide]))}
             </Card>
 
             <Card id="sec-abordagem" title="Nossa abordagem" desc="Título geral e três cartões.">
@@ -1029,16 +957,16 @@ export function Admin() {
                   <Item key={k} title={`Cartão ${i + 1}`}>
                     <Field label="Título"><TextIn value={home.approach[k].title} onChange={(v) => H(['approach', k, 'title'], v)} /></Field>
                     <Field label="Texto"><AreaIn value={home.approach[k].text} onChange={(v) => H(['approach', k, 'text'], v)} /></Field>
+                    <Field label="Texto do botão"><TextIn value={home.approach[k].btnText} onChange={(v) => H(['approach', k, 'btnText'], v)} /></Field>
+                    <Field label="Link do botão" hint="Ex.: /servicos"><input className={`inp ${linkOk(home.approach[k].btnLink) ? '' : 'err'}`} type="text" value={home.approach[k].btnLink} onChange={(e) => H(['approach', k, 'btnLink'], e.target.value)} /></Field>
                   </Item>
                 ))}
               </div>
             </Card>
 
-            <Card id="sec-mosaico" title='Mosaico "Quem somos"' desc="Texto, indicador e três imagens.">
+            <Card id="sec-mosaico" title='Mosaico "Quem somos"' desc="Título, texto e três imagens.">
               <div className="g2">
                 <Field label="Título"><TextIn value={home.aboutMosaic.title} onChange={(v) => H(['aboutMosaic', 'title'], v)} /></Field>
-                <div className="g2"><Field label="Indicador (número)"><TextIn value={home.aboutMosaic.statNumber} onChange={(v) => H(['aboutMosaic', 'statNumber'], v)} /></Field>
-                  <Field label="Indicador (legenda)"><TextIn value={home.aboutMosaic.statLabel} onChange={(v) => H(['aboutMosaic', 'statLabel'], v)} /></Field></div>
               </div>
               <Field label="Descrição"><AreaIn rows={2} value={home.aboutMosaic.description} onChange={(v) => H(['aboutMosaic', 'description'], v)} /></Field>
               <div className="img-grid">
@@ -1070,7 +998,7 @@ export function Admin() {
               <div className="g3">
                 <Field label="Missão"><AreaIn rows={5} value={quem.governanca.missao} onChange={(v) => Q(['governanca', 'missao'], v)} /></Field>
                 <Field label="Visão"><AreaIn rows={5} value={quem.governanca.visao} onChange={(v) => Q(['governanca', 'visao'], v)} /></Field>
-                <Field label="Valores"><AreaIn rows={5} value={quem.governanca.valores} onChange={(v) => Q(['governanca', 'valores'], v)} /></Field>
+                <Field label="Valores" hint="Use **assim** para deixar uma palavra em negrito."><AreaIn rows={5} value={quem.governanca.valores} onChange={(v) => Q(['governanca', 'valores'], v)} /></Field>
               </div>
             </Card>
             <Card id="sec-timeline" title="Linha do tempo" desc="Marcos da história da empresa.">
@@ -1181,10 +1109,12 @@ export function Admin() {
           {activeTab === 'servicos' && (<>
             <Card id="sec-hero" title="Banner da página de serviços">
               <div className="g2">
-                <Field label="Selo superior"><TextIn value={servicos.hero.badge} onChange={(v) => SV(['hero', 'badge'], v)} /></Field>
-                <Field label="Título"><TextIn value={servicos.hero.title} onChange={(v) => SV(['hero', 'title'], v)} /></Field>
+                <Field label="Título (linha 1)"><TextIn value={servicos.hero.titleLine1} onChange={(v) => SV(['hero', 'titleLine1'], v)} /></Field>
+                <Field label="Título (destaque amarelo)"><TextIn value={servicos.hero.titleHighlight} onChange={(v) => SV(['hero', 'titleHighlight'], v)} /></Field>
               </div>
               <Field label="Descrição"><AreaIn value={servicos.hero.description} onChange={(v) => SV(['hero', 'description'], v)} /></Field>
+              <ImageField label="Imagem de fundo" inputKey="sbg" url={servicos.hero.bgImage} onUrl={(v) => SV(['hero', 'bgImage'], v)} busy={up('sbg')}
+                onPick={(f) => uploadOne('sbg', f, 'servicos', false, (url) => SV(['hero', 'bgImage'], url))} />
             </Card>
             <Card id="sec-lista" title="Serviços prestados">
               {servicos.lista.map((s, i) => (
@@ -1192,10 +1122,12 @@ export function Admin() {
                   acts={<MoveBtns i={i} n={servicos.lista.length} onMove={(d) => SV(['lista'], moveItem(servicos.lista, i, d))} />}>
                   <Field label="Título"><TextIn value={s.title} onChange={(v) => SV(['lista', i, 'title'], v)} /></Field>
                   <Field label="Descrição"><AreaIn rows={2} value={s.desc} onChange={(v) => SV(['lista', i, 'desc'], v)} /></Field>
+                  <ImageField label="Imagem do cartão" inputKey={`sv${s.id}`} url={s.image || ''} onUrl={(v) => SV(['lista', i, 'image'], v)} busy={up(`sv${s.id}`)}
+                    onPick={(f) => uploadOne(`sv${s.id}`, f, 'servicos', false, (url) => setServicos((x) => setIn(x, ['lista'], x.lista.map((y) => (y.id === s.id ? { ...y, image: url } : y)))))} />
                   <StringList label="Itens inclusos (entregáveis)" items={s.entregaveis} onChange={(l) => SV(['lista', i, 'entregaveis'], l)} addLabel="Adicionar item" />
                 </Item>
               ))}
-              {addBtn('Adicionar serviço', () => SV(['lista'], [...servicos.lista, { id: `servico-${newId()}`, title: '', desc: '', entregaveis: [] }]))}
+              {addBtn('Adicionar serviço', () => SV(['lista'], [...servicos.lista, { id: `servico-${newId()}`, title: '', image: '', desc: '', entregaveis: [] }]))}
             </Card>
             <Card id="sec-fluxo" title="Fluxo de trabalho" desc="Passo a passo numerado automaticamente.">
               {servicos.fluxo.map((f, i) => (
@@ -1219,7 +1151,11 @@ export function Admin() {
                 <Field label="Telefone comercial"><TextIn value={contato.comercialPhone} onChange={(v) => CT(['comercialPhone'], v)} /></Field>
                 <Field label="E-mail direto"><input className="inp" type="email" value={contato.comercialEmail} onChange={(e) => CT(['comercialEmail'], e.target.value)} /></Field>
               </div>
-              <Field label="Endereço da sede"><TextIn value={contato.endereco} onChange={(v) => CT(['endereco'], v)} /></Field>
+              <div className="g2">
+                <Field label="Endereço (linha 1)" hint="Rua, número e conjunto."><TextIn value={contato.enderecoLinha1} onChange={(v) => CT(['enderecoLinha1'], v)} /></Field>
+                <Field label="Endereço (linha 2)" hint="Bairro, cidade e CEP."><TextIn value={contato.enderecoLinha2} onChange={(v) => CT(['enderecoLinha2'], v)} /></Field>
+              </div>
+              <Field label="Horário de atendimento"><TextIn value={contato.horario} onChange={(v) => CT(['horario'], v)} /></Field>
             </Card>
             <Card id="sec-faq" title="Perguntas frequentes">
               {contato.faqs.map((f, i) => (

@@ -2,50 +2,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Building2, ShieldCheck, Wrench } from 'lucide-react';
+import { useSiteDoc } from '../lib/siteContent';
+import { DEFAULT_HOME } from '../data/siteDefaults';
 
-export interface ApproachCardData {
-  title: string;
-  text: string;
-  btnText: string;
-  btnLink: string;
-}
-
-export interface ApproachProps {
-  data?: {
-    badge?: string;
-    title?: string;
-    description?: string;
-    card1?: ApproachCardData;
-    card2?: ApproachCardData;
-    card3?: ApproachCardData;
-  };
-}
-
-export const Approach_Home: React.FC<ApproachProps> = ({ data }) => {
-  const badge = data?.badge || 'NOSSA ABORDAGEM';
-  const title = data?.title || 'Engenharia versátil e soluções completas para sua obra';
-  const description = data?.description || 'Atuamos em empreendimentos residenciais, habitação social (Minha Casa Minha Vida), obras corporativas, retrofits e adequações técnicas AVCB/CLCB.';
-
-  const card1 = data?.card1 || {
-    title: 'Obras Corporativas & Habitação',
-    text: 'Execução de edificações industriais, prédios comerciais e projetos habitacionais integrados, incluindo empreendimentos Minha Casa Minha Vida.',
-    btnText: 'Saiba Mais',
-    btnLink: '/setores'
-  };
-
-  const card2 = data?.card2 || {
-    title: 'Gestão Turnkey & Regularização',
-    text: 'Gerenciamento completo do projeto à entrega final, assegurando conformidade com normas NBR e obtenção de AVCB/CLCB junto aos Bombeiros.',
-    btnText: 'Ver Padrão',
-    btnLink: '/quem-somos'
-  };
-
-  const card3 = data?.card3 || {
-    title: 'Retrofit, Reformas & Manutenção',
-    text: 'Modernização de edificações, renovação de fachadas, reformas estruturais e adequações técnicas para imóveis comerciais e residenciais.',
-    btnText: 'Ver Soluções',
-    btnLink: '/servicos'
-  };
+export const Approach_Home: React.FC = () => {
+  const { approach } = useSiteDoc('home', DEFAULT_HOME);
+  const { badge, title, description, card1, card2, card3 } = approach;
 
   return (
     <section className="approach-section">

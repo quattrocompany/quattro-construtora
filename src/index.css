@@ -171,6 +171,16 @@ body {
   @apply text-xs md:text-sm leading-relaxed font-sans text-zinc-600;
 }
 
+/* Card escuro (Retrofit): as regras acima fixam cor escura e vencem as classes
+   text-white / text-zinc-300 do componente. Estas têm mais especificidade. */
+.approach-card-dark .approach-card-title {
+  @apply text-white;
+}
+
+.approach-card-dark .approach-card-text {
+  @apply text-zinc-300;
+}
+
 .approach-notch-wrapper {
   @apply absolute -bottom-px -left-px z-10 flex items-end;
 }
@@ -438,4 +448,9 @@ body {
 
 .footer-link-bottom {
   @apply hover:text-amber-500 transition-colors;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
