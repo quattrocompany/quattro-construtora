@@ -227,16 +227,13 @@ export const QuemSomos: React.FC = () => {
     if (!el) return;
     const reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduz || typeof IntersectionObserver === 'undefined') { setTrajVisivel(true); return; }
-    let fim: number | undefined;
+    // entra quando o infográfico aparece; volta ao início quando sai de vista (e refaz ao voltar)
     const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      setTrajVisivel(true);
-      // depois da animação, remede as posições (as caixas já assentaram)
-      fim = window.setTimeout(() => window.dispatchEvent(new Event('resize')), TRAJ_PASSO * (TRAJETORIA_TIMELINE.length + 2));
-    }, { threshold: 0.2 });
+      if (e.isIntersecting && e.intersectionRatio >= 0.2) setTrajVisivel(true);
+      else if (!e.isIntersecting) setTrajVisivel(false);
+    }, { threshold: [0, 0.2] });
     io.observe(el);
-    return () => { io.disconnect(); window.clearTimeout(fim); };
+    return () => io.disconnect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [TRAJETORIA_TIMELINE.length]);
 
@@ -819,7 +816,7 @@ export const QuemSomos: React.FC = () => {
                     strokeDasharray="4 4" 
                     fill="none" 
                     markerEnd="url(#arrowhead-desktop)"
-                    style={{ opacity: trajVisivel ? 1 : 0, transition: 'opacity 0.35s ease-out', transitionDelay: `${(idx + 1) * TRAJ_PASSO + 140}ms` }}
+                    style={{ opacity: trajVisivel ? 1 : 0, transition: 'opacity 0.35s ease-out', transitionDelay: trajVisivel ? `${(idx + 1) * TRAJ_PASSO + 140}ms` : '0ms' }}
                   />
                 ))}
               </svg>
@@ -835,7 +832,7 @@ export const QuemSomos: React.FC = () => {
                         opacity: trajVisivel ? 1 : 0,
                         translate: trajVisivel ? '0 0' : '0 40px',
                         transition: 'opacity 0.45s ease-out, translate 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
-                        transitionDelay: `${idx * TRAJ_PASSO}ms`,
+                        transitionDelay: trajVisivel ? `${idx * TRAJ_PASSO}ms` : '0ms',
                       }}
                     >
                       <div

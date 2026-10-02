@@ -47,21 +47,20 @@ export const ScrollEffects: React.FC = () => {
     const primeiraSecao = main.querySelector('section');
     const vistos = new WeakSet<Element>();
 
+    // Refaz o efeito sempre que o bloco volta à tela: some quando sai totalmente de vista
+    // e entra de novo (com a animação) quando reaparece.
     const io = new IntersectionObserver(
       (entradas) => {
         entradas.forEach((e) => {
-          if (!e.isIntersecting) return;
           const el = e.target as HTMLElement;
-          io.unobserve(el);
-          el.classList.add('reveal-in');
-          window.setTimeout(() => {
+          if (e.isIntersecting && e.intersectionRatio >= 0.12) {
+            if (!el.classList.contains('reveal-in')) el.classList.add('reveal-in');
+          } else if (!e.isIntersecting) {
             el.classList.remove('reveal-in');
-            el.removeAttribute('data-reveal');
-            el.style.removeProperty('--reveal-delay');
-          }, 1400);
+          }
         });
       },
-      { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }
+      { threshold: [0, 0.12], rootMargin: '0px 0px -6% 0px' }
     );
 
     const marcar = () => {
