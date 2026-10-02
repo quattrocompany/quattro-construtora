@@ -21,7 +21,7 @@ import { DEFAULT_HOME, DEFAULT_QUEM, DEFAULT_SERVICOS, DEFAULT_CONTATO_INFO, typ
 
 // Se o usuário digitar só "marketing", completa com este domínio.
 const LOGIN_DOMAIN = 'quattroconstrutora.com.br';
-const LOGO_SRC = '/logo/Logo_Quattro Construtora_cut.svg';
+const LOGO_SRC = '/logo/logo_quattro-construtora.svg';
 
 // ============================================================
 //  ESTILOS
@@ -48,7 +48,7 @@ const ADMIN_CSS = `
 /* ---------- Barra lateral ---------- */
 .adm-side { background: var(--side); color: var(--side-ink); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; padding: 22px 14px 16px; }
 .adm-brand { padding: 2px 10px 22px; }
-.adm-brand img { display: block; width: 118px; height: auto; }
+.adm-brand img { display: block; width: 172px; height: auto; }
 .adm-brand span { display: block; margin-top: 11px; font-size: 12px; color: var(--side-muted); }
 .adm-nav { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; min-height: 0; }
 .adm-sub { display: flex; flex-direction: column; margin: 2px 0 8px 18px; padding-left: 10px; border-left: 1px solid var(--side-line); }
@@ -185,7 +185,7 @@ select.inp { padding-right: 28px; }
 /* ---------- Login ---------- */
 .login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); padding: 20px; }
 .login-card { width: 100%; max-width: 380px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 30px; display: flex; flex-direction: column; gap: 16px; }
-.login-card img { width: 130px; height: auto; display: block; }
+.login-card img { width: 190px; height: auto; display: block; }
 .login-card p.sub2 { color: var(--muted); margin-top: -4px; font-size: 13px; }
 .login-err { color: var(--danger); font-size: 13px; background: var(--danger-soft); padding: 8px 10px; border-radius: 7px; }
 .adm-loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f4f4f1; color: #6f6e68; font-family: 'Inter', system-ui, sans-serif; gap: 10px; position: relative; z-index: 200; }

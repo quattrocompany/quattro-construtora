@@ -85,7 +85,7 @@ export const AboutMosaic_Home: React.FC = () => {
                   src="/selos/Logo_ISO9001_2026.png"
                   alt="Selo ISO 9001 - certificação CBG Certificadora Brasileira de Gestão"
                   className="about-seal-img"
-                  style={{ height: "3rem", width: "auto" }}
+                  style={{ height: "4.5rem", width: "auto" }}
                 />
               </div>
               <p className="text-[11px] text-zinc-500 font-sans leading-tight">
