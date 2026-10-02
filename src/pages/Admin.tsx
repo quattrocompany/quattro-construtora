@@ -47,8 +47,8 @@ const ADMIN_CSS = `
 
 /* ---------- Barra lateral ---------- */
 .adm-side { background: var(--side); color: var(--side-ink); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; padding: 22px 14px 16px; }
-.adm-brand { padding: 2px 10px 22px; }
-.adm-brand img { display: block; width: 172px; height: auto; }
+.adm-brand { padding: 2px 10px 22px; text-align: center; }
+.adm-brand img { display: block; width: 172px; height: auto; margin: 0 auto; }
 .adm-brand span { display: block; margin-top: 11px; font-size: 12px; color: var(--side-muted); }
 .adm-nav { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; min-height: 0; }
 .adm-sub { display: flex; flex-direction: column; margin: 2px 0 8px 18px; padding-left: 10px; border-left: 1px solid var(--side-line); }
@@ -874,7 +874,7 @@ export function Admin() {
       <style>{ADMIN_CSS}</style>
 
       <aside className="adm-side">
-        <div className="adm-brand"><img src={LOGO_SRC} alt="Quattro Construtora" /><span>Painel de conteúdo</span></div>
+        <div className="adm-brand"><img src={LOGO_SRC} alt="Quattro Construtora" /><span>CMS Exclusivo</span></div>
         <nav className="adm-nav">
           {TABS.map((t) => (
             <React.Fragment key={t.id}>
