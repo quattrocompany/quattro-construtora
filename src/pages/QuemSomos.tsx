@@ -190,6 +190,8 @@ const PROVA_SOCIAL_OBRAS = [
 ];
 
 
+const TRAJ_PASSO = 330; // ms entre uma caixinha e a próxima
+
 export const QuemSomos: React.FC = () => {
   const { hero, manifesto, qualidade, governanca, timeline: TRAJETORIA_TIMELINE } = useSiteDoc('quemsomos', DEFAULT_QUEM);
   const [activeSegment, setActiveSegment] = useState(0);
@@ -211,37 +213,69 @@ export const QuemSomos: React.FC = () => {
   const [trajetoriaSize, setTrajetoriaSize] = useState({ width: 1000, height: 260 });
   const [trajetoriaCardTops, setTrajetoriaCardTops] = useState<{ x: number; y: number }[]>([]);
   const [trajetoriaDots, setTrajetoriaDots] = useState<{ x: number; y: number }[]>([]);
+  // Entrada em sequência: uma caixinha e uma seta por vez quando o infográfico aparece na tela
+  const [trajVisivel, setTrajVisivel] = useState(false);
+  useEffect(() => {
+    const el = trajetoriaRef.current;
+    if (!el) return;
+    const reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduz || typeof IntersectionObserver === 'undefined') { setTrajVisivel(true); return; }
+    let fim: number | undefined;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      setTrajVisivel(true);
+      // depois da animação, remede as posições (as caixas já assentaram)
+      fim = window.setTimeout(() => window.dispatchEvent(new Event('resize')), TRAJ_PASSO * (TRAJETORIA_TIMELINE.length + 2));
+    }, { threshold: 0.2 });
+    io.observe(el);
+    return () => { io.disconnect(); window.clearTimeout(fim); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [TRAJETORIA_TIMELINE.length]);
 
   useEffect(() => {
     const el = trajetoriaRef.current;
     if (!el) return;
 
+    // Posição de um elemento dentro do container, sem contar transformações (translate/scale),
+    // para que as setas fiquem certas mesmo durante a animação de entrada.
+    const pos = (node: HTMLElement) => {
+      let x = 0, y = 0;
+      let cur: HTMLElement | null = node;
+      while (cur && cur !== el) {
+        x += cur.offsetLeft;
+        y += cur.offsetTop;
+        cur = cur.offsetParent as HTMLElement | null;
+      }
+      return { x, y, w: node.offsetWidth, h: node.offsetHeight };
+    };
+
     const update = () => {
-      const containerRect = el.getBoundingClientRect();
       setTrajetoriaSize({ width: el.clientWidth, height: el.clientHeight });
 
       setTrajetoriaCardTops(
         trajetoriaCardRefs.current.map((card) => {
           if (!card) return { x: 0, y: 0 };
-          const r = card.getBoundingClientRect();
-          return { x: r.left - containerRect.left + r.width * 0.78, y: r.top - containerRect.top };
+          const r = pos(card);
+          return { x: r.x + r.w * 0.78, y: r.y };
         })
       );
 
       setTrajetoriaDots(
         trajetoriaDotRefs.current.map((dot) => {
           if (!dot) return { x: 0, y: 0 };
-          const r = dot.getBoundingClientRect();
-          return { x: r.left - containerRect.left + r.width / 2, y: r.top - containerRect.top + r.height / 2 };
+          const r = pos(dot);
+          return { x: r.x + r.w / 2, y: r.y + r.h / 2 };
         })
       );
     };
 
     update();
+    window.addEventListener('resize', update);
     const ro = new ResizeObserver(update);
     ro.observe(el);
     trajetoriaCardRefs.current.forEach((card) => card && ro.observe(card));
-    return () => ro.disconnect();
+    return () => { ro.disconnect(); window.removeEventListener('resize', update); };
   }, [TRAJETORIA_TIMELINE.length]);
 
   const trajW = trajetoriaSize.width || 1000;
@@ -748,7 +782,7 @@ export const QuemSomos: React.FC = () => {
 
           {/* VISUALIZAÇÃO DESKTOP: Infográfico em Escada Ascendente com Arcos/Setas Individuais */}
           <div className="hidden lg:block relative pt-10 pb-2">
-            <div className="w-full relative px-4" ref={trajetoriaRef}>
+            <div className="w-full relative px-4" ref={trajetoriaRef} data-sequencia>
               
               <svg 
                 className="absolute inset-0 w-full h-full pointer-events-none z-30" 
@@ -778,6 +812,7 @@ export const QuemSomos: React.FC = () => {
                     strokeDasharray="4 4" 
                     fill="none" 
                     markerEnd="url(#arrowhead-desktop)"
+                    style={{ opacity: trajVisivel ? 1 : 0, transition: 'opacity 0.35s ease-out', transitionDelay: `${(idx + 1) * TRAJ_PASSO + 140}ms` }}
                   />
                 ))}
               </svg>
@@ -785,7 +820,17 @@ export const QuemSomos: React.FC = () => {
               <div className="grid gap-6 items-end relative z-10" style={{ gridTemplateColumns: `repeat(${Math.max(TRAJETORIA_TIMELINE.length, 1)}, minmax(0, 1fr))` }}>
                 {TRAJETORIA_TIMELINE.map((item, idx) => {
                   return (
-                    <div key={idx} className="relative flex flex-col items-center" style={{ marginBottom: idx * 18 }}>
+                    <div
+                      key={idx}
+                      className="relative flex flex-col items-center"
+                      style={{
+                        marginBottom: idx * 18,
+                        opacity: trajVisivel ? 1 : 0,
+                        translate: trajVisivel ? '0 0' : '0 40px',
+                        transition: 'opacity 0.45s ease-out, translate 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+                        transitionDelay: `${idx * TRAJ_PASSO}ms`,
+                      }}
+                    >
                       <div
                         ref={(el) => { trajetoriaCardRefs.current[idx] = el; }}
                         className="w-full min-h-[200px] bg-[#f8f9f6] border border-zinc-200/80 p-5 rounded-2xl flex flex-col space-y-2 shadow-sm hover:border-amber-500/60 hover:bg-white hover:shadow-lg transition-all duration-300 group"

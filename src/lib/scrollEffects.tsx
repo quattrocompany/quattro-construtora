@@ -71,6 +71,7 @@ export const ScrollEffects: React.FC = () => {
         // não anima o banner do topo da página, nem itens dentro de outro item já animado
         if (primeiraSecao && primeiraSecao.contains(el)) return;
         if (el.parentElement?.closest('[data-reveal]')) return;
+        if (el.closest('[data-sequencia]')) return; // tem animação própria
         const irmaos = el.parentElement ? Array.from(el.parentElement.children) : [];
         const i = Math.max(0, irmaos.indexOf(el));
         (el as HTMLElement).style.setProperty('--reveal-delay', `${Math.min(i, 5) * 90}ms`);
