@@ -1,8 +1,9 @@
 // src/pages/Contato.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, HelpCircle, ChevronRight, ArrowRight } from 'lucide-react';
 import { LeadForm } from '../components/LeadForm';
+import { FAQS_PADRAO, getFaqs, type FaqPublico } from '../lib/faq';
 
 const CANAIS_DIRETOS = [
   {
@@ -35,22 +36,14 @@ const CANAIS_DIRETOS = [
   }
 ];
 
-const FAQS_CONTATO = [
-  {
-    pergunta: 'Sou vizinho de uma obra em andamento. Como relatar um imprevisto?',
-    resposta: 'Selecione a opção "Sou Vizinho de Obra" no formulário. Essa mensagem é direcionada com prioridade ao engenheiro residente.'
-  },
-  {
-    pergunta: 'Como cadastrar minha empresa para ser fornecedor de insumos?',
-    resposta: 'Utilize a opção "Sou Fornecedor / Parceria Comercial". Nosso departamento de suprimentos analisará suas homologações técnicas.'
-  },
-  {
-    pergunta: 'Qual o prazo médio de retorno para solicitações de cotação?',
-    resposta: 'Propostas preliminares são enviadas em até 48 horas úteis após o recebimento dos memoriais descritivos ou projetos.'
-  }
-];
-
 export const Contato: React.FC = () => {
+  // Perguntas marcadas em /admin > Contato como "Mostrar também na página Contato".
+  const [faqs, setFaqs] = useState<FaqPublico[]>(FAQS_PADRAO);
+  useEffect(() => {
+    getFaqs().then(setFaqs);
+  }, []);
+  const faqsContato = faqs.filter((f) => f.destaque);
+
   return (
     <div className="w-full bg-[#f8f9f6] text-zinc-900 font-sans selection:bg-amber-500 selection:text-zinc-950 overflow-x-hidden">
       
@@ -172,7 +165,7 @@ export const Contato: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {FAQS_CONTATO.map((faq, idx) => (
+            {faqsContato.map((faq, idx) => (
               <div key={idx} className="bg-[#f8f9f6] border border-zinc-200/80 p-7 sm:p-8 rounded-3xl space-y-3 shadow-xs hover:border-amber-500/50 hover:bg-white hover:shadow-md transition-all duration-300">
                 <div className="flex items-center gap-2 text-amber-600 font-['Montserrat']">
                   <HelpCircle className="w-5 h-5 shrink-0" />

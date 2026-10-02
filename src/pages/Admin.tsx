@@ -16,6 +16,7 @@ import { auth, db, storage } from '../firebase';
 import { sanitizeHtml, isSafeUrl } from '../utils/sanitizeHtml';
 import { SETORES_PADRAO, OBRAS_PADRAO } from '../data/portfolioDefaults';
 import { blogPosts as BLOG_PADRAO } from '../data/blogPosts';
+import { FAQS_PADRAO, CATEGORIAS_FAQ } from '../lib/faq';
 
 // Se o usuário digitar só "marketing", completa com este domínio.
 const LOGIN_DOMAIN = 'quattroconstrutora.com.br';
@@ -318,13 +319,11 @@ const DEFAULT_SERVICOS = {
 };
 
 const DEFAULT_CONTATO = {
-  comercialPhone: '+55 (11) 4003-0000',
+  comercialPhone: '(11) 3045-0826',
   comercialEmail: 'contato@quattroconstrutora.com.br',
   endereco: 'Al. Rio Negro, 503 - Conj 907 - Alphaville Industrial, Barueri/SP - CEP 06454-000',
-  faqs: [
-    { id: 1, pergunta: 'Sou vizinho de uma obra em andamento. Como relatar um imprevisto?', resposta: 'Selecione a opção "Sou Vizinho de Obra" no formulário de contato.' },
-    { id: 2, pergunta: 'Qual o prazo médio de retorno para solicitações de cotação?', resposta: 'Propostas preliminares são enviadas em até 48 horas úteis.' },
-  ] as { id: number; pergunta: string; resposta: string }[],
+  // Mesmas perguntas que já estão no ar (src/lib/faq.ts), até alguém publicar a aba Contato.
+  faqs: FAQS_PADRAO.map((f, i) => ({ id: i + 1, ...f })) as { id: number; pergunta: string; resposta: string; categoria: string; destaque: boolean }[],
 };
 
 const newId = () => Date.now() + Math.floor(Math.random() * 1000);
@@ -732,7 +731,7 @@ export function Admin() {
       const OBR = (Array.isArray(pd.obras) && pd.obras.length ? pd.obras : OBRAS_PADRAO).map(normObra);
       const S = mergeDeep(DEFAULT_SERVICOS, d(3));
       const C = mergeDeep(DEFAULT_CONTATO, d(4));
-      C.faqs = C.faqs.map((f: any) => ({ ...f, id: Number(f.id) || newId() }));
+      C.faqs = C.faqs.map((f: any) => ({ ...f, id: Number(f.id) || newId(), categoria: String(f.categoria || 'geral'), destaque: !!f.destaque }));
       const B: Post[] = snap[5].exists() && Array.isArray(d(5).posts) ? d(5).posts.map(normPost) : POSTS_PADRAO();
       setHome(H); setQuem(Q); setSetores(SET); setObras(OBR); setServicos(S); setContato(C); setBlog(B);
       setSelPost(B.length ? B[0].id : null);
@@ -832,6 +831,9 @@ export function Admin() {
       }
     }
     if (tab === 'contato' && contato.comercialEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contato.comercialEmail.trim())) return 'O e-mail de contato parece inválido.';
+    if (tab === 'contato') {
+      for (const f of contato.faqs) if (!f.pergunta.trim() || !f.resposta.trim()) return 'Há uma pergunta frequente sem pergunta ou sem resposta.';
+    }
     if (tab === 'blog') {
       const slugsPosts = new Set<string>();
       for (const p of blog) {
@@ -1224,10 +1226,14 @@ export function Admin() {
                 <Item key={f.id} title={`Pergunta ${i + 1}`} onRemove={() => CT(['faqs'], removeAt(contato.faqs, i))}
                   acts={<MoveBtns i={i} n={contato.faqs.length} onMove={(d) => CT(['faqs'], moveItem(contato.faqs, i, d))} />}>
                   <Field label="Pergunta"><TextIn value={f.pergunta} onChange={(v) => CT(['faqs', i, 'pergunta'], v)} /></Field>
-                  <Field label="Resposta"><AreaIn rows={2} value={f.resposta} onChange={(v) => CT(['faqs', i, 'resposta'], v)} /></Field>
+                  <Field label="Resposta"><AreaIn rows={3} value={f.resposta} onChange={(v) => CT(['faqs', i, 'resposta'], v)} /></Field>
+                  <div className="g2">
+                    <Field label="Categoria (página Dúvidas Frequentes)"><select className="inp" value={f.categoria} onChange={(e) => CT(['faqs', i, 'categoria'], e.target.value)}>{CATEGORIAS_FAQ.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</select></Field>
+                    <label className="chk"><input type="checkbox" checked={f.destaque} onChange={(e) => CT(['faqs', i, 'destaque'], e.target.checked)} /> Mostrar também na página Contato</label>
+                  </div>
                 </Item>
               ))}
-              {addBtn('Adicionar pergunta', () => CT(['faqs'], [...contato.faqs, { id: newId(), pergunta: '', resposta: '' }]))}
+              {addBtn('Adicionar pergunta', () => CT(['faqs'], [...contato.faqs, { id: newId(), pergunta: '', resposta: '', categoria: 'geral', destaque: false }]))}
             </Card>
           </>)}
 
