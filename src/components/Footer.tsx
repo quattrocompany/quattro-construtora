@@ -50,7 +50,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8 mb-16">
           
           {/* COLUNA 1: TEXTO INSTITUCIONAL + NEWSLETTER */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 lg:pr-14 space-y-6">
             <p className="footer-text max-w-sm">
               Engenharia de precisão, flexibilidade técnica e inovação. Construindo soluções de alta performance para o setor corporativo, industrial, hospitalar e residencial em todo o Brasil.
             </p>
@@ -112,7 +112,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* COLUNA 5: ONDE ESTAMOS */}
-          <div className="space-y-5">
+          <div className="flex flex-col gap-5">
             <h4 className="footer-col-title">Onde Estamos</h4>
             <div className="footer-list">
               <div className="flex items-start gap-3">
@@ -128,7 +128,7 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 pt-5">
+            <div className="flex items-center gap-3 mt-auto pt-2">
               {[
                 { icon: <FacebookIcon />, href: 'https://www.facebook.com/quattroconstrutora/', label: 'Facebook' },
                 { icon: <InstagramIcon />, href: 'https://instagram.com/quattroconstrutoraoficial', label: 'Instagram' },
