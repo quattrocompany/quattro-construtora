@@ -314,9 +314,12 @@ export const QuemSomos: React.FC = () => {
           <img
             src={img.grafismoQuem}
             alt=""
-            className="w-[80%] sm:w-[60%] lg:w-[45%] max-w-3xl h-auto object-contain object-right opacity-40 mix-blend-overlay"
+            className="w-[80%] sm:w-[60%] lg:w-[45%] max-w-3xl h-auto object-contain object-right opacity-20 mix-blend-multiply"
           />
         </div>
+
+        {/* Celular: escurece a imagem para o texto ficar legível (no desktop vale só o degradê à esquerda) */}
+        <div className="absolute inset-0 bg-zinc-950/65 lg:hidden z-[15] pointer-events-none" />
 
         <div className="absolute inset-y-0 left-0 w-full lg:w-7/12 bg-gradient-to-r from-zinc-950/90 via-zinc-950/60 to-transparent backdrop-blur-md [mask-image:linear-gradient(to_right,black_60%,transparent_100%)] z-20 pointer-events-none" />
 
