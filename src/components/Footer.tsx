@@ -62,7 +62,10 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* COLUNA 2: NAVEGAÇÃO */}
+          {/* COLUNA 2: vazia (só no desktop, mantém o espaçamento do grid) */}
+          <div className="hidden lg:block" aria-hidden="true" />
+
+          {/* COLUNA 3: NAVEGAÇÃO */}
           <div className="space-y-5">
             <h4 className="footer-col-title">Navegação</h4>
             <ul className="footer-list">
@@ -70,17 +73,6 @@ export const Footer: React.FC = () => {
               <li><Link to="/setores" className="footer-link">Setores de Atuação</Link></li>
               <li><Link to="/servicos" className="footer-link">Engenharia & Serviços</Link></li>
               <li><Link to="/blog" className="footer-link">Notícias & Blog</Link></li>
-            </ul>
-          </div>
-
-          {/* COLUNA 3: SETORES */}
-          <div className="space-y-5">
-            <h4 className="footer-col-title">Setores</h4>
-            <ul className="footer-list">
-              <li><Link to="/setores" className="footer-link">Industrial & Logística</Link></li>
-              <li><Link to="/setores" className="footer-link">Setor Corporativo</Link></li>
-              <li><Link to="/setores" className="footer-link">Setor Farmacêutico</Link></li>
-              <li><Link to="/setores" className="footer-link">Habitação & MCMV</Link></li>
             </ul>
           </div>
 
