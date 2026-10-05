@@ -3,7 +3,7 @@
 // botão dourado, slogan e rodapé preto com redes sociais. Tabelas + estilos inline para funcionar em qualquer cliente.
 import { obrasDestaque } from './obras.js';
 
-const SITE = 'https://www.quattroconstrutora.com.br';
+import { SITE } from './site.js';
 const OURO = '#fbb03b';
 
 const esc = (s) =>
