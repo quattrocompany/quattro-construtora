@@ -6,7 +6,7 @@ import { htmlConfirmacao } from './_lib/email-confirmacao.js';
 
 // Remetente da Construtora (precisa estar verificado no Brevo).
 // Se ainda nao estiver, usa o remetente ja verificado da Quattro Inc como reserva.
-const REMETENTE = { name: 'Quattro Construtora', email: 'no-reply@quattroconstrutora.com.br' };
+const REMETENTE = { name: 'Quattro Construtora', email: 'marketing@quattroconstrutora.com.br' };
 const REMETENTE_RESERVA = { name: 'Quattro Construtora', email: 'mailing@quattroinc.com.br' };
 
 const LISTAS = {
