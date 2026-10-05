@@ -52,7 +52,7 @@ export const Footer: React.FC = () => {
           {/* COLUNA 1: TEXTO INSTITUCIONAL + NEWSLETTER */}
           <div className="lg:col-span-2 lg:pr-14 space-y-6">
             <p className="footer-text max-w-sm">
-              Engenharia de precisão, flexibilidade técnica e inovação. Construindo soluções de alta performance para o setor corporativo, industrial, hospitalar e residencial em todo o Brasil.
+              Construindo soluções de alta performance para o setor corporativo, industrial, hospitalar e residencial em todo o Brasil.
             </p>
 
             {/* NEWSLETTER */}
