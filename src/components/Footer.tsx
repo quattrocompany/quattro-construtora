@@ -120,7 +120,7 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 mt-auto pt-2">
+            <div className="flex items-center gap-3 mt-auto pt-2 lg:justify-end">
               {[
                 { icon: <FacebookIcon />, href: 'https://www.facebook.com/quattroconstrutora/', label: 'Facebook' },
                 { icon: <InstagramIcon />, href: 'https://instagram.com/quattroconstrutoraoficial', label: 'Instagram' },
