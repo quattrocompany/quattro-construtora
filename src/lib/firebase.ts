@@ -4,7 +4,8 @@
 // inicialização duplicada aqui).
 
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../firebase';
 
 export { db };
 
@@ -54,6 +55,61 @@ export const saveLead = async (data: LeadData): Promise<boolean> => {
     return true;
   } catch (error) {
     console.error('Erro ao salvar lead no Firestore:', error);
+    return false;
+  }
+};
+
+// ---------------------------------------------------------------------------
+// Candidaturas (formulário Trabalhe Conosco / CareerForm)
+// ---------------------------------------------------------------------------
+
+export interface Candidatura {
+  id?: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  areaInteresse: string;
+  mensagem?: string;
+  curriculoUrl: string;
+  curriculoNome?: string;
+  termoAceito?: boolean;
+  origem?: string;
+  createdAt?: any;
+}
+
+export type CandidaturaData = Omit<Candidatura, 'id' | 'createdAt' | 'curriculoUrl'> & {
+  curriculo: File;
+};
+
+/**
+ * Envia o currículo (PDF/DOC/DOCX) para o Storage e grava a candidatura no
+ * Firestore (coleção 'candidaturas'). Mesmo esquema de validação do saveLead:
+ * lista fechada de campos, tamanhos máximos espelhados em firestore.rules e
+ * storage.rules.
+ */
+export const saveCandidatura = async (data: CandidaturaData): Promise<boolean> => {
+  try {
+    const caminho = `curriculos/${Date.now()}_${data.curriculo.name}`;
+    const storageRef = ref(storage, caminho);
+    await uploadBytes(storageRef, data.curriculo, { contentType: data.curriculo.type });
+    const curriculoUrl = await getDownloadURL(storageRef);
+
+    const payload: Record<string, unknown> = {
+      nome: cut(data.nome, 120),
+      email: cut(data.email, 160),
+      telefone: cut(data.telefone, 30),
+      areaInteresse: cut(data.areaInteresse, 60),
+      mensagem: cut(data.mensagem, 2000),
+      curriculoUrl: cut(curriculoUrl, 500),
+      curriculoNome: cut(data.curriculo.name, 200),
+      termoAceito: data.termoAceito === true,
+      origem: 'Site Oficial Quattro - Trabalhe Conosco',
+      createdAt: serverTimestamp(),
+    };
+    await addDoc(collection(db, 'candidaturas'), payload);
+    return true;
+  } catch (error) {
+    console.error('Erro ao salvar candidatura no Firestore:', error);
     return false;
   }
 };

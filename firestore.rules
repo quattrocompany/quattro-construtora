@@ -40,6 +40,28 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    function candidaturaValida(d) {
+      return d.keys().hasOnly(['nome','email','telefone','areaInteresse','mensagem','curriculoUrl','curriculoNome','termoAceito','origem','createdAt'])
+        && d.keys().hasAll(['nome','email','telefone','areaInteresse','curriculoUrl','termoAceito','createdAt'])
+        && d.nome is string && d.nome.size() >= 2 && d.nome.size() <= 120
+        && d.email is string && d.email.size() >= 5 && d.email.size() <= 160 && d.email.matches('^[^@ ]+@[^@ ]+[.][^@ ]+$')
+        && d.telefone is string && d.telefone.size() >= 8 && d.telefone.size() <= 30
+        && d.areaInteresse is string && d.areaInteresse.size() <= 60
+        && (!('mensagem' in d) || (d.mensagem is string && d.mensagem.size() <= 2000))
+        && d.curriculoUrl is string && d.curriculoUrl.size() <= 500
+        && (!('curriculoNome' in d) || (d.curriculoNome is string && d.curriculoNome.size() <= 200))
+        && (!('origem' in d) || (d.origem is string && d.origem.size() <= 60))
+        && d.termoAceito == true
+        && d.createdAt == request.time;
+    }
+
+    // Candidaturas (Trabalhe Conosco): qualquer visitante PODE CRIAR (com campos
+    // validados e currículo já enviado ao Storage antes), só o admin lê/altera/apaga.
+    match /candidaturas/{candidaturaId} {
+      allow create: if candidaturaValida(request.resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+
     // Todo o resto fica fechado.
     match /{document=**} {
       allow read, write: if false;

@@ -29,6 +29,19 @@ service firebase.storage {
       allow delete: if isAdmin();
     }
 
+    function curriculoValido() {
+      return request.resource.contentType.matches('application/(pdf|msword|vnd.openxmlformats-officedocument.wordprocessingml.document)')
+        && request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // Currículos enviados pelo formulário "Trabalhe Conosco": qualquer visitante
+    // pode ENVIAR (só PDF/DOC/DOCX até 10MB); a leitura é só do admin (dados pessoais).
+    match /curriculos/{allPaths=**} {
+      allow read: if isAdmin();
+      allow create: if curriculoValido();
+      allow update, delete: if isAdmin();
+    }
+
     // Demais arquivos: leitura pública, nenhuma gravação.
     match /{allPaths=**} {
       allow read: if true;

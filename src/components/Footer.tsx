@@ -96,7 +96,7 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/contato" className="footer-link">
+                <Link to="/trabalhe-conosco" className="footer-link">
                   Trabalhe Conosco
                 </Link>
               </li>
