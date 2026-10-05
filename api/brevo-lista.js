@@ -4,8 +4,10 @@
 
 import { htmlConfirmacao } from './_lib/email-confirmacao.js';
 
-// Remetente já verificado no Brevo (o mesmo da Quattro Inc)
-const REMETENTE = { name: 'Quattro Construtora', email: 'mailing@quattroinc.com.br' };
+// Remetente da Construtora (precisa estar verificado no Brevo).
+// Se ainda nao estiver, usa o remetente ja verificado da Quattro Inc como reserva.
+const REMETENTE = { name: 'Quattro Construtora', email: 'no-reply@quattroconstrutora.com.br' };
+const REMETENTE_RESERVA = { name: 'Quattro Construtora', email: 'mailing@quattroinc.com.br' };
 
 const LISTAS = {
   newsletter: 19, // Newsletter Quattro Construtora
@@ -98,16 +100,23 @@ export default async function handler(req, res) {
     if (r.status === 201 || r.status === 204) {
       if (lista === 'newsletter' && !jaNaLista) {
         try {
-          const m = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({
-              sender: REMETENTE,
-              to: [{ email }],
-              subject: 'Inscrição confirmada | Quattro Construtora',
-              htmlContent: await htmlConfirmacao(),
-            }),
-          });
+          const html = await htmlConfirmacao();
+          const enviar = (sender) =>
+            fetch('https://api.brevo.com/v3/smtp/email', {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({
+                sender,
+                to: [{ email }],
+                subject: 'Inscrição confirmada | Quattro Construtora',
+                htmlContent: html,
+              }),
+            });
+          let m = await enviar(REMETENTE);
+          if (!m.ok) {
+            console.error('Remetente principal recusado, usando reserva', m.status, (await m.text()).slice(0, 200));
+            m = await enviar(REMETENTE_RESERVA);
+          }
           if (!m.ok) console.error('Brevo recusou o e-mail de confirmação', m.status, (await m.text()).slice(0, 300));
         } catch (e) {
           console.error('Falha ao enviar o e-mail de confirmação', e);
