@@ -49,29 +49,16 @@ export const Footer: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8 mb-16">
           
-          {/* COLUNA 1: TEXTO INSTITUCIONAL + REDES */}
+          {/* COLUNA 1: TEXTO INSTITUCIONAL + NEWSLETTER */}
           <div className="lg:col-span-2 space-y-6">
             <p className="footer-text max-w-sm">
               Engenharia de precisão, flexibilidade técnica e inovação. Construindo soluções de alta performance para o setor corporativo, industrial, hospitalar e residencial em todo o Brasil.
             </p>
 
-            <div className="flex items-center gap-3">
-              {[
-                { icon: <FacebookIcon />, href: 'https://www.facebook.com/quattroconstrutora/', label: 'Facebook' },
-                { icon: <InstagramIcon />, href: 'https://instagram.com/quattroconstrutoraoficial', label: 'Instagram' },
-                { icon: <YoutubeIcon />, href: 'https://youtube.com/quattroconstrutora', label: 'YouTube' },
-              ].map((social, idx) => (
-                <a
-                  key={idx}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="footer-social-link"
-                >
-                  {social.icon}
-                </a>
-              ))}
+            {/* NEWSLETTER */}
+            <div className="space-y-3 pt-2">
+              <h4 className="footer-col-title">Newsletter</h4>
+              <NewsletterForm />
             </div>
           </div>
 
@@ -141,17 +128,26 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
+            <div className="flex items-center gap-3 pt-5">
+              {[
+                { icon: <FacebookIcon />, href: 'https://www.facebook.com/quattroconstrutora/', label: 'Facebook' },
+                { icon: <InstagramIcon />, href: 'https://instagram.com/quattroconstrutoraoficial', label: 'Instagram' },
+                { icon: <YoutubeIcon />, href: 'https://youtube.com/quattroconstrutora', label: 'YouTube' },
+              ].map((social, idx) => (
+                <a
+                  key={idx}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="footer-social-link"
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
           </div>
 
-        </div>
-
-        {/* NEWSLETTER */}
-        <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          <div className="space-y-1">
-            <h4 className="footer-col-title">Newsletter</h4>
-            <p className="footer-text">Receba notícias de obras, setores e novidades da Quattro Construtora.</p>
-          </div>
-          <NewsletterForm />
         </div>
 
         <div className="footer-bottom-bar">
