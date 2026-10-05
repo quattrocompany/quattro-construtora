@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Send, AlertCircle, CheckCircle2, HardHat, Building2 } from 'lucide-react';
 import { saveLead } from '../lib/firebase';
+import { adicionarNaLista } from '../lib/brevo';
 
 export interface LeadFormProps {
   obraId?: string;
@@ -110,6 +111,14 @@ export const LeadForm: React.FC<LeadFormProps> = ({
       };
       const ok = await saveLead(payload);
       if (ok) {
+        // Registra o contato na lista certa do Brevo (Contato / Trabalhe Conosco / Outras interações).
+        // Não bloqueia o envio: se o Brevo falhar, o lead já está salvo no Firestore.
+        void adicionarNaLista({
+          tipo: 'contato',
+          assunto: formData.assunto,
+          email: formData.email.trim(),
+          nome: formData.nome.trim(),
+        });
         try { localStorage.setItem('quattro_lead_ts', String(Date.now())); } catch { /* ignora */ }
         setSucesso(true);
         setFormData({

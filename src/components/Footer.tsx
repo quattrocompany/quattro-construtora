@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useContato, useImagens, hrefMapa } from '../lib/siteContent';
+import { NewsletterForm } from './NewsletterForm';
 import { 
   MapPin
 } from 'lucide-react';
@@ -35,39 +36,29 @@ export const Footer: React.FC = () => {
       </div>
 
       <div className="footer-container">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8 mb-16">
-          
-          {/* COLUNA 1: LOGO COMPLETO E EXPANDIDO */}
-          <div className="lg:col-span-2 space-y-6">
-            <Link to="/" className="inline-block group focus:outline-none">
+        {/* LOGO: sozinho no topo, acima da hierarquia de títulos */}
+        <div className="mb-10 lg:mb-12">
+          <Link to="/" className="inline-block group focus:outline-none">
               <img 
                 src={img.logoRodape} 
                 alt="Quattro Construtora" 
                 className="h-20 md:h-24 lg:h-28 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </Link>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8 mb-16">
+          
+          {/* COLUNA 1: TEXTO INSTITUCIONAL + NEWSLETTER */}
+          <div className="lg:col-span-2 space-y-6">
             <p className="footer-text max-w-sm">
               Engenharia de precisão, flexibilidade técnica e inovação. Construindo soluções de alta performance para o setor corporativo, industrial, hospitalar e residencial em todo o Brasil.
             </p>
 
-            <div className="flex items-center gap-3">
-              {[
-                { icon: <FacebookIcon />, href: 'https://www.facebook.com/quattroconstrutora/', label: 'Facebook' },
-                { icon: <InstagramIcon />, href: 'https://instagram.com/quattroconstrutoraoficial', label: 'Instagram' },
-                { icon: <YoutubeIcon />, href: 'https://youtube.com/quattroconstrutora', label: 'YouTube' },
-              ].map((social, idx) => (
-                <a
-                  key={idx}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="footer-social-link"
-                >
-                  {social.icon}
-                </a>
-              ))}
+            {/* NEWSLETTER */}
+            <div className="space-y-3 pt-2">
+              <h4 className="footer-col-title">Newsletter</h4>
+              <NewsletterForm />
             </div>
           </div>
 
@@ -75,7 +66,6 @@ export const Footer: React.FC = () => {
           <div className="space-y-5">
             <h4 className="footer-col-title">Navegação</h4>
             <ul className="footer-list">
-              <li><Link to="/" className="footer-link">Home</Link></li>
               <li><Link to="/quem-somos" className="footer-link">A Construtora</Link></li>
               <li><Link to="/setores" className="footer-link">Setores de Atuação</Link></li>
               <li><Link to="/servicos" className="footer-link">Engenharia & Serviços</Link></li>
@@ -113,6 +103,11 @@ export const Footer: React.FC = () => {
                   Fale Conosco
                 </Link>
               </li>
+              <li>
+                <Link to="/contato" className="footer-link">
+                  Trabalhe Conosco
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -133,6 +128,24 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
+            <div className="flex items-center gap-3 pt-5">
+              {[
+                { icon: <FacebookIcon />, href: 'https://www.facebook.com/quattroconstrutora/', label: 'Facebook' },
+                { icon: <InstagramIcon />, href: 'https://instagram.com/quattroconstrutoraoficial', label: 'Instagram' },
+                { icon: <YoutubeIcon />, href: 'https://youtube.com/quattroconstrutora', label: 'YouTube' },
+              ].map((social, idx) => (
+                <a
+                  key={idx}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="footer-social-link"
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
           </div>
 
         </div>
