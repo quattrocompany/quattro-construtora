@@ -2,6 +2,11 @@
 // A chave BREVO_API_KEY fica só no servidor (Vercel > Settings > Environment Variables).
 // Nunca expor a chave no front-end.
 
+import { htmlConfirmacao } from './_lib/email-confirmacao.js';
+
+// Remetente já verificado no Brevo (o mesmo da Quattro Inc)
+const REMETENTE = { name: 'Quattro Construtora', email: 'mailing@quattroinc.com.br' };
+
 const LISTAS = {
   newsletter: 19, // Newsletter Quattro Construtora
   contato: 20, // Contato Quattro Construtora
@@ -73,14 +78,43 @@ export default async function handler(req, res) {
   if (primeiro) attributes.FIRSTNAME = primeiro;
   if (resto.length) attributes.LASTNAME = resto.join(' ');
 
+  const headers = { 'api-key': apiKey, 'content-type': 'application/json', accept: 'application/json' };
+
+  // Já estava nesta lista? Então não reenviamos a confirmação (evita usar o formulário para
+  // disparar e-mails repetidos para outra pessoa).
+  let jaNaLista = false;
+  try {
+    const g = await fetch('https://api.brevo.com/v3/contacts/' + encodeURIComponent(email), { headers });
+    if (g.ok) jaNaLista = ((await g.json()).listIds || []).includes(listId);
+  } catch { /* segue: no pior caso reenviamos uma vez */ }
+
   try {
     const r = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
-      headers: { 'api-key': apiKey, 'content-type': 'application/json', accept: 'application/json' },
+      headers,
       body: JSON.stringify({ email, attributes, listIds: [listId], updateEnabled: true }),
     });
     // 201 = criado, 204 = atualizado (já existia)
-    if (r.status === 201 || r.status === 204) return res.status(200).json({ ok: true });
+    if (r.status === 201 || r.status === 204) {
+      if (lista === 'newsletter' && !jaNaLista) {
+        try {
+          const m = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              sender: REMETENTE,
+              to: [{ email }],
+              subject: 'Inscrição confirmada | Quattro Construtora',
+              htmlContent: await htmlConfirmacao(),
+            }),
+          });
+          if (!m.ok) console.error('Brevo recusou o e-mail de confirmação', m.status, (await m.text()).slice(0, 300));
+        } catch (e) {
+          console.error('Falha ao enviar o e-mail de confirmação', e);
+        }
+      }
+      return res.status(200).json({ ok: true });
+    }
     const txt = await r.text();
     console.error('Brevo recusou o contato', r.status, txt.slice(0, 300));
     return res.status(502).json({ ok: false, erro: 'brevo' });
