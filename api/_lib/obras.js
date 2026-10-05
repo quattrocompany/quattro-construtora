@@ -2,7 +2,7 @@
 // o mesmo que a página Setores & Obras mostra. Se o Firestore não responder ou vier vazio,
 // devolve [] e o e-mail mostra só o botão do portfólio.
 
-const SITE = 'https://www.quattroconstrutora.com.br';
+import { SITE } from './site.js';
 
 function valor(v) {
   if (!v || typeof v !== 'object') return undefined;
