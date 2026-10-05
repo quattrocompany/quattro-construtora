@@ -302,9 +302,7 @@ export const QuemSomos: React.FC = () => {
       
       {/* 1. HERO SECTION */}
       <section className="relative w-full min-h-[85vh] flex items-center bg-zinc-950 text-white pt-36 md:pt-44 pb-16 overflow-hidden border-b border-zinc-800 font-['Montserrat']">
-        <div className="absolute inset-0 bg-black z-0" />
-
-        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden opacity-30">
+        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
           <img
             src={hero.bgImage}
             alt="Quattro Construtora - Quem Somos"
