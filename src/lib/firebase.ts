@@ -69,6 +69,8 @@ export interface Candidatura {
   email: string;
   telefone: string;
   areaInteresse: string;
+  vagaId?: string;
+  vagaTitulo?: string;
   mensagem?: string;
   curriculoUrl: string;
   curriculoNome?: string;
@@ -135,6 +137,8 @@ const enviarParaConecta = async (data: CandidaturaData): Promise<void> => {
       arquivoUrl: cut(arquivoUrl, 700),
       arquivoNome: cut(data.curriculo.name, 200),
       termoAceito: data.termoAceito === true,
+      vagaId: cut(data.vagaId || '', 40),
+      vagaTitulo: cut(data.vagaTitulo || '', 200),
       origem: 'site_quattro_construtora',
       status: 'pendente_processamento',
       criadoEm: serverTimestamp(),

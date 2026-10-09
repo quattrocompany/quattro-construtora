@@ -1,8 +1,9 @@
 // src/components/CareerForm.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Send, AlertCircle, CheckCircle2, UploadCloud } from 'lucide-react';
 import { saveCandidatura } from '../lib/firebase';
 import { adicionarNaLista } from '../lib/brevo';
+import { listarVagasDivulgadas, type VagaDivulgada } from '../lib/vagasConecta';
 
 const AREAS_INTERESSE = [
   { value: '', label: 'Selecione a área de interesse...' },
@@ -25,9 +26,12 @@ export const CareerForm: React.FC = () => {
     email: '',
     telefone: '',
     areaInteresse: '',
+    vagaId: '',
     mensagem: '',
     termoAceito: false,
   });
+  const [vagas, setVagas] = useState<VagaDivulgada[]>([]);
+  useEffect(() => { listarVagasDivulgadas('construtora').then(setVagas); }, []);
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [sucesso, setSucesso] = useState(false);
@@ -114,6 +118,8 @@ export const CareerForm: React.FC = () => {
         email: formData.email,
         telefone: formData.telefone,
         areaInteresse: formData.areaInteresse,
+        vagaId: formData.vagaId,
+        vagaTitulo: vagas.find((v) => v.id === formData.vagaId)?.cargo || '',
         mensagem: formData.mensagem,
         termoAceito: formData.termoAceito,
         curriculo: arquivo,
@@ -127,7 +133,7 @@ export const CareerForm: React.FC = () => {
         });
         try { localStorage.setItem('quattro_candidatura_ts', String(Date.now())); } catch { /* ignora */ }
         setSucesso(true);
-        setFormData({ nome: '', email: '', telefone: '', areaInteresse: '', mensagem: '', termoAceito: false });
+        setFormData({ nome: '', email: '', telefone: '', areaInteresse: '', vagaId: '', mensagem: '', termoAceito: false });
         setArquivo(null);
       } else {
         setError('Não foi possível enviar sua candidatura. Tente novamente.');
@@ -250,6 +256,18 @@ export const CareerForm: React.FC = () => {
                 <option key={op.value} value={op.value} disabled={op.value === ''} className="bg-white text-zinc-900">
                   {op.label}
                 </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="vagaId" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+              Vaga de Interesse
+            </label>
+            <select id="vagaId" name="vagaId" value={formData.vagaId} onChange={handleChange} className="contact-input cursor-pointer">
+              <option value="" className="bg-white text-zinc-900">Banco de talentos (fora de época / outras oportunidades)</option>
+              {vagas.map((v) => (
+                <option key={v.id} value={v.id} className="bg-white text-zinc-900">{v.cargo}{v.local ? ` — ${v.local}` : ''}</option>
               ))}
             </select>
           </div>
