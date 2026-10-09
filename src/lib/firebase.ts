@@ -126,7 +126,7 @@ const enviarParaConecta = async (data: CandidaturaData): Promise<void> => {
     await uploadBytes(storageRef, data.curriculo, { contentType: data.curriculo.type });
     const arquivoUrl = await getDownloadURL(storageRef);
 
-    await addDoc(collection(dbConecta, 'curriculos_recebidos_site'), {
+    const novo = await addDoc(collection(dbConecta, 'curriculos_recebidos_site'), {
       nome: cut(data.nome, 120),
       email: cut(data.email, 160),
       telefone: cut(data.telefone, 30),
@@ -139,6 +139,8 @@ const enviarParaConecta = async (data: CandidaturaData): Promise<void> => {
       status: 'pendente_processamento',
       criadoEm: serverTimestamp(),
     });
+    // Avisa o Conecta para importar e ler o currículo agora (falha silenciosa: o RH também importa depois)
+    fetch('https://conecta.quattrocompany.com.br/api/curriculos/processar-site', { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ id: novo.id }), keepalive: true }).catch(() => {});
   } catch (error) {
     console.error('Erro ao enviar candidatura ao Quattro Conecta:', error);
   }
