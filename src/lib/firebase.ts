@@ -5,7 +5,7 @@
 
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../firebase';
+import { db, storage, dbConecta, storageConecta } from '../firebase';
 
 export { db };
 
@@ -87,7 +87,7 @@ export type CandidaturaData = Omit<Candidatura, 'id' | 'createdAt' | 'curriculoU
  * lista fechada de campos, tamanhos máximos espelhados em firestore.rules e
  * storage.rules.
  */
-export const saveCandidatura = async (data: CandidaturaData): Promise<boolean> => {
+const salvarNoProprio = async (data: CandidaturaData): Promise<boolean> => {
   try {
     const caminho = `curriculos/${Date.now()}_${data.curriculo.name}`;
     const storageRef = ref(storage, caminho);
@@ -112,4 +112,44 @@ export const saveCandidatura = async (data: CandidaturaData): Promise<boolean> =
     console.error('Erro ao salvar candidatura no Firestore:', error);
     return false;
   }
+};
+
+/**
+ * Cópia da candidatura para o Banco de Currículos do Quattro Conecta (RH).
+ * Falhar aqui nunca deve impedir o envio da candidatura: erros só vão ao console.
+ */
+const enviarParaConecta = async (data: CandidaturaData): Promise<void> => {
+  try {
+    const nomeSeguro = data.curriculo.name.replace(/[^\w.\-]+/g, '_');
+    const caminho = `curriculos_recebidos_site/${Date.now()}_${nomeSeguro}`;
+    const storageRef = ref(storageConecta, caminho);
+    await uploadBytes(storageRef, data.curriculo, { contentType: data.curriculo.type });
+    const arquivoUrl = await getDownloadURL(storageRef);
+
+    await addDoc(collection(dbConecta, 'curriculos_recebidos_site'), {
+      nome: cut(data.nome, 120),
+      email: cut(data.email, 160),
+      telefone: cut(data.telefone, 30),
+      areaInteresse: cut(data.areaInteresse, 60),
+      cartaRecomendacao: cut(data.mensagem, 2000),
+      arquivoUrl: cut(arquivoUrl, 700),
+      arquivoNome: cut(data.curriculo.name, 200),
+      termoAceito: data.termoAceito === true,
+      origem: 'site_quattro_construtora',
+      status: 'pendente_processamento',
+      criadoEm: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error('Erro ao enviar candidatura ao Quattro Conecta:', error);
+  }
+};
+
+/**
+ * Salva a candidatura no Firebase do site (painel /admin) e, em paralelo,
+ * envia uma cópia ao Banco de Currículos do Quattro Conecta.
+ * O retorno depende só do salvamento no próprio site.
+ */
+export const saveCandidatura = async (data: CandidaturaData): Promise<boolean> => {
+  const [ok] = await Promise.all([salvarNoProprio(data), enviarParaConecta(data)]);
+  return ok;
 };
