@@ -123,7 +123,7 @@ const salvarNoProprio = async (data: CandidaturaData): Promise<boolean> => {
 const enviarParaConecta = async (data: CandidaturaData): Promise<void> => {
   try {
     const nomeSeguro = data.curriculo.name.replace(/[^\w.\-]+/g, '_');
-    const caminho = `curriculos_recebidos_site/${Date.now()}_${nomeSeguro}`;
+    const caminho = `curriculos_recebidos_site/${Date.now()}_${Math.random().toString(36).slice(2, 10)}${Math.random().toString(36).slice(2, 10)}_${nomeSeguro}`;
     const storageRef = ref(storageConecta, caminho);
     await uploadBytes(storageRef, data.curriculo, { contentType: data.curriculo.type });
     const arquivoUrl = await getDownloadURL(storageRef);
