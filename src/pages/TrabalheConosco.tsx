@@ -7,23 +7,23 @@ import { CareerForm } from '../components/CareerForm';
 const BENEFICIOS = [
   {
     icon: HardHat,
-    titulo: 'Obras Técnicas e Desafiadoras',
-    desc: 'Atue em empreendimentos industriais, corporativos e residenciais de grande porte, com rigor técnico reconhecido pelo mercado.',
+    titulo: 'Obras que desafiam',
+    desc: 'Projetos grandes, industriais, corporativos e residenciais.',
   },
   {
     icon: GraduationCap,
-    titulo: 'Desenvolvimento Contínuo',
-    desc: 'Investimos em capacitação técnica e normativa (NBRs, segurança do trabalho, gestão de obras) para toda a nossa equipe.',
+    titulo: 'Sempre aprendendo',
+    desc: 'Capacitação técnica e de segurança para toda a equipe.',
   },
   {
     icon: HeartHandshake,
-    titulo: 'Cultura de Respeito',
-    desc: 'Mais de 15 anos de mercado construídos com ética, transparência e valorização de quem faz a obra acontecer.',
+    titulo: 'Gente que respeita gente',
+    desc: 'Mais de 15 anos de ética e valorização de quem constrói.',
   },
   {
     icon: TrendingUp,
-    titulo: 'Crescimento Real',
-    desc: 'Buscamos talentos que queiram crescer junto com a empresa, em um ambiente de meritocracia e oportunidades internas.',
+    titulo: 'Cresça com a gente',
+    desc: 'Meritocracia e oportunidades para crescer por dentro.',
   },
 ];
 
@@ -91,16 +91,16 @@ export const TrabalheConosco: React.FC = () => {
               {BENEFICIOS.map((b, idx) => {
                 const Icon = b.icon;
                 return (
-                  <div key={idx} className="flex items-start gap-5 py-9 sm:py-10 first:pt-0 last:pb-0">
-                    <div className="flex items-center justify-center w-16 h-16 bg-amber-500/10 border border-amber-500/25 rounded-2xl text-amber-600 shrink-0">
-                      <Icon className="w-8 h-8" strokeWidth={1.75} />
+                  <div key={idx} className="group flex items-center gap-5 py-9 sm:py-10 first:pt-0 last:pb-0">
+                    <div className="flex items-center justify-center w-16 h-16 bg-amber-500 text-zinc-950 rounded-2xl shrink-0 shadow-md shadow-amber-500/30 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+                      <Icon className="w-8 h-8" strokeWidth={2} />
                     </div>
 
                     <div className="space-y-1.5">
-                      <h3 className="text-base sm:text-lg font-bold text-zinc-950 font-['Montserrat'] leading-snug">
+                      <h3 className="text-lg sm:text-xl font-extrabold text-zinc-950 font-['Montserrat'] leading-snug">
                         {b.titulo}
                       </h3>
-                      <p className="text-sm sm:text-base text-zinc-600 font-sans leading-relaxed">
+                      <p className="text-base text-zinc-600 font-sans leading-snug">
                         {b.desc}
                       </p>
                     </div>
