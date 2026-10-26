@@ -301,7 +301,7 @@ export const CareerForm: React.FC = () => {
               Vaga de Interesse
             </label>
             <select id="vagaId" name="vagaId" value={formData.vagaId} onChange={handleChange} className="career-field career-select">
-              <option value="" className="bg-white text-zinc-900">Banco de talentos (fora de época / outras oportunidades)</option>
+              <option value="" className="bg-white text-zinc-900">Banco de Talentos</option>
               {vagasOrdenadas.map((v) => (
                 <option key={v.id} value={v.id} className="bg-white text-zinc-900">{v.cargo}{v.local ? ` — ${v.local}` : ''}</option>
               ))}
