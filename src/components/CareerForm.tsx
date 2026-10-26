@@ -1,5 +1,5 @@
 // src/components/CareerForm.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Send, AlertCircle, CheckCircle2, UploadCloud } from 'lucide-react';
 import { saveCandidatura } from '../lib/firebase';
 import { adicionarNaLista } from '../lib/brevo';
@@ -7,16 +7,21 @@ import { listarVagasDivulgadas, type VagaDivulgada } from '../lib/vagasConecta';
 
 const AREAS_INTERESSE = [
   { value: '', label: 'Selecione a área de interesse...' },
-  { value: 'Engenharia & Obra', label: 'Engenharia & Obra' },
-  { value: 'Arquitetura & Projetos', label: 'Arquitetura & Projetos' },
-  { value: 'Orçamento & Planejamento', label: 'Orçamento & Planejamento' },
-  { value: 'Suprimentos & Compras', label: 'Suprimentos & Compras' },
-  { value: 'Segurança do Trabalho', label: 'Segurança do Trabalho' },
   { value: 'Administrativo & Financeiro', label: 'Administrativo & Financeiro' },
-  { value: 'Recursos Humanos', label: 'Recursos Humanos' },
+  { value: 'Arquitetura & Projetos', label: 'Arquitetura & Projetos' },
   { value: 'Comercial & Marketing', label: 'Comercial & Marketing' },
+  { value: 'Compras/Suprimentos', label: 'Compras/Suprimentos' },
+  { value: 'Engenharia & Obra', label: 'Engenharia & Obra' },
+  { value: 'Orçamento & Planejamento', label: 'Orçamento & Planejamento' },
+  { value: 'Recursos Humanos', label: 'Recursos Humanos' },
+  { value: 'Segurança do Trabalho', label: 'Segurança do Trabalho' },
   { value: 'Outra Área', label: 'Outra Área' },
 ];
+
+const OUTRA_AREA = 'Outra Área';
+const OUTRA_AREA_MAX = 45; // "Outra Área: " + texto cabe nos 60 caracteres aceitos no banco
+
+const LABEL_CLASS = "block text-[11px] uppercase font-bold text-zinc-600 mb-1.5 font-['Montserrat']";
 
 const MAX_ARQUIVO_MB = 10;
 
@@ -26,12 +31,17 @@ export const CareerForm: React.FC = () => {
     email: '',
     telefone: '',
     areaInteresse: '',
+    outraArea: '',
     vagaId: '',
     mensagem: '',
     termoAceito: false,
   });
   const [vagas, setVagas] = useState<VagaDivulgada[]>([]);
   useEffect(() => { listarVagasDivulgadas('construtora').then(setVagas); }, []);
+  const vagasOrdenadas = useMemo(
+    () => [...vagas].sort((a, b) => a.cargo.localeCompare(b.cargo, 'pt-BR', { sensitivity: 'base' })),
+    [vagas],
+  );
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [sucesso, setSucesso] = useState(false);
@@ -92,6 +102,11 @@ export const CareerForm: React.FC = () => {
       setLoading(false);
       return;
     }
+    if (formData.areaInteresse === OUTRA_AREA && formData.outraArea.trim().length < 2) {
+      setError('Informe qual é a área de interesse.');
+      setLoading(false);
+      return;
+    }
     if (!arquivo) {
       setError('Anexe seu currículo em PDF, DOC ou DOCX.');
       setLoading(false);
@@ -117,7 +132,9 @@ export const CareerForm: React.FC = () => {
         nome: formData.nome,
         email: formData.email,
         telefone: formData.telefone,
-        areaInteresse: formData.areaInteresse,
+        areaInteresse: formData.areaInteresse === OUTRA_AREA
+          ? `${OUTRA_AREA}: ${formData.outraArea.trim()}`
+          : formData.areaInteresse,
         vagaId: formData.vagaId,
         vagaTitulo: vagas.find((v) => v.id === formData.vagaId)?.cargo || '',
         mensagem: formData.mensagem,
@@ -133,7 +150,7 @@ export const CareerForm: React.FC = () => {
         });
         try { localStorage.setItem('quattro_candidatura_ts', String(Date.now())); } catch { /* ignora */ }
         setSucesso(true);
-        setFormData({ nome: '', email: '', telefone: '', areaInteresse: '', vagaId: '', mensagem: '', termoAceito: false });
+        setFormData({ nome: '', email: '', telefone: '', areaInteresse: '', outraArea: '', vagaId: '', mensagem: '', termoAceito: false });
         setArquivo(null);
       } else {
         setError('Não foi possível enviar sua candidatura. Tente novamente.');
@@ -146,7 +163,7 @@ export const CareerForm: React.FC = () => {
   };
 
   return (
-    <div className="bg-white border border-zinc-200/80 rounded-3xl p-8 md:p-10 shadow-sm space-y-6 text-zinc-900">
+    <div className="bg-white border border-zinc-200/80 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 shadow-sm space-y-5 sm:space-y-6 text-zinc-900">
       <div>
         <h3 className="text-lg font-bold text-zinc-950 font-['Montserrat'] mb-1">
           Envie sua Candidatura
@@ -179,7 +196,7 @@ export const CareerForm: React.FC = () => {
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           <input
             type="text"
             name="website"
@@ -192,7 +209,7 @@ export const CareerForm: React.FC = () => {
           />
 
           <div>
-            <label htmlFor="nome" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+            <label htmlFor="nome" className={LABEL_CLASS}>
               Nome Completo *
             </label>
             <input
@@ -203,13 +220,13 @@ export const CareerForm: React.FC = () => {
               placeholder="Ex: Roberto Silva"
               value={formData.nome}
               onChange={handleChange}
-              className="contact-input"
+              className="career-field"
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             <div>
-              <label htmlFor="email" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+              <label htmlFor="email" className={LABEL_CLASS}>
                 E-mail *
               </label>
               <input
@@ -220,11 +237,11 @@ export const CareerForm: React.FC = () => {
                 placeholder="seu@email.com.br"
                 value={formData.email}
                 onChange={handleChange}
-                className="contact-input"
+                className="career-field"
               />
             </div>
             <div>
-              <label htmlFor="telefone" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+              <label htmlFor="telefone" className={LABEL_CLASS}>
                 Telefone / WhatsApp *
               </label>
               <input
@@ -235,13 +252,13 @@ export const CareerForm: React.FC = () => {
                 placeholder="(11) 99999-9999"
                 value={formData.telefone}
                 onChange={handleChange}
-                className="contact-input"
+                className="career-field"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="areaInteresse" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+            <label htmlFor="areaInteresse" className={LABEL_CLASS}>
               Área de Interesse *
             </label>
             <select
@@ -250,7 +267,7 @@ export const CareerForm: React.FC = () => {
               required
               value={formData.areaInteresse}
               onChange={handleChange}
-              className="contact-input cursor-pointer"
+              className="career-field career-select"
             >
               {AREAS_INTERESSE.map((op) => (
                 <option key={op.value} value={op.value} disabled={op.value === ''} className="bg-white text-zinc-900">
@@ -260,40 +277,59 @@ export const CareerForm: React.FC = () => {
             </select>
           </div>
 
+          {formData.areaInteresse === OUTRA_AREA && (
+            <div>
+              <label htmlFor="outraArea" className={LABEL_CLASS}>
+                Qual área? *
+              </label>
+              <input
+                id="outraArea"
+                name="outraArea"
+                type="text"
+                required
+                maxLength={OUTRA_AREA_MAX}
+                placeholder="Digite a área de interesse"
+                value={formData.outraArea}
+                onChange={handleChange}
+                className="career-field"
+              />
+            </div>
+          )}
+
           <div>
-            <label htmlFor="vagaId" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+            <label htmlFor="vagaId" className={LABEL_CLASS}>
               Vaga de Interesse
             </label>
-            <select id="vagaId" name="vagaId" value={formData.vagaId} onChange={handleChange} className="contact-input cursor-pointer">
+            <select id="vagaId" name="vagaId" value={formData.vagaId} onChange={handleChange} className="career-field career-select">
               <option value="" className="bg-white text-zinc-900">Banco de talentos (fora de época / outras oportunidades)</option>
-              {vagas.map((v) => (
+              {vagasOrdenadas.map((v) => (
                 <option key={v.id} value={v.id} className="bg-white text-zinc-900">{v.cargo}{v.local ? ` — ${v.local}` : ''}</option>
               ))}
             </select>
           </div>
 
           <div>
-            <label htmlFor="mensagem" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+            <label htmlFor="mensagem" className={LABEL_CLASS}>
               Carta de Apresentação (Opcional)
             </label>
             <textarea
               id="mensagem"
               name="mensagem"
-              rows={3}
+              rows={4}
               placeholder="Conte um pouco sobre sua experiência e o que te motiva a trabalhar com a gente..."
               value={formData.mensagem}
               onChange={handleChange}
-              className="contact-input resize-none"
+              className="career-field career-textarea"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold text-amber-600 mb-1 font-['Montserrat']">
+            <label className="block text-[11px] uppercase font-bold text-amber-600 mb-1.5 font-['Montserrat']">
               Anexe seu Currículo *
             </label>
             <label
               htmlFor="curriculo"
-              className="flex items-center gap-3 w-full bg-[#f8f9f6] border border-dashed border-zinc-300 hover:border-amber-500 rounded-xl px-4 py-3.5 text-xs font-sans text-zinc-600 cursor-pointer transition-colors"
+              className="flex items-center gap-3 w-full bg-[#f8f9f6] border border-dashed border-zinc-300 hover:border-amber-500 rounded-xl px-4 min-h-12 py-2 text-sm font-sans text-zinc-600 cursor-pointer transition-colors"
             >
               <UploadCloud className="w-4 h-4 text-amber-500 shrink-0" />
               <span className="truncate">{arquivo ? arquivo.name : 'Escolher arquivo (PDF, DOC ou DOCX, até 10MB)'}</span>

@@ -1,5 +1,5 @@
 /* src/index.css */
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+/* Fontes Inter e Montserrat agora carregam pelo <link> do index.html (sem @import bloqueante) */
 @import "tailwindcss";
 
 @theme {
@@ -492,4 +492,28 @@ main > * {
 @media (prefers-reduced-motion: reduce) {
   [data-reveal]:not(.reveal-in) { opacity: 1; translate: none; }
   main > * { animation: none; }
+}
+
+/* ==========================================================================
+   FORMULÁRIO TRABALHE CONOSCO (CareerForm): campos com mesma altura
+   ========================================================================== */
+
+.career-field {
+  @apply w-full h-12 bg-[#f8f9f6] border border-zinc-200 focus:border-amber-500 text-zinc-900 placeholder-zinc-400 px-4 rounded-xl text-base sm:text-sm font-sans outline-none transition-colors;
+  box-sizing: border-box;
+  line-height: 1.25;
+}
+
+.career-select {
+  @apply cursor-pointer pr-10 truncate;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+}
+
+.career-textarea {
+  @apply h-auto min-h-28 py-3 resize-none;
 }

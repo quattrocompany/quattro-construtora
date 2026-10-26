@@ -37,6 +37,8 @@ export const TrabalheConosco: React.FC = () => {
           <img
             src="/img/Amazon_Entrada.jpg"
             alt="Quattro Construtora - Trabalhe Conosco"
+            fetchPriority="high"
+            decoding="async"
             className="w-full h-full object-cover object-center"
           />
         </div>

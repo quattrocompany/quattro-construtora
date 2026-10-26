@@ -1,21 +1,21 @@
 // src/App.tsx
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
-import { QuemSomos } from './pages/QuemSomos';
-import { Setores } from './pages/Setores';
-import { Servicos } from './pages/Servicos';
-import { Contato } from './pages/Contato';
-import { TrabalheConosco } from './pages/TrabalheConosco';
-import { Duvidas } from './pages/Duvidas';
-import { BlogIndex } from './pages/Blog/BlogIndex';
-import { BlogPost } from './pages/Blog/BlogPost';
-import { Privacidade } from './pages/Privacidade';
-import { Termos } from './pages/Termos';
-import { Admin } from './pages/Admin';
-import { PortalCliente } from './pages/PortalCliente';
+const QuemSomos = lazy(() => import('./pages/QuemSomos').then((m) => ({ default: m.QuemSomos })));
+const Setores = lazy(() => import('./pages/Setores').then((m) => ({ default: m.Setores })));
+const Servicos = lazy(() => import('./pages/Servicos').then((m) => ({ default: m.Servicos })));
+const Contato = lazy(() => import('./pages/Contato').then((m) => ({ default: m.Contato })));
+const TrabalheConosco = lazy(() => import('./pages/TrabalheConosco').then((m) => ({ default: m.TrabalheConosco })));
+const Duvidas = lazy(() => import('./pages/Duvidas').then((m) => ({ default: m.Duvidas })));
+const BlogIndex = lazy(() => import('./pages/Blog/BlogIndex').then((m) => ({ default: m.BlogIndex })));
+const BlogPost = lazy(() => import('./pages/Blog/BlogPost').then((m) => ({ default: m.BlogPost })));
+const Privacidade = lazy(() => import('./pages/Privacidade').then((m) => ({ default: m.Privacidade })));
+const Termos = lazy(() => import('./pages/Termos').then((m) => ({ default: m.Termos })));
+const Admin = lazy(() => import('./pages/Admin').then((m) => ({ default: m.Admin })));
+const PortalCliente = lazy(() => import('./pages/PortalCliente').then((m) => ({ default: m.PortalCliente })));
 import { ScrollEffects } from './lib/scrollEffects';
 
 const ScrollToTop: React.FC = () => {
@@ -44,6 +44,7 @@ const MainLayout: React.FC = () => {
       {!isAdminRoute && <Header />}
       
       <main className="grow relative z-10 w-full">
+        <Suspense fallback={<div className="min-h-[60vh]" aria-busy="true" />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/quem-somos" element={<QuemSomos />} />
@@ -60,6 +61,7 @@ const MainLayout: React.FC = () => {
           <Route path="/admin" element={<Admin />} />
           <Route path="/portal-cliente" element={<PortalCliente />} />
         </Routes>
+        </Suspense>
       </main>
 
       {!isAdminRoute && <Footer />}
