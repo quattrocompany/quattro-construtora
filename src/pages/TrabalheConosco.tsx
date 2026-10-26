@@ -69,15 +69,15 @@ export const TrabalheConosco: React.FC = () => {
 
       {/* 2. SEÇÃO PRINCIPAL: BENEFÍCIOS + FORMULÁRIO */}
       <section className="py-16 sm:py-24 bg-[#f8f9f6] border-b border-zinc-200/80 font-['Montserrat']">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
 
           {/* FORMULÁRIO ESQUERDA */}
-          <div className="lg:col-span-7 flex flex-col justify-stretch">
+          <div className="min-w-0 lg:col-span-7 flex flex-col justify-stretch">
             <CareerForm />
           </div>
 
           {/* BENEFÍCIOS DIREITA */}
-          <div className="lg:col-span-5 flex flex-col gap-8 lg:self-start lg:sticky lg:top-32">
+          <div className="min-w-0 lg:col-span-5 flex flex-col gap-8 lg:self-start lg:sticky lg:top-32">
             <div className="space-y-3">
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Carreira na Quattro

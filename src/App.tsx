@@ -18,11 +18,30 @@ const Admin = lazy(() => import('./pages/Admin').then((m) => ({ default: m.Admin
 const PortalCliente = lazy(() => import('./pages/PortalCliente').then((m) => ({ default: m.PortalCliente })));
 import { ScrollEffects } from './lib/scrollEffects';
 
+const TITULOS: Record<string, string> = {
+  '/quem-somos': 'Quem Somos',
+  '/setores': 'Setores e Obras',
+  '/setores-e-obras': 'Setores e Obras',
+  '/servicos': 'Serviços',
+  '/contato': 'Contato',
+  '/trabalhe-conosco': 'Trabalhe Conosco',
+  '/duvidas-frequentes': 'Dúvidas Frequentes',
+  '/blog': 'Blog',
+  '/privacidade': 'Política de Privacidade',
+  '/termos': 'Termos de Uso',
+  '/portal-cliente': 'Portal do Cliente',
+  '/admin': 'Painel Administrativo',
+};
+const TITULO_PADRAO = 'Quattro Construtora | Engenharia civil de alta performance';
+
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const base = pathname.replace(/\/+$/, '') || '/';
+    const titulo = TITULOS[base] || (base.startsWith('/blog/') ? 'Blog' : '');
+    document.title = titulo ? `${titulo} | Quattro Construtora` : TITULO_PADRAO;
   }, [pathname]);
 
   return null;

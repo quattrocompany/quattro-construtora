@@ -332,7 +332,7 @@ export const CareerForm: React.FC = () => {
               className="flex items-center gap-3 w-full bg-[#f8f9f6] border border-dashed border-zinc-300 hover:border-amber-500 rounded-xl px-4 min-h-12 py-2 text-sm font-sans text-zinc-600 cursor-pointer transition-colors"
             >
               <UploadCloud className="w-4 h-4 text-amber-500 shrink-0" />
-              <span className="truncate">{arquivo ? arquivo.name : 'Escolher arquivo (PDF, DOC ou DOCX, até 10MB)'}</span>
+              <span className={arquivo ? 'truncate' : 'leading-snug'}>{arquivo ? arquivo.name : 'Escolher arquivo (PDF, DOC ou DOCX, até 10MB)'}</span>
             </label>
             <input
               id="curriculo"
