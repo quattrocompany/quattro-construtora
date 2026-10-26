@@ -8,7 +8,7 @@ const BENEFICIOS = [
   {
     icon: HardHat,
     titulo: 'Obras que desafiam',
-    desc: 'Projetos grandes, industriais, corporativos e residenciais.',
+    desc: 'Grandes projetos industriais, logísticos, corporativos e residenciais.',
   },
   {
     icon: GraduationCap,
