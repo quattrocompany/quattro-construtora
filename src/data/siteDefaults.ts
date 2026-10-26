@@ -32,13 +32,37 @@ const slideBase = {
   ctaLink: '/contato',
 };
 
+const slideGalpoes = {
+  line0: 'GALPÕES LOGÍSTICOS',
+  line1BeforeHighlight: 'COM',
+  highlightPart1: 'RIGOR',
+  highlightPart2: 'TÉCNICO',
+  line3AfterHighlight: 'DO PROJETO À ENTREGA',
+  slideDesc:
+    'Construção e adequação de galpões e centros de distribuição com gestão Turnkey, padrão técnico NBR e transparência em cada etapa da obra.',
+  ctaText: 'Solicitar Orçamento',
+  ctaLink: '/contato',
+};
+
+const slideCamaraFria = {
+  line0: 'CÂMARAS FRIAS',
+  line1BeforeHighlight: 'OBRA TÉCNICA PARA',
+  highlightPart1: 'TEMPERATURA',
+  highlightPart2: 'CONTROLADA',
+  line3AfterHighlight: 'SEM IMPROVISO',
+  slideDesc:
+    'Instalação e adequação civil de câmaras frias e áreas climatizadas para indústria, alimentos, farmacêutico e logística, com isolamento, pisos e instalações dentro das normas.',
+  ctaText: 'Falar com um Especialista',
+  ctaLink: '/contato',
+};
+
 export const DEFAULT_HOME = {
   hero: {
     mode: 'carousel' as 'single' | 'carousel' | 'video',
     mediaList: [
       { id: 1, type: 'image', desktopUrl: '/img/bg_hero1.avif', mobileUrl: '', ...slideBase },
-      { id: 2, type: 'image', desktopUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000', mobileUrl: '', ...slideBase },
-      { id: 3, type: 'video', desktopUrl: 'https://assets.mixkit.co/videos/preview/mixkit-architectural-model-of-a-house-41561-large.mp4', mobileUrl: '', ...slideBase },
+      { id: 2, type: 'image', desktopUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?q=80&w=2000', mobileUrl: '', ...slideGalpoes },
+      { id: 3, type: 'video', desktopUrl: 'https://assets.mixkit.co/videos/preview/mixkit-architectural-model-of-a-house-41561-large.mp4', mobileUrl: '', ...slideCamaraFria },
     ] as Slide[],
   },
   approach: {
