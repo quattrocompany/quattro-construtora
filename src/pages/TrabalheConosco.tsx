@@ -91,7 +91,7 @@ export const TrabalheConosco: React.FC = () => {
               {BENEFICIOS.map((b, idx) => {
                 const Icon = b.icon;
                 return (
-                  <div key={idx} className="flex items-start gap-5 py-6 first:pt-0 last:pb-0">
+                  <div key={idx} className="flex items-start gap-5 py-9 sm:py-10 first:pt-0 last:pb-0">
                     <div className="flex items-center justify-center w-16 h-16 bg-amber-500/10 border border-amber-500/25 rounded-2xl text-amber-600 shrink-0">
                       <Icon className="w-8 h-8" strokeWidth={1.75} />
                     </div>
