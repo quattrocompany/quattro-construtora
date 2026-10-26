@@ -77,8 +77,8 @@ export const TrabalheConosco: React.FC = () => {
           </div>
 
           {/* BENEFÍCIOS DIREITA */}
-          <div className="lg:col-span-5 flex flex-col h-full justify-between">
-            <div className="space-y-2 pb-2">
+          <div className="lg:col-span-5 flex flex-col gap-8 lg:self-start lg:sticky lg:top-32">
+            <div className="space-y-3">
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Carreira na Quattro
               </span>
@@ -87,23 +87,20 @@ export const TrabalheConosco: React.FC = () => {
               </h2>
             </div>
 
-            <div className="flex-1 flex flex-col justify-between gap-3">
+            <div className="flex flex-col divide-y divide-zinc-200/80">
               {BENEFICIOS.map((b, idx) => {
                 const Icon = b.icon;
                 return (
-                  <div
-                    key={idx}
-                    className="p-4 sm:p-5 bg-white border border-zinc-200/80 rounded-2xl flex items-start gap-4 hover:border-amber-500/50 hover:shadow-md transition-all duration-300 shadow-xs flex-1"
-                  >
-                    <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-600 shrink-0">
-                      <Icon className="w-5 h-5" />
+                  <div key={idx} className="flex items-start gap-5 py-6 first:pt-0 last:pb-0">
+                    <div className="flex items-center justify-center w-16 h-16 bg-amber-500/10 border border-amber-500/25 rounded-2xl text-amber-600 shrink-0">
+                      <Icon className="w-8 h-8" strokeWidth={1.75} />
                     </div>
 
-                    <div className="space-y-0.5">
-                      <h3 className="text-xs sm:text-sm font-bold text-zinc-950 font-['Montserrat'] leading-snug">
+                    <div className="space-y-1.5">
+                      <h3 className="text-base sm:text-lg font-bold text-zinc-950 font-['Montserrat'] leading-snug">
                         {b.titulo}
                       </h3>
-                      <p className="text-[11px] text-zinc-500 font-sans leading-normal">
+                      <p className="text-sm sm:text-base text-zinc-600 font-sans leading-relaxed">
                         {b.desc}
                       </p>
                     </div>
