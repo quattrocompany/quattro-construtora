@@ -23,7 +23,7 @@ const BENEFICIOS = [
   {
     icon: TrendingUp,
     titulo: 'Cresça com a gente',
-    desc: 'Meritocracia e oportunidades para crescer por dentro.',
+    desc: 'Reconhecimento e oportunidades reais de crescer na empresa.',
   },
 ];
 
