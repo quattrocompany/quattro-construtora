@@ -29,7 +29,7 @@ export const Hero_Home: React.FC = () => {
     if (mode !== 'carousel' || slides.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, 8000);
     return () => clearInterval(interval);
   }, [mode, slides.length]);
 
