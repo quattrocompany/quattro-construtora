@@ -46,10 +46,10 @@ const slideGalpoes = {
 
 const slideCamaraFria = {
   line0: 'CÂMARAS FRIAS',
-  line1BeforeHighlight: 'OBRA TÉCNICA PARA',
-  highlightPart1: 'TEMPERATURA',
-  highlightPart2: 'CONTROLADA',
-  line3AfterHighlight: 'SEM IMPROVISO',
+  line1BeforeHighlight: 'COM',
+  highlightPart1: 'OBRA',
+  highlightPart2: 'ESPECIALIZADA',
+  line3AfterHighlight: 'PARA SUA OPERAÇÃO',
   slideDesc:
     'Instalação e adequação civil de câmaras frias e áreas climatizadas para indústria, alimentos, farmacêutico e logística, com isolamento, pisos e instalações dentro das normas.',
   ctaText: 'Falar com um Especialista',
