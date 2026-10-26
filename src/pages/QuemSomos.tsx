@@ -111,8 +111,8 @@ const PILARES_PADRAO = [
   },
   {
     icon: FileCheck2,
-    title: 'Turnkey & Compliance',
-    desc: 'Solução de ponta a ponta. Gerenciamos todas as etapas, desde licenças e aprovações até o Habite-se, AVCB e entrega das chaves.'
+    title: 'Turnkey, PMG & Compliance',
+    desc: 'Solução de ponta a ponta, em Turnkey ou PMG (Preço Máximo Garantido). Gerenciamos todas as etapas, desde licenças e aprovações até o Habite-se, AVCB e entrega das chaves.'
   },
   {
     icon: ShieldAlert,

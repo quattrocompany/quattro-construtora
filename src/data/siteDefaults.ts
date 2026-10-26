@@ -39,7 +39,7 @@ const slideGalpoes = {
   highlightPart2: 'TÉCNICO',
   line3AfterHighlight: 'DO PROJETO À ENTREGA',
   slideDesc:
-    'Construção e adequação de galpões e centros de distribuição com gestão Turnkey, padrão técnico NBR e transparência em cada etapa da obra.',
+    'Construção e adequação de galpões e centros de distribuição em Turnkey ou PMG (Preço Máximo Garantido), com padrão técnico NBR e transparência em cada etapa da obra.',
   ctaText: 'Solicitar Orçamento',
   ctaLink: '/contato',
 };
@@ -77,8 +77,8 @@ export const DEFAULT_HOME = {
       btnLink: '/setores',
     },
     card2: {
-      title: 'Gestão Turnkey & Regularização',
-      text: 'Gerenciamento completo do projeto à entrega final, assegurando conformidade com normas NBR e obtenção de AVCB/CLCB junto aos Bombeiros.',
+      title: 'Turnkey, PMG & Regularização',
+      text: 'Atuamos em Turnkey ou PMG (Preço Máximo Garantido), conforme a necessidade de cada cliente, com gerenciamento completo do projeto à entrega final, conformidade com as normas NBR e obtenção de AVCB/CLCB junto aos Bombeiros.',
       btnText: 'Ver Padrão',
       btnLink: '/quem-somos',
     },
@@ -114,7 +114,7 @@ export const DEFAULT_QUEM = {
   manifesto: {
     title: 'Soluções End-to-End & Rigor Técnico',
     p1: 'A Quattro Construtora é especializada em soluções end-to-end de alta complexidade. Com mais de 1 milhão de metros quadrados executados, construímos nossa reputação onde o rigor técnico é inegociável: de galpões logísticos e plantas industriais a sedes corporativas, ambientes farmacêuticos controlados e complexos residenciais.',
-    p2: 'Atuamos no modelo Turnkey (Design & Build), assumindo responsabilidade integral por todo o ciclo da obra — dos estudos de viabilidade e projetos executivos ao comissionamento e entrega final das chaves.',
+    p2: 'Atuamos nos modelos Turnkey (Design & Build) ou PMG (Preço Máximo Garantido), de acordo com a necessidade de cada cliente, conduzindo todo o ciclo da obra — dos estudos de viabilidade e projetos executivos ao comissionamento e entrega final das chaves.',
   },
   qualidade: {
     quote:
@@ -154,9 +154,9 @@ export const DEFAULT_SERVICOS = {
   },
   lista: [
     {
-      id: 'turnkey', title: 'Engenharia Turnkey & EPC', image: '/img/turnkey_2150290086.jpg',
-      desc: 'Solução completa do conceito à entrega das chaves. Assumimos a responsabilidade integral pelo projeto, compras, construção e comissionamento.',
-      entregaveis: ['Gestão unificada de fornecedores e contratos', 'Preço fechado com previsibilidade orçamentária', 'Prazo de entrega garantido em contrato', 'Comissionamento e startup de instalações'],
+      id: 'turnkey', title: 'Engenharia Turnkey & PMG', image: '/img/turnkey_2150290086.jpg',
+      desc: 'Solução completa do conceito à entrega das chaves, em Turnkey ou PMG (Preço Máximo Garantido), conforme a necessidade do cliente. Cuidamos do projeto, compras, construção e comissionamento.',
+      entregaveis: ['Gestão unificada de fornecedores e contratos', 'Turnkey (preço fechado) ou PMG (teto de preço garantido)', 'Transparência e controle de custos em cada etapa', 'Comissionamento e startup de instalações'],
     },
     {
       id: 'gerenciamento', title: 'Gerenciamento & Fiscalização', image: '/img/fiscalizacao_2151589549.jpg',
