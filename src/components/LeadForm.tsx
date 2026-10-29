@@ -15,7 +15,6 @@ const OPCOES_ASSUNTO = [
   { value: 'geral', label: 'Contato Geral & Dúvidas' },
   { value: 'vizinho_obra', label: 'Sou Vizinho de Obra (Atendimento à Comunidade)' },
   { value: 'fornecedor', label: 'Sou Fornecedor / Parceria Comercial' },
-  { value: 'trabalhe_conosco', label: 'Trabalhe Conosco (RH / Envio de Currículo)' },
   { value: 'imprensa', label: 'Assessoria de Imprensa & Comunicação' }
 ];
 
@@ -141,13 +140,13 @@ export const LeadForm: React.FC<LeadFormProps> = ({
   };
 
   return (
-    <div className="bg-white border border-zinc-200/80 rounded-3xl p-8 md:p-10 shadow-sm space-y-6 text-zinc-900">
+    <div className="bg-white border border-zinc-200/80 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 shadow-sm space-y-5 sm:space-y-6 text-zinc-900">
       <div>
         <h3 className="text-lg font-bold text-zinc-950 font-['Montserrat'] mb-1">
-          Solicite um Orçamento
+          Entre em Contato
         </h3>
         <p className="text-xs font-sans text-zinc-600">
-          Preencha os dados abaixo para direcionarmos sua demanda aos nossos engenheiros.
+          Preencha os dados abaixo e direcionaremos sua demanda aos nossos colaboradores.
         </p>
       </div>
 
@@ -174,7 +173,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           <input
             type="text"
             name="website"
@@ -186,7 +185,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
             style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
           />
           <div>
-            <label htmlFor="nome" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+            <label htmlFor="nome" className="block text-[11px] uppercase font-bold text-zinc-600 mb-1.5 font-['Montserrat']">
               Nome Completo *
             </label>
             <input
@@ -197,13 +196,13 @@ export const LeadForm: React.FC<LeadFormProps> = ({
               placeholder="Ex: Roberto Silva"
               value={formData.nome}
               onChange={handleChange}
-              className="contact-input"
+              className="career-field"
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
             <div>
-              <label htmlFor="email" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+              <label htmlFor="email" className="block text-[11px] uppercase font-bold text-zinc-600 mb-1.5 font-['Montserrat']">
                 E-mail *
               </label>
               <input
@@ -214,11 +213,11 @@ export const LeadForm: React.FC<LeadFormProps> = ({
                 placeholder="seu@email.com.br"
                 value={formData.email}
                 onChange={handleChange}
-                className="contact-input"
+                className="career-field"
               />
             </div>
             <div>
-              <label htmlFor="telefone" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+              <label htmlFor="telefone" className="block text-[11px] uppercase font-bold text-zinc-600 mb-1.5 font-['Montserrat']">
                 Telefone / WhatsApp *
               </label>
               <input
@@ -229,14 +228,14 @@ export const LeadForm: React.FC<LeadFormProps> = ({
                 placeholder="(11) 99999-9999"
                 value={formData.telefone}
                 onChange={handleChange}
-                className="contact-input"
+                className="career-field"
               />
             </div>
           </div>
 
           {showSubjectSelect && (
             <div>
-              <label htmlFor="assunto" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+              <label htmlFor="assunto" className="block text-[11px] uppercase font-bold text-zinc-600 mb-1.5 font-['Montserrat']">
                 Motivo do Contato *
               </label>
               <select
@@ -245,7 +244,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
                 required
                 value={formData.assunto}
                 onChange={handleChange}
-                className="contact-input cursor-pointer"
+                className="career-field career-select"
               >
                 {OPCOES_ASSUNTO.map((op) => (
                   <option key={op.value} value={op.value} disabled={op.value === ''} className="bg-white text-zinc-900">
@@ -271,7 +270,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
           )}
 
           <div>
-            <label htmlFor="mensagem" className="block text-[10px] uppercase font-bold text-zinc-600 mb-1 font-['Montserrat']">
+            <label htmlFor="mensagem" className="block text-[11px] uppercase font-bold text-zinc-600 mb-1.5 font-['Montserrat']">
               Sua Mensagem *
             </label>
             <textarea
@@ -282,7 +281,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
               placeholder="Descreva resumidamente o seu projeto ou necessidade..."
               value={formData.mensagem}
               onChange={handleChange}
-              className="contact-input resize-none"
+              className="career-field career-textarea"
             />
           </div>
 

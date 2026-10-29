@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, HelpCircle, ChevronRight, ArrowRight } from 'lucide-react';
 import { LeadForm } from '../components/LeadForm';
 import { FAQS_PADRAO, getFaqs, type FaqPublico } from '../lib/faq';
-import { useContato, hrefWhatsapp, hrefMapa } from '../lib/siteContent';
+import { useContato, hrefTelefone, hrefMapa } from '../lib/siteContent';
 import type { ContatoInfo } from '../data/siteDefaults';
 
 const montarCanais = (c: ContatoInfo) => [
-  { icon: Phone, titulo: 'Telefone & WhatsApp Comercial', info: c.comercialPhone, sub: '', href: hrefWhatsapp(c.comercialPhone) as string | null },
+  { icon: Phone, titulo: 'Telefone Comercial', info: c.comercialPhone, sub: '', href: hrefTelefone(c.comercialPhone) as string | null },
   { icon: Mail, titulo: 'E-mail Institucional', info: c.comercialEmail, sub: 'Resposta média em até 24h úteis', href: `mailto:${c.comercialEmail}` as string | null },
   { icon: MapPin, titulo: 'Sede Administrativa', info: c.enderecoLinha1, sub: c.enderecoLinha2, href: hrefMapa(c) as string | null },
   { icon: Clock, titulo: 'Horário de Atendimento', info: c.horario, sub: '', href: null as string | null },
@@ -69,15 +69,15 @@ export const Contato: React.FC = () => {
 
       {/* 2. SEÇÃO PRINCIPAL DE CONTATO E FORMULÁRIO (SIMETRIA 1:1 EM ALTURA) */}
       <section id="formulario" className="py-16 sm:py-24 bg-[#f8f9f6] border-b border-zinc-200/80 font-['Montserrat']">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+        <div className="max-w-[1440px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
           
           {/* FORMULÁRIO ESQUERDA */}
-          <div className="lg:col-span-7 flex flex-col justify-stretch">
+          <div className="min-w-0 lg:col-span-7 flex flex-col justify-stretch">
             <LeadForm showSubjectSelect={true} />
           </div>
 
           {/* CANAIS DIREITA (EXPANDIDO PARA ALINHAR PERFEITAMENTE COM O FORMULÁRIO DA ESQUERDA) */}
-          <div className="lg:col-span-5 flex flex-col h-full justify-between">
+          <div className="min-w-0 lg:col-span-5 flex flex-col h-full justify-between">
             <div className="space-y-2 pb-2">
               <span className="inline-block bg-amber-500 text-zinc-950 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-md w-fit font-['Montserrat']">
                 Atendimento Direto
